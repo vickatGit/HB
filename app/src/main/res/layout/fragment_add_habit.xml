@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="20dp"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    tools:context=".ui.fragment.AddHabitFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:paddingBottom="30dp"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="15dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="15dp" />
+
+
+        <ImageView
+            android:id="@+id/back"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:padding="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/header"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toTopOf="@+id/header"
+            app:shapeAppearance="@style/Habit"
+            app:srcCompat="@drawable/arrow_icon" />
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/bold"
+            android:text="Add Habit"
+            android:textSize="25sp"
+            android:theme="@style/MaterialAlertDialog.Material3.Title.Text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/duration_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/cardview_light_background"
+            android:outlineProvider="bounds"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="7dp"
+            android:theme="@style/Habit"
+            app:cardElevation="5dp"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/header"
+            app:strokeWidth="0dp"
+            tools:layout_editor_absoluteX="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/regular"
+                    android:text="Duration"
+                    android:textColor="@color/grey_text"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/duration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:inputType="none"
+                    android:text="15 Minutes"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="150dp"
+                    android:layout_height="1dp"
+                    android:background="@color/light_grey" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/frequency_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/cardview_light_background"
+            android:outlineProvider="bounds"
+            android:paddingHorizontal="20dp"
+            android:theme="@style/Habit"
+            app:cardElevation="5dp"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/duration_card"
+            app:strokeWidth="0dp"
+            tools:layout_editor_absoluteX="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/regular"
+                    android:text="Frequency"
+                    android:textColor="@color/grey_text"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/frequency"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:inputType="none"
+                    android:text="2 Times a Day"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="150dp"
+                    android:layout_height="1dp"
+                    android:background="@color/light_grey" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/timeline_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/cardview_light_background"
+            android:outlineProvider="bounds"
+            android:theme="@style/Habit"
+            app:cardElevation="5dp"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/frequency_card"
+            app:strokeWidth="0dp"
+            tools:layout_editor_absoluteX="20dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/regular"
+                        android:gravity="center"
+                        android:text="Start Date"
+                        android:textColor="@color/grey_text"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        app:boxBackgroundColor="@color/white"
+                        app:hintEnabled="false"
+                        app:startIconDrawable="@drawable/calendar_icon"
+                        app:startIconTint="@color/light_grey">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="-10dp"
+                            android:inputType="none"
+                            android:enabled="false"
+                            android:padding="0dp"
+                            android:paddingStart="0dp"
+                            android:singleLine="true"
+                            android:text="Sep 15th, 2022"
+                            android:textColor="@color/text_color"
+                            android:textSize="14sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/regular"
+                        android:gravity="center"
+                        android:text="End Date"
+                        android:textColor="@color/grey_text"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        app:boxBackgroundColor="@color/white"
+                        app:hintEnabled="false"
+                        app:startIconDrawable="@drawable/calendar_icon"
+                        app:startIconTint="@color/light_grey">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="-10dp"
+                            android:inputType="none"
+                            android:padding="0dp"
+                            android:paddingStart="0dp"
+                            android:singleLine="true"
+                            android:text="Sep 15th, 2022"
+                            android:textColor="@color/text_color"
+                            android:textSize="14sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/reminder_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/cardview_light_background"
+            android:outlineProvider="bounds"
+            android:paddingHorizontal="20dp"
+            android:theme="@style/Habit"
+            app:cardElevation="5dp"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/timeline_container"
+            app:strokeWidth="0dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/reminder_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/regular"
+                    android:text="Get Reminder"
+                    android:textColor="@color/grey_text"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Switch
+                    android:id="@+id/reminder_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:thumb="@drawable/custom_switch_thumb_bg"
+                    android:track="@drawable/custom_switch_track_bg"
+                    app:layout_constraintBottom_toBottomOf="@+id/reminder_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/reminder_title"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                <TextView
+                    android:id="@+id/reminder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:inputType="none"
+                    android:text="15 Minutes"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/reminder_title" />
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="150dp"
+                    android:layout_height="1dp"
+                    android:background="@color/light_grey"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/reminder" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/cardview_light_background"
+            android:outlineProvider="bounds"
+            android:paddingHorizontal="20dp"
+            android:theme="@style/Habit"
+            app:cardElevation="5dp"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/reminder_card"
+            app:strokeWidth="0dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/description_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/regular"
+                    android:text="Description"
+                    android:textColor="@color/text_color"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="Type.."
+                    android:lines="7"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/light_grey"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/description_title" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_habit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:backgroundTint="@color/orange"
+            android:text="Create"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>

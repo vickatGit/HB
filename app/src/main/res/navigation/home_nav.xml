@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_nav"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/addHabitFragment"
+        android:name="com.example.habit.ui.fragment.AddHabitFragment"
+        android:label="fragment_add_habit"
+        tools:layout="@layout/fragment_add_habit" >
+        <action
+            android:id="@+id/action_addHabitFragment_to_dateFragment"
+            app:destination="@id/dateFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/dateFragment"
+        android:name="com.example.habit.ui.fragment.Date.DateFragment"
+        android:label="fragment_date"
+        tools:layout="@layout/fragment_date" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.habit.ui.fragment.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_self"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/communityFragment"
+        android:name="com.example.habit.ui.fragment.CommunityFragment"
+        android:label="fragment_community"
+        tools:layout="@layout/fragment_community" />
+    <fragment
+        android:id="@+id/habitsFragment"
+        android:name="com.example.habit.ui.fragment.HabitsFragment"
+        android:label="fragment_habits"
+        tools:layout="@layout/fragment_habits" />
+    <fragment
+        android:id="@+id/menteesFragment"
+        android:name="com.example.habit.ui.fragment.MenteesFragment"
+        android:label="fragment_mentees"
+        tools:layout="@layout/fragment_mentees" />
+    <action
+        android:id="@+id/action_global_homeFragment"
+        app:popUpTo="@id/homeFragment"
+        app:launchSingleTop="true" />
+    <fragment
+        android:id="@+id/myHabitsFragment"
+        android:name="com.example.habit.ui.fragment.MyHabitsFragment"
+        android:label="fragment_my_habits"
+        tools:layout="@layout/fragment_my_habits" >
+        <action
+            android:id="@+id/action_myHabitsFragment_to_habitsFragment"
+            app:destination="@id/habitsFragment" />
+    </fragment>
+</navigation>

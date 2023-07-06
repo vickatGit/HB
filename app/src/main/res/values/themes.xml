@@ -1,0 +1,33 @@
+<resources xmlns:ns2="http://schemas.android.com/apk/res-auto">
+    <style name="Habit" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="floatingActionButtonPrimaryStyle">@style/CustomFab</item>
+        
+    </style>
+
+    <style name="MyTextInputEditText" parent="ThemeOverlay.Material3.TextInputEditText.FilledBox.Dense">
+        <!-- left and right padding -->
+        <item name="android:paddingStart" ns2:ignore="NewApi">0dp</item>
+        <item name="android:paddingEnd" ns2:ignore="NewApi">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+
+        <!-- top and bottom padding -->
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+    
+    <style name="CustomFab" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="shapeAppearanceOverlay">@style/CustomFabStyle</item>
+    </style>
+
+
+    <style name="CustomFabStyle" parent="ShapeAppearance.Material3.SmallComponent">
+        
+        <item name="cornerSize">100%</item>
+        <item name="cornerFamily">rounded</item>
+
+    </style>
+</resources>

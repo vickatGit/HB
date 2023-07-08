@@ -18,12 +18,16 @@ class MyHabitsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding=FragmentMyHabitsBinding.inflate(inflater,container,false)
         binding.newHabitContainer.setOnClickListener {
             findNavController().navigate(R.id.action_myHabitsFragment_to_addHabitFragment)
         }
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding=null
     }
 
 }

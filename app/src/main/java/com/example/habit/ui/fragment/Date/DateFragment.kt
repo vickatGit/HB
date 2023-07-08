@@ -7,12 +7,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.example.habit.R
 import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentDateBinding
 import com.example.habit.ui.callback.DateClick
+import com.example.habit.ui.fragment.AddHabitFragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -26,6 +30,12 @@ import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class DateFragment : BottomSheetDialogFragment() {
+
+    companion object{
+        const val DATE_RESULT: String= "date_result"
+        const val DATE: String= "date"
+    }
+
 
     private var _weekDayBinding: CalendarDayLegendContainerBinding? = null
     private val weekDayBinding get() = _weekDayBinding!!
@@ -105,7 +115,6 @@ class DateFragment : BottomSheetDialogFragment() {
         binding.calendarView.monthScrollListener = { calendarMonth: CalendarMonth ->
             binding.month.setText(getMonthYearString(calendarMonth))
             currentMonth = calendarMonth.yearMonth
-            null
         }
         currentMonth = YearMonth.now()
         val startMonth = currentMonth?.minusMonths(100) // Adjust as needed
@@ -115,28 +124,20 @@ class DateFragment : BottomSheetDialogFragment() {
         binding.calendarView.setup(startMonth!!, endMonth!!, firstDayOfWeekFromLocale())
         binding.calendarView.scrollToMonth(currentMonth!!)
         binding.back.setOnClickListener(View.OnClickListener { findNavController().popBackStack() })
-        binding.prevMonth.setOnClickListener(View.OnClickListener {
-            binding.calendarView.scrollToMonth(
-                currentMonth!!.minusMonths(
-                    1
-                )
-            )
-        })
-        binding.nextMonth.setOnClickListener(View.OnClickListener {
-            binding.calendarView.scrollToMonth(
-                currentMonth!!.plusMonths(
-                    1
-                )
-            )
-        })
-        binding.save.setOnClickListener(View.OnClickListener {
+        binding.prevMonth.setOnClickListener{
+            binding.calendarView.scrollToMonth(currentMonth!!.minusMonths(1))
+        }
+        binding.nextMonth.setOnClickListener{
+            binding.calendarView.scrollToMonth(currentMonth!!.plusMonths(1))
+        }
+        binding.save.setOnClickListener{
             if (selectedDate != null) {
-
+                setFragmentResult(DATE_RESULT, bundleOf(DATE to selectedDate.toString()))
+                findNavController().navigateUp()
             } else {
-                Toast.makeText(requireContext(), "Please Select the Date", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Please Select the Date", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
 
         return binding.root
     }
@@ -157,5 +158,4 @@ class DateFragment : BottomSheetDialogFragment() {
         val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
         return calendarMonth.yearMonth.format(formatter)
     }
-
 }

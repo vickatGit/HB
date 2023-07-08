@@ -82,78 +82,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/regular"
-                    android:text="Duration"
+                    android:text="Title"
                     android:textColor="@color/grey_text"
                     android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/duration"
+                <EditText
+                    android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:inputType="none"
-                    android:text="15 Minutes"
                     android:textColor="@color/text_color"
                     android:textSize="14sp" />
 
-                <View
-                    android:layout_width="150dp"
-                    android:layout_height="1dp"
-                    android:background="@color/light_grey" />
+
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/frequency_card"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/cardview_light_background"
-            android:outlineProvider="bounds"
-            android:paddingHorizontal="20dp"
-            android:theme="@style/Habit"
-            app:cardElevation="5dp"
-            app:layout_constraintEnd_toEndOf="@id/end"
-            app:layout_constraintStart_toStartOf="@id/start"
-            app:layout_constraintTop_toBottomOf="@+id/duration_card"
-            app:strokeWidth="0dp"
-            tools:layout_editor_absoluteX="20dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="12dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/regular"
-                    android:text="Frequency"
-                    android:textColor="@color/grey_text"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/frequency"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:inputType="none"
-                    android:text="2 Times a Day"
-                    android:textColor="@color/text_color"
-                    android:textSize="14sp" />
-
-                <View
-                    android:layout_width="150dp"
-                    android:layout_height="1dp"
-                    android:background="@color/light_grey" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/timeline_container"
@@ -166,7 +111,7 @@
             app:cardElevation="5dp"
             app:layout_constraintEnd_toEndOf="@id/end"
             app:layout_constraintStart_toStartOf="@id/start"
-            app:layout_constraintTop_toBottomOf="@+id/frequency_card"
+            app:layout_constraintTop_toBottomOf="@+id/duration_card"
             app:strokeWidth="0dp"
             tools:layout_editor_absoluteX="20dp">
 
@@ -178,6 +123,7 @@
                 android:layout_marginVertical="14dp">
 
                 <LinearLayout
+                    android:id="@+id/start_date_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -204,15 +150,16 @@
                         app:startIconTint="@color/light_grey">
 
                         <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/start_date"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="-10dp"
                             android:inputType="none"
-                            android:enabled="false"
+                            android:focusable="false"
+                            android:cursorVisible="false"
                             android:padding="0dp"
                             android:paddingStart="0dp"
                             android:singleLine="true"
-                            android:text="Sep 15th, 2022"
                             android:textColor="@color/text_color"
                             android:textSize="14sp" />
 
@@ -221,6 +168,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/end_date_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -247,14 +195,15 @@
                         app:startIconTint="@color/light_grey">
 
                         <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/end_date"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="-10dp"
-                            android:inputType="none"
                             android:padding="0dp"
+                            android:focusable="false"
+                            android:cursorVisible="false"
                             android:paddingStart="0dp"
                             android:singleLine="true"
-                            android:text="Sep 15th, 2022"
                             android:textColor="@color/text_color"
                             android:textSize="14sp" />
 
@@ -317,7 +266,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:inputType="none"
-                    android:text="15 Minutes"
                     android:textColor="@color/text_color"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -330,6 +278,39 @@
                     android:background="@color/light_grey"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/reminder" />
+
+                <LinearLayout
+                    app:layout_constraintTop_toBottomOf="@id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/regular"
+                        android:text="Reminder Question"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/grey_text"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/reminder_question"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+
+                        android:background="@android:color/transparent"
+                        android:textColor="@color/text_color"
+                        android:textSize="14sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/light_grey" />
+
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -5,19 +5,21 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Parcelize
 @Entity
 data class Habit(
     @PrimaryKey(autoGenerate = true)
-    val id:Int,
-    var name:String,
-    var description:String,
-    var dayFrequency:Int,
-    var startDate:LocalDateTime,
-    var endDateTime: LocalDateTime,
-    var isReminderOn : Boolean,
-    var duration: Duration,
-    var reminderTime:LocalDateTime,
-) : Parcelable
+    var id:Int?=null,
+    var title:String?,
+    var description:String?,
+    var reminderQuestion:String?,
+    var startDate:LocalDate?,
+    var endDate: LocalDate?,
+    var isReminderOn : Boolean?,
+    var reminderTime:LocalDateTime?,
+) : Parcelable{
+    constructor():this(null,null,null,null,null,null,null,null,)
+}

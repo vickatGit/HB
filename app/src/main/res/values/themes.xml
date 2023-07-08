@@ -25,9 +25,16 @@
 
 
     <style name="CustomFabStyle" parent="ShapeAppearance.Material3.SmallComponent">
-        
         <item name="cornerSize">100%</item>
         <item name="cornerFamily">rounded</item>
+    </style>
 
+    <style name="MyAppTheme.TimePicker" parent="Habit">
+        <item name="colorAccent">@color/white</item>
+        <item name="colorControlNormal">@android:color/transparent </item>
+        <item name="android:textColorPrimary">@color/text_color</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>

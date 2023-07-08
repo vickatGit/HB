@@ -18,20 +18,27 @@ class AddHabitViewModel @Inject constructor(
 ): ViewModel() {
 
     fun addHabit(habit: Habit,context:Context){
-        viewModelScope.launch {
-            try {
-                val id = addHabitUseCase(habit = habit)
-                if(id>0){
-                    Log.e("TAG", "addHabit: Insertion Success", )
-                    scheduleAlarmUseCase(id.toInt(),"alaram shedulede",habit.reminderTime, context = context)
-                }else{
-                    Log.e("TAG", "addHabit: Insertion failed", )
+        habit.reminderTime?.let {reminderTime ->
+            viewModelScope.launch {
+                try {
+                    val id = addHabitUseCase(habit = habit)
+                    if (id > 0) {
+                        Log.e("TAG", "addHabit: Insertion Success",)
+                        scheduleAlarmUseCase(
+                            id.toInt(),
+                            "alarm schedule",
+                            reminderTime,
+                            context = context
+                        )
+                    } else {
+                        Log.e("TAG", "addHabit: Insertion failed",)
+                    }
+                } catch (e: Exception) {
+                    Log.e("TAG", "addHabit: Insertion failed some error occurred",)
                 }
-            }catch (e:Exception){
-                Log.e("TAG", "addHabit: Insertion failed some error occurred", )
+
+
             }
-
-
         }
     }
 }

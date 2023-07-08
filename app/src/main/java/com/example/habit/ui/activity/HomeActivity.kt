@@ -1,12 +1,11 @@
-package com.example.habit
+package com.example.habit.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.example.habit.R
 import com.example.habit.databinding.ActivityHomeBinding
-import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,7 +27,7 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.my_habits -> {
-                    navController.navigate(R.id.habitsFragment)
+                    navController.navigate(R.id.myHabitsFragment)
                     true
                 }
                 R.id.mentees -> {

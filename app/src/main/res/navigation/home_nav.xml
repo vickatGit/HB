@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_addHabitFragment_to_dateFragment"
             app:destination="@id/dateFragment" />
+        <action
+            android:id="@+id/action_addHabitFragment_to_timerFragment"
+            app:destination="@id/timerFragment" />
     </fragment>
     <dialog
         android:id="@+id/dateFragment"
@@ -61,4 +64,9 @@
             android:id="@+id/action_myHabitsFragment_to_addHabitFragment"
             app:destination="@id/addHabitFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/timerFragment"
+        android:name="com.example.habit.ui.fragment.time.TimerFragment"
+        android:label="fragment_timer"
+        tools:layout="@layout/fragment_timer" />
 </navigation>

@@ -93,11 +93,12 @@
         android:columnCount="3"
         android:useDefaultMargins="true"
         app:layout_constraintTop_toBottomOf="@id/search_card">
-        
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             app:cardBackgroundColor="@color/white"
             app:cardElevation="7dp"
+            android:clickable="false"
             android:layout_marginEnd="20dp"
             android:layout_marginTop="30dp"
             android:layout_marginStart="15dp"

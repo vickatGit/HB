@@ -15,8 +15,6 @@ import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentDateBinding
 import com.example.habit.ui.callback.DateClick
-import com.example.habit.ui.fragment.AddHabitFragment
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth

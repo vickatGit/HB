@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/addHabitFragment"
-        android:name="com.example.habit.ui.fragment.AddHabitFragment"
+        android:name="com.example.habit.ui.fragment.AddHabitFragment.AddHabitFragment"
         android:label="fragment_add_habit"
         tools:layout="@layout/fragment_add_habit" >
         <action
@@ -40,7 +40,7 @@
         tools:layout="@layout/fragment_community" />
     <fragment
         android:id="@+id/habitsFragment"
-        android:name="com.example.habit.ui.fragment.HabitsFragment"
+        android:name="com.example.habit.ui.fragment.Habits.HabitsFragment"
         android:label="fragment_habits"
         tools:layout="@layout/fragment_habits" />
     <fragment

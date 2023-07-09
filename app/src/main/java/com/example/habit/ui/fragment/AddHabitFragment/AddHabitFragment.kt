@@ -1,4 +1,4 @@
-package com.example.habit.ui.fragment
+package com.example.habit.ui.fragment.AddHabitFragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,22 +6,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.habit.R
 import com.example.habit.data.models.Habit
 import com.example.habit.databinding.FragmentAddHabitBinding
+import com.example.habit.domain.UseCases.AddHabitUseCase
 import com.example.habit.ui.fragment.Date.DateFragment
-import com.example.habit.ui.fragment.Date.DateFragment.*
 import com.example.habit.ui.fragment.time.TimerFragment
-import com.example.habit.ui.fragment.time.TimerFragment.*
 import com.example.habit.ui.viewmodel.AddHabitViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
@@ -31,7 +37,7 @@ class AddHabitFragment : Fragment() {
 
     private var _binding: FragmentAddHabitBinding? = null
     private val binding get() = _binding!!
-    private val viewmodel:AddHabitViewModel by viewModels()
+    private val viewModel:AddHabitViewModel by viewModels()
     private var isStart=false
     private var habit= Habit()
 
@@ -46,6 +52,27 @@ class AddHabitFragment : Fragment() {
         // Inflate the layout for this fragment
 
         _binding=FragmentAddHabitBinding.inflate(inflater,container,false)
+
+       lifecycleScope.launch {
+           viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+               viewModel.uiState.collectLatest {
+                   when(it){
+                       is AddHabitUiState.Success ->{
+                           showToast(it.msg)
+                           binding.progress.isVisible=false
+                           findNavController().popBackStack()
+                       }
+                       is AddHabitUiState.Error -> {
+                           showToast(it.error)
+                           binding.progress.isVisible=false
+                       }
+                       is AddHabitUiState.Loading -> {
+                           binding.progress.isVisible=true
+                       }
+                   }
+               }
+           }
+       }
         binding.startDate.setOnClickListener {
             isStart=true
             habit.startDate=null
@@ -89,7 +116,7 @@ class AddHabitFragment : Fragment() {
                     habit.title = title
                     habit.description = description
                     habit.reminderQuestion=reminderQuestion
-//                    viewmodel.addHabit(habit, requireContext())
+                    viewModel.addHabit(habit, requireContext())
                 }
             }
         }
@@ -116,14 +143,10 @@ class AddHabitFragment : Fragment() {
         setFragmentResultListener(TimerFragment.TIME_RESULT){_,bundle ->
             val time =Calendar.getInstance()
             time.timeInMillis=bundle.getLong(TimerFragment.TIME)
+            val instant = Instant.ofEpochMilli(time.timeInMillis)
+            val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
             time?.let {
-                habit.reminderTime= LocalDateTime.of(
-                    time.get(Calendar.YEAR),
-                    time.get(Calendar.MONTH),
-                    time.get(Calendar.DAY_OF_MONTH),
-                    time.get(Calendar.HOUR_OF_DAY),
-                    time.get(Calendar.MONTH),
-                )
+                habit.reminderTime= localDateTime
             }
             val formattedTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(time.time)
             binding.reminder.text = "Daily at $formattedTime"
@@ -132,7 +155,8 @@ class AddHabitFragment : Fragment() {
         return binding.root
     }
     private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        if(message.isNotBlank())
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
 

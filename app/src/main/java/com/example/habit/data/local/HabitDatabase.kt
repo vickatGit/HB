@@ -8,7 +8,7 @@ import com.example.habit.data.local.TypeConverters.LocalDateConverter
 import com.example.habit.data.local.TypeConverters.LocalDateTimeConvertor
 import com.example.habit.data.models.Habit
 
-@Database(entities = [Habit::class], version = 1)
+@Database(entities = [Habit::class], version = 2)
 @TypeConverters(LocalDateConverter::class,DurationConverter::class,LocalDateTimeConvertor::class)
 abstract class HabitDatabase : RoomDatabase() {
     abstract val habitDao:HabitDao

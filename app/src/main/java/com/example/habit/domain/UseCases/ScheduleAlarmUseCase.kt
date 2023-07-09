@@ -6,9 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.example.habit.data.common.recievers.AlarmReceiver
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoField
+import java.util.Date
+import java.util.Locale
 
 class ScheduleAlarmUseCase {
 
@@ -27,6 +30,9 @@ class ScheduleAlarmUseCase {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
-        Log.e("TAG", "invoke: alarm sheduled", )
+        val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
+        val formattedTime = timeFormat.format(Date(time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000))
+
+        Log.e("alarm scheduler", "invoke: alarm scheduled at $formattedTime ${time.toString()}", )
     }
 }

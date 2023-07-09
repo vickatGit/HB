@@ -1,7 +1,7 @@
 package com.example.habit.ui.fragment.time
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +9,12 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
-import com.example.habit.R
 import com.example.habit.databinding.FragmentTimerBinding
-import com.example.habit.ui.fragment.AddHabitFragment
-import com.example.habit.ui.fragment.Date.DateFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.util.Date
+import java.util.Locale
 
 class TimerFragment : BottomSheetDialogFragment() {
 
@@ -33,6 +33,9 @@ class TimerFragment : BottomSheetDialogFragment() {
         _binding=FragmentTimerBinding.inflate(inflater,container,false)
         binding.save.setOnClickListener(View.OnClickListener {
             if (binding.timer.getSelectedTime() != null ) {
+//                val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
+//                val formattedTime = timeFormat.format(Date(binding.timer.getSelectedTime()?.timeInMillis?:0))
+//                Log.e("alarm scheduler", " from time setter invoke: alarm scheduled at $formattedTime", )
                 setFragmentResult(TIME_RESULT, bundleOf(TIME to binding.timer.getSelectedTime()?.timeInMillis))
                 findNavController().navigateUp()
             } else {

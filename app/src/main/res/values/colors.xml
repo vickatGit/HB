@@ -10,6 +10,7 @@
     <color name="light_grey">#9D9C9C</color>
     <color name="bg">#F3F5F8</color>
     <color name="nav_item_unchecked">#C3C3C3</color>
+    <color name="progress_title_color">#C3C3C3</color>
     <color name="nav_item_checked">#DD5001</color>
     <color name="orange_op_20">#33DD5001</color>
 </resources>

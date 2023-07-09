@@ -1,4 +1,4 @@
-package com.example.habit.ui.fragment
+package com.example.habit.ui.fragment.Habits
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

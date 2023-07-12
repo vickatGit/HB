@@ -4,13 +4,12 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Parcelize
 @Entity
-data class Habit(
+data class HabitEntity(
     @PrimaryKey(autoGenerate = true)
     var id:Int?=null,
     var title:String?,

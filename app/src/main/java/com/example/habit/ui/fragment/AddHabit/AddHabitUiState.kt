@@ -1,4 +1,4 @@
-package com.example.habit.ui.fragment.AddHabitFragment
+package com.example.habit.ui.fragment.AddHabit
 
 sealed class AddHabitUiState {
     object Loading:AddHabitUiState()

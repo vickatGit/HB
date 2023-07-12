@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/addHabitFragment"
-        android:name="com.example.habit.ui.fragment.AddHabitFragment.AddHabitFragment"
+        android:name="com.example.habit.ui.fragment.AddHabit.AddHabitFragment"
         android:label="fragment_add_habit"
         tools:layout="@layout/fragment_add_habit" >
         <action

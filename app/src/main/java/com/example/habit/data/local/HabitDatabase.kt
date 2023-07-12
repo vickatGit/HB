@@ -6,9 +6,9 @@ import androidx.room.TypeConverters
 import com.example.habit.data.local.TypeConverters.DurationConverter
 import com.example.habit.data.local.TypeConverters.LocalDateConverter
 import com.example.habit.data.local.TypeConverters.LocalDateTimeConvertor
-import com.example.habit.data.models.Habit
+import com.example.habit.data.models.HabitEntity
 
-@Database(entities = [Habit::class], version = 2)
+@Database(entities = [HabitEntity::class], version = 3)
 @TypeConverters(LocalDateConverter::class,DurationConverter::class,LocalDateTimeConvertor::class)
 abstract class HabitDatabase : RoomDatabase() {
     abstract val habitDao:HabitDao

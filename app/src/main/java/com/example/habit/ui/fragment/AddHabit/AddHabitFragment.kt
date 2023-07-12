@@ -1,4 +1,4 @@
-package com.example.habit.ui.fragment.AddHabitFragment
+package com.example.habit.ui.fragment.AddHabit
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,11 +14,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.habit.R
-import com.example.habit.data.models.Habit
 import com.example.habit.databinding.FragmentAddHabitBinding
-import com.example.habit.domain.UseCases.AddHabitUseCase
 import com.example.habit.ui.fragment.Date.DateFragment
 import com.example.habit.ui.fragment.time.TimerFragment
+import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.viewmodel.AddHabitViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -39,7 +38,7 @@ class AddHabitFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel:AddHabitViewModel by viewModels()
     private var isStart=false
-    private var habit= Habit()
+    private var habit= HabitView()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

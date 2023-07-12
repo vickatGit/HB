@@ -4,17 +4,17 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import com.example.habit.data.models.Habit
+import com.example.habit.data.models.HabitEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HabitDao {
     @Upsert
-    suspend fun addHabit(habit: Habit):Long
+    suspend fun addHabit(habit: HabitEntity):Long
 
     @Delete
-    suspend fun removeHabit(habit: Habit)
+    suspend fun removeHabit(habit: HabitEntity)
 
-    @Query("SELECT * FROM Habit")
-    fun getHabits():Flow<List<Habit>>
+    @Query("SELECT * FROM HabitEntity")
+    fun getHabits():Flow<List<HabitEntity>>
 }

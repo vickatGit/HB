@@ -23,6 +23,9 @@ class MyHabitsFragment : Fragment() {
         binding.newHabitContainer.setOnClickListener {
             findNavController().navigate(R.id.action_myHabitsFragment_to_addHabitFragment)
         }
+        binding.habits.setOnClickListener {
+            findNavController().navigate(R.id.action_myHabitsFragment_to_habitsFragment)
+        }
         return binding.root
     }
 

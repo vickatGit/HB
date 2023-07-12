@@ -12,6 +12,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.example.habit.R
 import com.example.habit.databinding.CalendarDayLegendContainerBinding
+import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentDateBinding
 import com.example.habit.ui.callback.DateClick
@@ -34,6 +35,8 @@ class DateFragment : BottomSheetDialogFragment() {
         const val DATE: String= "date"
     }
 
+    private var _calendarBinding : CalendarLayoutBinding? = null
+    private val calendarBinding get() = _calendarBinding!!
 
     private var _weekDayBinding: CalendarDayLegendContainerBinding? = null
     private val weekDayBinding get() = _weekDayBinding!!
@@ -54,7 +57,8 @@ class DateFragment : BottomSheetDialogFragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding=FragmentDateBinding.inflate(inflater,container,false)
-        _weekDayBinding=CalendarDayLegendContainerBinding.bind(binding.weekDays.root)
+        _calendarBinding=CalendarLayoutBinding.bind(binding.calendar.root)
+        _weekDayBinding=CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
         for (i in 0 until weekDayBinding.root.childCount) {
             val childView: View = weekDayBinding.root.getChildAt(i)
             if (childView is TextView && childView.getId() == R.id.legendText1) {
@@ -62,7 +66,7 @@ class DateFragment : BottomSheetDialogFragment() {
             }
         }
 
-        binding.calendarView.dayBinder= object : MonthDayBinder<DayHolder> {
+        calendarBinding.calendarView.dayBinder= object : MonthDayBinder<DayHolder> {
             override fun bind(container: DayHolder, calendarDay: CalendarDay) {
                 container.day=calendarDay
                 if (calendarDay.position == DayPosition.MonthDate) {
@@ -110,8 +114,8 @@ class DateFragment : BottomSheetDialogFragment() {
         }
 
 
-        binding.calendarView.monthScrollListener = { calendarMonth: CalendarMonth ->
-            binding.month.setText(getMonthYearString(calendarMonth))
+        calendarBinding.calendarView.monthScrollListener = { calendarMonth: CalendarMonth ->
+            calendarBinding.month.setText(getMonthYearString(calendarMonth))
             currentMonth = calendarMonth.yearMonth
         }
         currentMonth = YearMonth.now()
@@ -119,14 +123,14 @@ class DateFragment : BottomSheetDialogFragment() {
 
         val endMonth = currentMonth?.plusMonths(100) // Adjust as needed
 
-        binding.calendarView.setup(startMonth!!, endMonth!!, firstDayOfWeekFromLocale())
-        binding.calendarView.scrollToMonth(currentMonth!!)
+        calendarBinding.calendarView.setup(startMonth!!, endMonth!!, firstDayOfWeekFromLocale())
+        calendarBinding.calendarView.scrollToMonth(currentMonth!!)
         binding.back.setOnClickListener(View.OnClickListener { findNavController().popBackStack() })
-        binding.prevMonth.setOnClickListener{
-            binding.calendarView.scrollToMonth(currentMonth!!.minusMonths(1))
+        calendarBinding.prevMonth.setOnClickListener{
+            calendarBinding.calendarView.scrollToMonth(currentMonth!!.minusMonths(1))
         }
-        binding.nextMonth.setOnClickListener{
-            binding.calendarView.scrollToMonth(currentMonth!!.plusMonths(1))
+        calendarBinding.nextMonth.setOnClickListener{
+            calendarBinding.calendarView.scrollToMonth(currentMonth!!.plusMonths(1))
         }
         binding.save.setOnClickListener{
             if (selectedDate != null) {
@@ -146,9 +150,9 @@ class DateFragment : BottomSheetDialogFragment() {
                 val oldDate = selectedDate
                 selectedDate = date
                 if (oldDate != null) {
-                    binding.calendarView.notifyDateChanged(oldDate)
+                    calendarBinding.calendarView.notifyDateChanged(oldDate)
                 }
-                binding.calendarView.notifyDateChanged(date)
+                calendarBinding.calendarView.notifyDateChanged(date)
             }
         }
     }

@@ -7,7 +7,7 @@ import com.example.habit.databinding.HabitItemLayoutBinding
 import com.example.habit.ui.callback.HabitClick
 import com.example.habit.ui.model.HabitThumbView
 
-class HabitsAdapter(val habits: MutableList<HabitThumbView>, param: HabitClick) : RecyclerView.Adapter<HabitsAdapter.HabitHolder>() {
+class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: HabitClick) : RecyclerView.Adapter<HabitsAdapter.HabitHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitHolder {
@@ -23,6 +23,9 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, param: HabitClick) 
     override fun onBindViewHolder(holder: HabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding.habit.text = habit.title
+        holder.binding.habitContainer.setOnClickListener {
+            habitClick.habitClick("3")
+        }
     }
 
     inner class HabitHolder(val binding: HabitItemLayoutBinding): RecyclerView.ViewHolder(binding.root)

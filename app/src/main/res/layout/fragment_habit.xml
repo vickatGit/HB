@@ -78,7 +78,9 @@
         android:layout_height="wrap_content">
 
 
-    <include layout="@layout/calendar_layout"/>
+    <include
+        android:id="@+id/calendar"
+        layout="@layout/calendar_layout"/>
 
 
     </com.google.android.material.card.MaterialCardView>

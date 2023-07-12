@@ -12,7 +12,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.habit.R
 import com.example.habit.databinding.FragmentHabitsBinding
 import com.example.habit.ui.adapter.HabitsAdapter
 import com.example.habit.ui.callback.HabitClick
@@ -43,7 +45,7 @@ class HabitsFragment : Fragment() {
         _binding=FragmentHabitsBinding.inflate(inflater,container,false)
         habitsAdapter= HabitsAdapter(habits, object : HabitClick {
             override fun habitClick(habitId: String) {
-
+                findNavController().navigate(R.id.action_habitsFragment_to_habitFragment)
             }
         })
         binding.habits.layoutManager=LinearLayoutManager(requireContext())

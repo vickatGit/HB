@@ -13,11 +13,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habit.R
 import com.example.habit.databinding.FragmentHabitsBinding
 import com.example.habit.ui.adapter.HabitsAdapter
 import com.example.habit.ui.callback.HabitClick
+import com.example.habit.ui.fragment.Habit.HabitFragment
 import com.example.habit.ui.model.HabitThumbView
 import com.example.habit.ui.viewmodel.HabitsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,17 +47,21 @@ class HabitsFragment : Fragment() {
         _binding=FragmentHabitsBinding.inflate(inflater,container,false)
         habitsAdapter= HabitsAdapter(habits, object : HabitClick {
             override fun habitClick(habitId: String) {
-                findNavController().navigate(R.id.action_habitsFragment_to_habitFragment)
+                findNavController().navigate(
+                    R.id.action_habitsFragment_to_habitFragment,
+                    Bundle().apply { putString(HabitFragment.HABIT_ID,habitId) }
+                )
             }
         })
-        binding.habits.layoutManager=LinearLayoutManager(requireContext())
+        binding.habits.layoutManager=GridLayoutManager(requireContext(),2)
         binding.habits.adapter=habitsAdapter
        lifecycleScope.launch {
-           viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+           viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
                viewModel.habitsUiState.collectLatest {
                    when(it){
                        is HabitsUiState.HabitsFetched -> {
                            binding.progress.isVisible=false
+                           habits.clear()
                            habits.addAll(it.habits)
                            habitsAdapter.notifyDataSetChanged()
                        }

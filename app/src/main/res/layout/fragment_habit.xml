@@ -66,6 +66,37 @@
         app:layout_constraintStart_toStartOf="@+id/start"
         app:layout_constraintTop_toBottomOf="@+id/header" />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/habit_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/black"
+        android:indeterminateTint="@color/black"
+        android:progress="75"
+        app:indicatorColor="@color/medium_orange"
+        app:indicatorDirectionCircular="clockwise"
+        app:indicatorSize="120dp"
+        android:layout_marginTop="30dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/end"
+        app:layout_constraintStart_toStartOf="@+id/start"
+        app:layout_constraintTop_toBottomOf="@id/encouragement_text"
+        app:trackColor="@color/orange_op_20"
+        app:trackCornerRadius="10dp"
+        app:trackThickness="15dp" />
+
+    <TextView
+        android:id="@+id/progress_percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="80%"
+        android:textColor="@color/orange"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/habit_progress"
+        app:layout_constraintEnd_toEndOf="@+id/habit_progress"
+        app:layout_constraintStart_toStartOf="@+id/habit_progress"
+        app:layout_constraintTop_toTopOf="@+id/habit_progress" />
+
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         app:layout_constraintStart_toStartOf="@id/start"
@@ -74,7 +105,7 @@
         app:cardBackgroundColor="@color/white"
         app:strokeWidth="0dp"
         app:cardElevation="7dp"
-        app:layout_constraintTop_toBottomOf="@id/encouragement_text"
+        app:layout_constraintTop_toBottomOf="@id/habit_progress"
         android:layout_height="wrap_content">
 
 
@@ -84,6 +115,19 @@
 
 
     </com.google.android.material.card.MaterialCardView>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/orange"
+        android:elevation="1000dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

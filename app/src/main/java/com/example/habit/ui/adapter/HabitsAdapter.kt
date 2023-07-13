@@ -24,7 +24,7 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding.habit.text = habit.title
         holder.binding.habitContainer.setOnClickListener {
-            habitClick.habitClick("3")
+            habitClick.habitClick(habitId = habit.id.toString())
         }
     }
 

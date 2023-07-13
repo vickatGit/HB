@@ -5,9 +5,9 @@ import com.example.habit.domain.models.Habit
 
 import com.example.habit.domain.models.HabitThumb
 
-class HabitMapper : Mapper<HabitEntity,HabitThumb,Habit>{
-    override fun mapFromHabitEntity(type: HabitEntity): HabitThumb {
-        return HabitThumb(type.id!!,type.title,type.startDate,type.endDate)
+class HabitMapper : Mapper<HabitEntity?,HabitThumb,Habit>{
+    override fun mapFromHabitEntity(type: HabitEntity?): HabitThumb {
+        return HabitThumb(type?.id!!,type?.title,type?.startDate,type?.endDate)
     }
 
 
@@ -21,6 +21,19 @@ class HabitMapper : Mapper<HabitEntity,HabitThumb,Habit>{
             type.endDate,
             type.isReminderOn,
             type.reminderTime
+        )
+    }
+
+    override fun mapToHabit(type: HabitEntity?): Habit {
+        return Habit(
+            type?.id,
+            type?.title,
+            type?.description,
+            type?.reminderQuestion,
+            type?.startDate,
+            type?.endDate,
+            type?.isReminderOn,
+            type?.reminderTime
         )
     }
 

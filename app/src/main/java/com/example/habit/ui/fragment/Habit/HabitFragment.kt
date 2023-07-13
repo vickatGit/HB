@@ -6,30 +6,42 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.LinearLayout
-import android.widget.LinearLayout.*
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.core.view.setMargins
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.habit.R
 import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentHabitBinding
-import com.example.habit.databinding.FragmentHabitsBinding
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.fragment.Date.DayHolder
+import com.example.habit.ui.viewmodel.HabitViewModel
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.view.MonthDayBinder
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
+@AndroidEntryPoint
 class HabitFragment : Fragment() {
+    companion object {
+        const val HABIT_ID: String = "habit_id_key"
+    }
+
+    private val viewModel : HabitViewModel  by viewModels()
+
 
     private var _binding: FragmentHabitBinding? = null
     private val binding get() = _binding!!
@@ -42,40 +54,66 @@ class HabitFragment : Fragment() {
 
 
     var weekdays = arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    private var selectedDate = LocalDate.now()
-    private val today = LocalDate.now()
     private var currentMonth: YearMonth? = null
     private var selectedDates= mutableMapOf<LocalDate,LocalDate>()
+    private var habitId:String? = null
+    private var habitStartDate:LocalDate?=null
+    private var habitEndDate:LocalDate?=null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         _binding=FragmentHabitBinding.inflate(inflater,container,false)
         _calendarBinding= CalendarLayoutBinding.bind(binding.calendar.root)
         _weekDaysBinding = CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
+        habitId=arguments?.getString(HABIT_ID)
 
-        initialiseCalendar()
-
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){
+                viewModel.habitUiState.collectLatest {
+                    when(it){
+                        is HabitUiState.DataFetched -> {
+                            binding.header.text = it.habit.title
+                            binding.progress.isVisible=false
+                            initialiseCalendar(it.habit.startDate!!,it.habit.endDate!!)
+                        }
+                        is HabitUiState.Error -> {
+                            Toast.makeText(requireContext(),it.error,Toast.LENGTH_SHORT).show()
+                            binding.progress.isVisible=false
+                        }
+                        is HabitUiState.Loading -> {
+                            binding.progress.isVisible=true
+                        }
+                        is HabitUiState.Nothing -> { }
+                    }
+                }
+            }
+        }
+        habitId?.let { viewModel.getHabit(it,getString(R.string.habit_not_found_error)) }
 
         return binding.root
     }
 
-    private fun initialiseCalendar() {
+    private fun initialiseCalendar(startDate: LocalDate, endDate: LocalDate) {
+        habitStartDate=startDate
+        habitEndDate=endDate
         bindWeekDays()
         bindDays()
         calendarBinding.calendarView.monthScrollListener = { calendarMonth: CalendarMonth ->
-            calendarBinding.month.setText(getMonthYearString(calendarMonth))
-            currentMonth = calendarMonth.yearMonth
+            calendarBinding.month.text = getMonthYearString(calendarMonth)
         }
-        currentMonth = YearMonth.now()
-        val startMonth = currentMonth?.minusMonths(100) // Adjust as needed
 
-        val endMonth = currentMonth?.plusMonths(100) // Adjust as needed
 
-        calendarBinding.calendarView.setup(startMonth!!, endMonth!!, firstDayOfWeekFromLocale())
-        calendarBinding.calendarView.scrollToMonth(currentMonth!!)
+        val startMonth = YearMonth.of(startDate.year, startDate.month)
+        val endMonth = YearMonth.of(endDate.year, endDate.month)
+
+        calendarBinding.calendarView.setup(startMonth, endMonth, firstDayOfWeekFromLocale())
+        calendarBinding.calendarView.scrollToMonth(startMonth)
+
     }
 
+
     private fun bindDays() {
+
         calendarBinding.calendarView.dayBinder= object : MonthDayBinder<DayHolder> {
             override fun bind(container: DayHolder, calendarDay: CalendarDay) {
                 container.day=calendarDay
@@ -105,6 +143,9 @@ class HabitFragment : Fragment() {
                         container.dayBinding.calendarDayText.setBackgroundResource(R.drawable.book_now_bg)
 
                     }
+                    if(calendarDay.date.isBefore(habitStartDate) || calendarDay.date.isAfter(habitEndDate)){
+                        container.dayBinding.calendarDayText.setTextColor(resources.getColor(R.color.white))
+                    }
                 }
                 val params = container.dayBinding.calendarDayText.layoutParams as MarginLayoutParams
                 params.leftMargin=10
@@ -112,13 +153,16 @@ class HabitFragment : Fragment() {
                 params.topMargin=10
                 params.rightMargin=10
 
-
             }
 
             override fun create(view: View): DayHolder {
                 return DayHolder(DayBinding.bind(view), object : DateClick {
                     override fun dateClick(date: LocalDate?) {
-                        selectDate(date)
+                        date?.let {
+                            if(!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate)) {
+                                selectDate(date)
+                            }
+                        }
                     }
                 } )
             }
@@ -155,5 +199,7 @@ class HabitFragment : Fragment() {
         val scale = deviceDensity / 160f
         return (dp * scale + 0.5f).toInt()
     }
+
+
 
 }

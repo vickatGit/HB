@@ -77,5 +77,10 @@
         android:id="@+id/habitFragment"
         android:name="com.example.habit.ui.fragment.Habit.HabitFragment"
         android:label="fragment_habit"
-        tools:layout="@layout/fragment_habit" />
+        tools:layout="@layout/fragment_habit" >
+        <argument
+            android:name="habitId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

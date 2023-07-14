@@ -1,6 +1,7 @@
 package com.example.habit.ui.fragment.Habit
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentHabitBinding
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.fragment.Date.DayHolder
+import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.viewmodel.HabitViewModel
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -30,9 +32,12 @@ import com.kizitonwose.calendar.view.MonthDayBinder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class HabitFragment : Fragment() {
@@ -40,6 +45,8 @@ class HabitFragment : Fragment() {
         const val HABIT_ID: String = "habit_id_key"
     }
 
+    private var habitDurationReached: Long? = null
+    private var totalHabitDuration: Long? = null
     private val viewModel : HabitViewModel  by viewModels()
 
 
@@ -54,7 +61,6 @@ class HabitFragment : Fragment() {
 
 
     var weekdays = arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    private var currentMonth: YearMonth? = null
     private var selectedDates= mutableMapOf<LocalDate,LocalDate>()
     private var habitId:String? = null
     private var habitStartDate:LocalDate?=null
@@ -72,9 +78,7 @@ class HabitFragment : Fragment() {
                 viewModel.habitUiState.collectLatest {
                     when(it){
                         is HabitUiState.DataFetched -> {
-                            binding.header.text = it.habit.title
-                            binding.progress.isVisible=false
-                            initialiseCalendar(it.habit.startDate!!,it.habit.endDate!!)
+                            bindHabitPageData(it.habit)
                         }
                         is HabitUiState.Error -> {
                             Toast.makeText(requireContext(),it.error,Toast.LENGTH_SHORT).show()
@@ -91,6 +95,18 @@ class HabitFragment : Fragment() {
         habitId?.let { viewModel.getHabit(it,getString(R.string.habit_not_found_error)) }
 
         return binding.root
+    }
+
+    private fun bindHabitPageData(habit: HabitView) {
+        binding.header.text = habit.title
+        binding.progress.isVisible=false
+        totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate,habit.endDate)
+        habitDurationReached = ChronoUnit.DAYS.between(habit.startDate,habit.startDate?.plusDays(1))
+        val progress = (totalHabitDuration!!/100f)*habitDurationReached!!
+        binding.habitProgress.progress=progress.roundToInt()
+        binding.progressPercentage.text="${DecimalFormat("#.#").format(progress)}%"
+        initialiseCalendar(habit.startDate!!,habit.endDate!!)
+
     }
 
     private fun initialiseCalendar(startDate: LocalDate, endDate: LocalDate) {

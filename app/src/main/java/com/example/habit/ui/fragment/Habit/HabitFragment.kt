@@ -65,6 +65,7 @@ class HabitFragment : Fragment() {
     private var habitId:String? = null
     private var habitStartDate:LocalDate?=null
     private var habitEndDate:LocalDate?=null
+    private var isCalendarEditable:Boolean=false
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -106,6 +107,10 @@ class HabitFragment : Fragment() {
         binding.habitProgress.progress=progress.roundToInt()
         binding.progressPercentage.text="${DecimalFormat("#.#").format(progress)}%"
         initialiseCalendar(habit.startDate!!,habit.endDate!!)
+        binding.streakEditSwitch.setOnCheckedChangeListener { _, isChecked ->
+            isCalendarEditable=isChecked
+            bindDays()
+        }
 
     }
 
@@ -133,6 +138,7 @@ class HabitFragment : Fragment() {
         calendarBinding.calendarView.dayBinder= object : MonthDayBinder<DayHolder> {
             override fun bind(container: DayHolder, calendarDay: CalendarDay) {
                 container.day=calendarDay
+                container.dayBinding.root.setOnTouchListener { _, _ ->  return@setOnTouchListener !isCalendarEditable}
 
                 when (calendarDay.position) {
                     DayPosition.MonthDate -> {

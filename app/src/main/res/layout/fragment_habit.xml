@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragment.Habit.HabitFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,128 +12,150 @@
         android:layout_height="match_parent">
 
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="15dp" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="15dp" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="15dp" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="15dp" />
 
-    <ImageView
-        android:id="@+id/back"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:padding="0dp"
-        android:layout_marginTop="10dp"
+        <ImageView
+            android:id="@+id/back"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="10dp"
+            android:padding="0dp"
 
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/Habit"
-        app:srcCompat="@drawable/arrow_icon" />
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearance="@style/Habit"
+            app:srcCompat="@drawable/arrow_icon" />
 
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/bold"
-        android:text="My Habits"
-        android:textSize="32sp"
-        android:layout_marginTop="25dp"
-        android:theme="@style/MaterialAlertDialog.Material3.Title.Text"
-        app:layout_constraintStart_toStartOf="@+id/start"
-        app:layout_constraintTop_toBottomOf="@+id/back" />
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/bold"
+            android:text="My Habits"
+            android:textSize="32sp"
+            android:theme="@style/MaterialAlertDialog.Material3.Title.Text"
+            app:layout_constraintStart_toStartOf="@+id/start"
+            app:layout_constraintTop_toBottomOf="@+id/back" />
 
-    <ImageView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:src="@drawable/edit_icon"
-        app:layout_constraintBottom_toBottomOf="@+id/header"
-        app:layout_constraintEnd_toStartOf="@+id/end"
-        app:layout_constraintTop_toTopOf="@+id/header" />
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/edit_icon"
+            app:layout_constraintBottom_toBottomOf="@+id/header"
+            app:layout_constraintEnd_toStartOf="@+id/end"
+            app:layout_constraintTop_toTopOf="@+id/header" />
 
-    <TextView
-        android:id="@+id/encouragement_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/regular"
-        android:layout_marginTop="15dp"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        android:text="@string/habit_encouragement_text"
-        app:layout_constraintStart_toStartOf="@+id/start"
-        app:layout_constraintTop_toBottomOf="@+id/header" />
+        <TextView
+            android:id="@+id/encouragement_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/regular"
+            android:text="@string/habit_encouragement_text"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="@+id/start"
+            app:layout_constraintTop_toBottomOf="@+id/header" />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/habit_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/black"
-        android:indeterminateTint="@color/black"
-        android:progress="75"
-        app:indicatorColor="@color/medium_orange"
-        app:indicatorDirectionCircular="clockwise"
-        app:indicatorSize="120dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toStartOf="@+id/end"
-        app:layout_constraintStart_toStartOf="@+id/start"
-        app:layout_constraintTop_toBottomOf="@id/encouragement_text"
-        app:trackColor="@color/orange_op_20"
-        app:trackCornerRadius="10dp"
-        app:trackThickness="15dp" />
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/habit_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/black"
+            android:indeterminateTint="@color/black"
+            android:progress="75"
+            app:indicatorColor="@color/medium_orange"
+            app:indicatorDirectionCircular="clockwise"
+            app:indicatorSize="120dp"
+            app:layout_constraintEnd_toStartOf="@+id/end"
+            app:layout_constraintStart_toStartOf="@+id/start"
+            app:layout_constraintTop_toBottomOf="@id/encouragement_text"
+            app:trackColor="@color/orange_op_20"
+            app:trackCornerRadius="10dp"
+            app:trackThickness="15dp" />
 
-    <TextView
-        android:id="@+id/progress_percentage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="80%"
-        android:textColor="@color/orange"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/habit_progress"
-        app:layout_constraintEnd_toEndOf="@+id/habit_progress"
-        app:layout_constraintStart_toStartOf="@+id/habit_progress"
-        app:layout_constraintTop_toTopOf="@+id/habit_progress" />
+        <TextView
+            android:id="@+id/progress_percentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="80%"
+            android:textColor="@color/orange"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/habit_progress"
+            app:layout_constraintEnd_toEndOf="@+id/habit_progress"
+            app:layout_constraintStart_toStartOf="@+id/habit_progress"
+            app:layout_constraintTop_toTopOf="@+id/habit_progress" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="0dp"
-        app:layout_constraintStart_toStartOf="@id/start"
-        app:layout_constraintEnd_toEndOf="@id/end"
-        android:layout_marginTop="20dp"
-        app:cardBackgroundColor="@color/white"
-        app:strokeWidth="0dp"
-        app:cardElevation="7dp"
-        app:layout_constraintTop_toBottomOf="@id/habit_progress"
-        android:layout_height="wrap_content">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardElevation="7dp"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@id/habit_progress"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
 
-    <include
-        android:id="@+id/calendar"
-        layout="@layout/calendar_layout"/>
+                    <Switch
+                        android:id="@+id/streak_edit_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_gravity="end"
+                        android:thumb="@drawable/custom_switch_thumb_bg"
+                        android:track="@drawable/custom_switch_track_bg"
+                        app:layout_constraintBottom_toBottomOf="@+id/reminder_title"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/reminder_title"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 
-    </com.google.android.material.card.MaterialCardView>
 
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/orange"
-        android:elevation="1000dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
 
-        
+                <include
+                    android:id="@+id/calendar"
+                    layout="@layout/calendar_layout" />
+            </LinearLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="1000dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/orange"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

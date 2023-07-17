@@ -6,7 +6,7 @@ package com.example.habit.data.Mapper
  * D = Habit
  */
 
-interface Mapper<A,V,D> {
+interface HabitMapperI<A,V,D> {
     fun mapFromHabitEntity(type : A) : V
     fun mapToHabitEntity(type : D ) : A
 

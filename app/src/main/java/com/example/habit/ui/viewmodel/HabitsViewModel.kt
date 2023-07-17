@@ -1,5 +1,6 @@
 package com.example.habit.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habit.domain.UseCases.GetHabitThumbsUseCase
@@ -36,6 +37,7 @@ class HabitsViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                Log.e("TAG", "getHabits: "+e.printStackTrace() )
                 _habitsState.update { HabitsUiState.Error(e.message) }
             }
 

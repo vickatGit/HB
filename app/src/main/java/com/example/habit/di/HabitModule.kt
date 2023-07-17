@@ -2,12 +2,12 @@ package com.example.habit.di
 
 import android.app.Application
 import androidx.room.Room
+import com.example.habit.data.Mapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper
 import com.example.habit.data.Repository.HabitRepoImpl
 import com.example.habit.data.local.HabitDatabase
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
-import com.example.habit.ui.mapper.Mapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,8 +29,8 @@ class HabitModule {
 
     @Provides
     @Singleton
-    fun provideHabitRepo(habitDatabase: HabitDatabase,habitMapper : HabitMapper):HabitRepo{
-        return HabitRepoImpl(habitDatabase.habitDao,habitMapper)
+    fun provideHabitRepo(habitDatabase: HabitDatabase):HabitRepo{
+        return HabitRepoImpl(habitDatabase.habitDao,HabitMapper(EntryMapper()),EntryMapper())
     }
 
     @Provides
@@ -38,14 +38,24 @@ class HabitModule {
         return ScheduleAlarmUseCase()
     }
 
+//    @Provides
+//    fun dataHabitMapper(entryMapper: EntryMapper): HabitMapper {
+//       return HabitMapper(entryMapper)
+//    }
+
+//    @Provides
+//    fun dataEntryMapper(): EntryMapper {
+//        return EntryMapper()
+//    }
+
     @Provides
-    fun dataHabitMapper(): HabitMapper {
-       return HabitMapper()
+    fun uiHabitMapper(entryMapper : com.example.habit.ui.mapper.EntryMapper):com.example.habit.ui.mapper.HabitMapper{
+        return com.example.habit.ui.mapper.HabitMapper(entryMapper)
     }
 
     @Provides
-    fun uiHabitMapper():com.example.habit.ui.mapper.HabitMapper{
-        return com.example.habit.ui.mapper.HabitMapper()
+    fun uiEntryMapper():com.example.habit.ui.mapper.EntryMapper{
+        return com.example.habit.ui.mapper.EntryMapper()
     }
 
 

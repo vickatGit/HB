@@ -15,6 +15,7 @@ data class HabitView(
     var endDate: LocalDate?,
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
+    var entries:HashMap<LocalDate,EntryView>? = null
 ) : Parcelable {
-    constructor():this(null,null,null,null,null,null,null,null,)
+    constructor():this(null,null,null,null,null,null,null,null,null)
 }

@@ -7,7 +7,7 @@ package com.example.habit.ui.mapper
  * C - HabitThumbView (ui)
  */
 
-interface Mapper<A,V,D,C> {
+interface HabitMapperI<A,V,D,C> {
     fun mapFromHabit(type : A) : V
 
     fun mapToHabit(type: V) :A

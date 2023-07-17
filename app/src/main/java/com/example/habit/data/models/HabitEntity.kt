@@ -1,11 +1,17 @@
 package com.example.habit.data.models
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.habit.data.local.TypeConverters.EntryMapConverter
+import com.example.habit.data.local.TypeConverters.LocalDateConverter
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.HashMap
 
 @Parcelize
 @Entity
@@ -19,6 +25,7 @@ data class HabitEntity(
     var endDate: LocalDate?,
     var isReminderOn : Boolean?,
     var reminderTime:LocalDateTime?,
+    var entryList: Map<LocalDate,EntryEntity>? = null
 ) : Parcelable{
-    constructor():this(null,null,null,null,null,null,null,null,)
+    constructor():this(null,null,null,null,null,null,null,null,null)
 }

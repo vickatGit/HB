@@ -1,13 +1,29 @@
 package com.example.habit.data.Mapper
 
+import com.example.habit.data.models.EntryEntity
 import com.example.habit.data.models.HabitEntity
+import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.Habit
-
 import com.example.habit.domain.models.HabitThumb
+import java.time.LocalDate
+import javax.inject.Inject
 
-class HabitMapper : Mapper<HabitEntity?,HabitThumb,Habit>{
+class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
+    HabitMapperI<HabitEntity?, HabitThumb, Habit> {
     override fun mapFromHabitEntity(type: HabitEntity?): HabitThumb {
-        return HabitThumb(type?.id!!,type?.title,type?.startDate,type?.endDate)
+        return HabitThumb(
+            type?.id!!,
+            type?.title,
+            type?.startDate,
+            type?.endDate,
+//            null
+            type.entryList?.let {
+                it.mapValues {
+                    entryMapper.mapToEntry(it.value)
+                }.toMutableMap() as java.util.HashMap<LocalDate, Entry>?
+            }
+
+        )
     }
 
 
@@ -20,7 +36,14 @@ class HabitMapper : Mapper<HabitEntity?,HabitThumb,Habit>{
             type.startDate,
             type.endDate,
             type.isReminderOn,
-            type.reminderTime
+            type.reminderTime,
+            type.entries?.let {
+                it.mapValues {
+                    entryMapper.mapFromEntry(it.value)
+                } as Map<LocalDate, EntryEntity>
+            }
+
+
         )
     }
 
@@ -33,7 +56,13 @@ class HabitMapper : Mapper<HabitEntity?,HabitThumb,Habit>{
             type?.startDate,
             type?.endDate,
             type?.isReminderOn,
-            type?.reminderTime
+            type?.reminderTime,
+            type?.entryList?.let {
+                it.mapValues {
+                    entryMapper.mapToEntry(it.value)
+                } as HashMap<LocalDate, Entry>
+            }
+
         )
     }
 

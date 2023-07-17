@@ -1,9 +1,12 @@
 package com.example.habit.domain.models
 
 import android.os.Parcelable
+import android.util.ArrayMap
 import kotlinx.parcelize.Parcelize
+import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.HashMap
 
 @Parcelize
 data class Habit(
@@ -15,6 +18,7 @@ data class Habit(
     var endDate: LocalDate?,
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
+    var entries:HashMap<LocalDate,Entry>? = null
 ) : Parcelable{
-    constructor():this(null,null,null,null,null,null,null,null,)
+    constructor():this(null,null,null,null,null,null,null,null,null)
 }

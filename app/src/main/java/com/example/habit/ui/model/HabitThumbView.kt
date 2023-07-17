@@ -7,4 +7,5 @@ data class HabitThumbView (
     var title:String?,
     var startDate: LocalDate?,
     var endDate: LocalDate?,
+    var entries:HashMap<LocalDate,EntryView>? = null
 )

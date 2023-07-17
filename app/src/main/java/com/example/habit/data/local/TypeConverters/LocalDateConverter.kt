@@ -1,16 +1,20 @@
 package com.example.habit.data.local.TypeConverters
 
+import android.util.Log
 import androidx.room.TypeConverter
+import com.google.gson.Gson
 import java.time.LocalDate
 
-class LocalDateConverter {
+object LocalDateConverter {
+    @JvmStatic
     @TypeConverter
     fun fromLocalDate(value: LocalDate): String {
-        return value.toString()
+        return Gson().toJson(value,LocalDate::class.java)
     }
 
+    @JvmStatic
     @TypeConverter
     fun toLocalDate(value: String): LocalDate {
-        return LocalDate.parse(value)
+      return Gson().fromJson(value,LocalDate::class.java)
     }
 }

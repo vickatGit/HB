@@ -16,7 +16,6 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             type?.title,
             type?.startDate,
             type?.endDate,
-//            null
             type.entryList?.let {
                 it.mapValues {
                     entryMapper.mapToEntry(it.value)
@@ -40,7 +39,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             type.entries?.let {
                 it.mapValues {
                     entryMapper.mapFromEntry(it.value)
-                } as Map<LocalDate, EntryEntity>
+                }
             }
 
 

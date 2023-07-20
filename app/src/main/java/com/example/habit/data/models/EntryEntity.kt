@@ -8,7 +8,8 @@ import java.time.LocalDate
 @Parcelize
 data class EntryEntity(
     val timestamp: LocalDate?,
-    val score:Int?
+    val score:Int?,
+    val completed:Boolean=false
 ) : Parcelable{
     constructor():this(null,null)
 }

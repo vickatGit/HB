@@ -7,5 +7,6 @@ import java.time.LocalDate
 @Parcelize
 data class EntryView(
     val timestamp: LocalDate?,
-    val score:Int?
+    var score:Int?=0,
+    var completed:Boolean=false
 ) : Parcelable

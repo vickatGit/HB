@@ -2,7 +2,6 @@ package com.example.habit.ui.fragment.Habit
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -128,18 +128,22 @@ class HabitFragment : Fragment() {
                 selectedDates.put(it.key, it.value.timestamp!!)
             }
         }
-        totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
-        habitDurationReached =
-            ChronoUnit.DAYS.between(habit.startDate, habit.startDate?.plusDays(1))
-        val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
-        binding.habitProgress.progress = progress.roundToInt()
-        binding.progressPercentage.text = "${DecimalFormat("#.#").format(progress)}%"
+        initialiseProgress(habit)
         initialiseCalendar(habit.startDate!!, habit.endDate!!)
         binding.streakEditSwitch.setOnCheckedChangeListener { _, isChecked ->
             isCalendarEditable = isChecked
             bindDays()
         }
 
+    }
+
+    private fun initialiseProgress(habit: HabitView) {
+        totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
+        habitDurationReached =
+            ChronoUnit.DAYS.between(habit.startDate, habit.startDate?.plusDays(1))
+        val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
+        binding.habitProgress.progress = progress.roundToInt()
+        binding.progressPercentage.text = "${DecimalFormat("#.#").format(progress)}%"
     }
 
     private fun initialiseCalendar(startDate: LocalDate, endDate: LocalDate) {
@@ -162,8 +166,6 @@ class HabitFragment : Fragment() {
 
 
     private fun bindDays() {
-
-
         calendarBinding.calendarView.dayBinder = object : MonthDayBinder<DayHolder> {
             override fun bind(container: DayHolder, calendarDay: CalendarDay) {
                 container.day = calendarDay
@@ -190,7 +192,7 @@ class HabitFragment : Fragment() {
 
                 if (calendarDay.position == DayPosition.MonthDate) {
                     container.dayBinding.calendarDayText.isVisible = true
-                    if (habitEntries.containsKey(calendarDay.date)) {
+                    if (habitEntries.containsKey(calendarDay.date) && habitEntries[calendarDay.date]!!.completed) {
                         container.dayBinding.calendarDayText.setTextColor(
                             ContextCompat.getColor(requireContext(), R.color.white)
                         )
@@ -200,9 +202,8 @@ class HabitFragment : Fragment() {
                     if (calendarDay.date.isBefore(habitStartDate) || calendarDay.date.isAfter(
                             habitEndDate
                         )
-                    ) {
+                    )
                         container.dayBinding.calendarDayText.setTextColor(resources.getColor(R.color.white))
-                    }
                 }
                 val params = container.dayBinding.calendarDayText.layoutParams as MarginLayoutParams
                 params.leftMargin = 10
@@ -229,13 +230,13 @@ class HabitFragment : Fragment() {
     private fun selectDate(date: LocalDate?) {
         date?.let {
             if (habitEntries.containsKey(it)) {
-                habitEntries.remove(it)
+                habitEntries[it]!!.completed = !habitEntries[it]!!.completed
                 Log.e("TAG", "updateEntry selectDate: present $date ")
-                updateEntry(it, false)
+                updateEntries(it, habitEntries[it]!!.completed)
             } else {
-                habitEntries[it] = EntryView(it!!, null)
+                habitEntries[it] = EntryView(it!!, 0,true)
                 Log.e("TAG", "updateEntry selectDate: not present $date ")
-                updateEntry(it, true)
+                updateEntries(it, true)
             }
             calendarBinding.calendarView.notifyDateChanged(it)
         }
@@ -244,16 +245,46 @@ class HabitFragment : Fragment() {
     private fun updateEntry(date: LocalDate, isUpgrade: Boolean) {
         val prevDayEntry = habitEntries[date.minusDays(1)]
         Log.e("TAG", "updateEntry: ${Gson().toJson(habitEntries)}")
-        if (isUpgrade)
-            if (prevDayEntry != null) {
-                habitEntries[date] = EntryView(
-                    date,
-                    if (isUpgrade) prevDayEntry.score!! + 1 else prevDayEntry.score!! - 1
-                )
-            } else {
-                habitEntries[date] = EntryView(date, if (isUpgrade) 1 else 0)
-            }
+        if (prevDayEntry != null) {
+            habitEntries[date] = EntryView(
+                date,
+                if (isUpgrade) prevDayEntry.score!! + 1 else if ((prevDayEntry.score!! - 1) < 0) 0 else prevDayEntry.score!! - 1,
+                isUpgrade
+            )
+        } else {
+            habitEntries[date] = EntryView(date, if (isUpgrade) 1 else 0, isUpgrade)
+        }
         habitId?.let { viewModel.updateHabitEntries(it.toInt(), habitEntries) }
+    }
+
+    private fun updateEntries(date: LocalDate, isUpgrade: Boolean) {
+        val prevEntry = habitEntries[date.minusDays(1)]
+
+
+        if (prevEntry != null) {
+
+        } else {
+            //for new entry
+            habitEntries[date] = EntryView(date, if (isUpgrade) 1 else 0, isUpgrade)
+        }
+        val habitList= mutableListOf<EntryView>()
+        habitList.addAll(habitEntries.values)
+        habitList.sortBy { it.timestamp }
+
+        habitList.forEachIndexed() {index,it ->
+            if (index>0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
+                var score=habitList.get(if(index!=0) index-1 else index).score
+                Log.e("TAG", "updateEntries: before $score", )
+                habitList[index].score=if (isUpgrade) score!!+1 else it.score!!-1
+                score=habitList[index].score
+                Log.e("TAG", "updateEntries: after ${score}", )
+            }
+        }
+        habitList.forEach {
+            habitEntries.put(it.timestamp!!,it)
+            Log.e("TAG", "updateEntries: ${Gson().toJson(it)}", )
+        }
+//        habitId?.let { viewModel.updateHabitEntries(it.toInt(), habitEntries) }
     }
 
     private fun bindWeekDays() {

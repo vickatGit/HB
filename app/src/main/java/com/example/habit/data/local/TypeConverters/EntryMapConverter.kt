@@ -11,40 +11,38 @@ import java.time.format.DateTimeParseException
 
 object EntryMapConverter {
 
-        @JvmStatic
-        @TypeConverter
-        fun fromEntries(entries: Map<LocalDate, EntryEntity>?): String? {
-            return if(entries!=null){
-                val string = Gson().toJson(entries)
-                Log.e("TAG", "fromEntries: after fromEntries $string", )
-                string
-            }else{
-                null
-            }
-
+    @JvmStatic
+    @TypeConverter
+    fun fromEntries(entries: Map<LocalDate, EntryEntity>?): String? {
+        return if (entries != null) {
+            Gson().toJson(entries)
+        } else {
+            null
         }
 
-        @JvmStatic
-        @TypeConverter
-        fun toEntries(entries: String?): Map<LocalDate, EntryEntity>? {
-            return if(entries!=null) {
-                val convertedMapType = object : TypeToken<Map<String, EntryEntity>?>() {}.type
-                val habitEntries: MutableMap<LocalDate, EntryEntity> = mutableMapOf()
-                val convertedMap = Gson().fromJson(entries, convertedMapType) as Map<String,EntryEntity>
-                for ((key,value ) in convertedMap){
-                    try {
-                        val localDate = LocalDate.parse(key)
-                        habitEntries[localDate] = value
-                    }catch (e:DateTimeParseException){
-                        Log.e("TAG", "toEntries: catch $key", )
-                    }
+    }
+
+    @JvmStatic
+    @TypeConverter
+    fun toEntries(entries: String?): Map<LocalDate, EntryEntity>? {
+        return if (entries != null) {
+            val convertedMapType = object : TypeToken<Map<String, EntryEntity>?>() {}.type
+            val habitEntries: MutableMap<LocalDate, EntryEntity> = mutableMapOf()
+            val convertedMap =
+                Gson().fromJson(entries, convertedMapType) as Map<String, EntryEntity>
+            for ((key, value) in convertedMap) {
+                try {
+                    val localDate = LocalDate.parse(key)
+                    habitEntries[localDate] = value
+                } catch (e: DateTimeParseException) {
+                    Log.e("TAG", "toEntries: catch $key")
                 }
-                Log.e("TAG", "toEntries: $habitEntries",)
-                habitEntries
-            }else{
-                null
             }
+            habitEntries
+        } else {
+            null
         }
+    }
 
 
 }

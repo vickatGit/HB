@@ -5,7 +5,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habit.databinding.HabitItemLayoutBinding
 import com.example.habit.ui.callback.HabitClick
+import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.model.HabitThumbView
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import java.text.DecimalFormat
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 
 class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: HabitClick) : RecyclerView.Adapter<HabitsAdapter.HabitHolder>() {
 
@@ -23,10 +32,43 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
     override fun onBindViewHolder(holder: HabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding.habit.text = habit.title
+        initialiseProgress(habit,holder.binding)
+        initialiseConsistencyGraph(habit.entries,holder.binding)
         holder.binding.habitContainer.setOnClickListener {
             habitClick.habitClick(habitId = habit.id.toString())
         }
     }
+    private fun initialiseProgress(habit: HabitThumbView,binding:HabitItemLayoutBinding) {
+        val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
+        val habitDurationReached =
+            ChronoUnit.DAYS.between(habit.startDate, habit.startDate?.plusDays(1))
+        val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
+        binding.progress.progress = progress.roundToInt()
+        binding.progressPercentage.text = "${DecimalFormat("#.#").format(progress)}%"
+    }
 
     inner class HabitHolder(val binding: HabitItemLayoutBinding): RecyclerView.ViewHolder(binding.root)
+
+    private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?, binding:HabitItemLayoutBinding) {
+        //values for single line chart on the graph
+        val entries:MutableList<Entry> = mutableListOf()
+        mapEntries?.mapValues {
+            entries.add(Entry(it.value.timestamp?.dayOfMonth!!.toFloat(),it.value.score!!.toFloat()))
+        }
+        if(entries.size>0) {
+            //Each LineDateSet Represents data for sing line chart on Graph
+            val dataset = LineDataSet(entries, "")
+
+            //LineData object is Needed by Graph and to create LineData() object we Need to Pass list ILineDataSet objects
+            // since it has capability to show multiple Line chart on single graph whereas LineDataSet Object Represents one chart in a Graph
+            val datasets = mutableListOf<ILineDataSet>(dataset)
+            val chartLineData = LineData(datasets)
+
+            binding.consistency.data = chartLineData
+            binding.consistency.invalidate()
+        }
+
+
+
+    }
 }

@@ -77,6 +77,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progress" />
 
+        <View
+            android:id="@+id/consistency_fg"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/consistency_chart_fg"
+            app:layout_constraintTop_toTopOf="@id/consistency"
+            app:layout_constraintBottom_toBottomOf="@id/consistency"
+            app:layout_constraintStart_toStartOf="@id/consistency"
+            app:layout_constraintEnd_toEndOf="@id/consistency"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

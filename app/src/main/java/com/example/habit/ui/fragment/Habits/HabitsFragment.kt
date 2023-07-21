@@ -53,7 +53,7 @@ class HabitsFragment : Fragment() {
                 )
             }
         })
-        binding.habits.layoutManager=GridLayoutManager(requireContext(),1)
+        binding.habits.layoutManager=GridLayoutManager(requireContext(),2)
         binding.habits.adapter=habitsAdapter
        lifecycleScope.launch {
            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){

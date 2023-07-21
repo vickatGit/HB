@@ -260,31 +260,21 @@ class HabitFragment : Fragment() {
     private fun updateEntries(date: LocalDate, isUpgrade: Boolean) {
         val prevEntry = habitEntries[date.minusDays(1)]
 
-
-        if (prevEntry != null) {
-
-        } else {
-            //for new entry
+        if (prevEntry == null) {
             habitEntries[date] = EntryView(date, if (isUpgrade) 1 else 0, isUpgrade)
         }
         val habitList= mutableListOf<EntryView>()
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
 
-        habitList.forEachIndexed() {index,it ->
+        habitList.forEachIndexed {index,it ->
             if (index>0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
                 var score=habitList.get(if(index!=0) index-1 else index).score
-                Log.e("TAG", "updateEntries: before $score", )
                 habitList[index].score=if (isUpgrade) score!!+1 else it.score!!-1
-                score=habitList[index].score
-                Log.e("TAG", "updateEntries: after ${score}", )
             }
         }
-        habitList.forEach {
-            habitEntries.put(it.timestamp!!,it)
-            Log.e("TAG", "updateEntries: ${Gson().toJson(it)}", )
-        }
-//        habitId?.let { viewModel.updateHabitEntries(it.toInt(), habitEntries) }
+        habitEntries.putAll(habitList.associateBy { it.timestamp!! })
+        habitId?.let { viewModel.updateHabitEntries(it.toInt(), habitEntries) }
     }
 
     private fun bindWeekDays() {

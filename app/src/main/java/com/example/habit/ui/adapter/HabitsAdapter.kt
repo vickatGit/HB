@@ -2,6 +2,7 @@ package com.example.habit.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habit.R
 import com.example.habit.databinding.HabitItemLayoutBinding
@@ -42,7 +43,7 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
     private fun initialiseProgress(habit: HabitThumbView,binding:HabitItemLayoutBinding) {
         val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
         val habitDurationReached =
-            ChronoUnit.DAYS.between(habit.startDate, habit.startDate?.plusDays(1))
+            ChronoUnit.DAYS.between(habit.startDate, LocalDate.now())
         val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
         binding.progress.progress = progress.roundToInt()
         binding.progressPercentage.text = "${DecimalFormat("#.#").format(progress)}%"
@@ -93,6 +94,9 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
 
             binding.consistency.data = chartLineData
             binding.consistency.invalidate()
+        }else{
+            binding.consistency.isVisible=false
+            binding.consistencyFg.isVisible=false
         }
 
 

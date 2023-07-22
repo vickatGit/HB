@@ -33,4 +33,7 @@ interface HabitDao {
     @Query("SELECT entryList FROM HabitEntity WHERE id = :habitId")
     suspend fun getHabitEntries(habitId: Int):Map<LocalDate,EntryEntity>?
 
+    @Query("DELETE FROM HabitEntity WHERE id=:habitId")
+    suspend fun deleteHabit(habitId: Int):Int
+
 }

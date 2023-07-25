@@ -46,6 +46,13 @@ class HabitRepoImpl(
         }
     }
 
+    override suspend fun getHabitThumb(habitId: Int): Habit {
+        return habitDao.getHabit(habitId).let {
+            Log.e("TAG", "getHabit: data" + habitId)
+            habitMapper.mapToHabit(habitDao.getHabit(habitId))
+        }
+    }
+
     override suspend fun getHabitEntries(habitId: Int): HashMap<LocalDate, Entry>? {
         val habitEntries = habitDao.getHabitEntries(habitId)?.toMutableMap()
         Log.e("TAG", "getHabitEntries: repo $habitEntries", )

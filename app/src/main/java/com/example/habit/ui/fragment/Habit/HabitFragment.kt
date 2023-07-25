@@ -1,13 +1,23 @@
 package com.example.habit.ui.fragment.Habit
 
+import android.app.NotificationManager
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.ImageView
+import android.widget.RemoteViews
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -20,11 +30,19 @@ import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentHabitBinding
+import com.example.habit.domain.UseCases.GetHabitThumbUseCase
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.fragment.Date.DayHolder
+import com.example.habit.ui.mapper.HabitMapper
 import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.model.HabitView
+import com.example.habit.ui.notification.NotificationBuilder
 import com.example.habit.ui.viewmodel.HabitViewModel
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -32,19 +50,27 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.view.MonthDayBinder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
+import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
+import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import javax.inject.Inject
 import kotlin.math.roundToInt
+
 
 @AndroidEntryPoint
 class HabitFragment : Fragment() {
     companion object {
         const val HABIT_ID: String = "habit_id_key"
+        lateinit var image:ImageView
     }
 
     private var habitDurationReached: Long? = null
@@ -62,6 +88,16 @@ class HabitFragment : Fragment() {
     private var _weekDaysBinding: CalendarDayLegendContainerBinding? = null
     private val weekDayBinding get() = _weekDaysBinding!!
 
+    @Inject
+    lateinit var notificationBuilder:NotificationBuilder
+
+    @Inject
+    lateinit var habitMapper:HabitMapper
+
+    @Inject
+    lateinit var getHabitThumbUseCase:GetHabitThumbUseCase
+
+
 
     var weekdays = arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     private var selectedDates = mutableMapOf<LocalDate, LocalDate>()
@@ -69,6 +105,14 @@ class HabitFragment : Fragment() {
     private var habitStartDate: LocalDate? = null
     private var habitEndDate: LocalDate? = null
     private var isCalendarEditable: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        habitId = arguments?.getString(HABIT_ID)
+
+
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -77,7 +121,8 @@ class HabitFragment : Fragment() {
         _binding = FragmentHabitBinding.inflate(inflater, container, false)
         _calendarBinding = CalendarLayoutBinding.bind(binding.calendar.root)
         _weekDaysBinding = CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
-        habitId = arguments?.getString(HABIT_ID)
+
+//        sendNotification(habitId!!.toInt())
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -242,20 +287,6 @@ class HabitFragment : Fragment() {
         }
     }
 
-    private fun updateEntry(date: LocalDate, isUpgrade: Boolean) {
-        val prevDayEntry = habitEntries[date.minusDays(1)]
-        Log.e("TAG", "updateEntry: ${Gson().toJson(habitEntries)}")
-        if (prevDayEntry != null) {
-            habitEntries[date] = EntryView(
-                date,
-                if (isUpgrade) prevDayEntry.score!! + 1 else if ((prevDayEntry.score!! - 1) < 0) 0 else prevDayEntry.score!! - 1,
-                isUpgrade
-            )
-        } else {
-            habitEntries[date] = EntryView(date, if (isUpgrade) 1 else 0, isUpgrade)
-        }
-        habitId?.let { viewModel.updateHabitEntries(it.toInt(), habitEntries) }
-    }
 
     private fun updateEntries(date: LocalDate, isUpgrade: Boolean) {
         val prevEntry = habitEntries[date.minusDays(1)]
@@ -290,6 +321,8 @@ class HabitFragment : Fragment() {
         val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
         return calendarMonth.yearMonth.format(formatter)
     }
+
+
 
 
 }

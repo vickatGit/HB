@@ -36,7 +36,6 @@ class AddHabitViewModel @Inject constructor(
                         Log.e("TAG", "addHabit: Insertion Success",)
                         scheduleAlarmUseCase(
                             id.toInt(),
-                            habit.reminderQuestion!!,
                             reminderTime,
                             context = context
                         )

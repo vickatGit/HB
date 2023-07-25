@@ -15,17 +15,17 @@ import java.util.Locale
 
 class ScheduleAlarmUseCase {
 
-    suspend operator fun invoke(reqCode:Int,msg:String,time: LocalDateTime,context:Context){
+    suspend operator fun invoke(id:Int,time: LocalDateTime,context:Context){
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra("EXTRA_MESSAGE", msg)
+            putExtra("habitId",id)
         }
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
-                reqCode,
+                id,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

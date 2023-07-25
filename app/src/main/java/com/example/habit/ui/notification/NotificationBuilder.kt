@@ -49,8 +49,14 @@ class NotificationBuilder @Inject constructor(
             val habit = habitMapper.mapToHabit(getHabitThumbUseCase(habitId))
             withContext(Dispatchers.Main){
                 val collapsedView=RemoteViews(app.packageName, R.layout.collapsed_notification_layout)
-                val chartImage = buildLineChartAndExportBitmap(app.applicationContext,habit.entries)
-                collapsedView.setImageViewBitmap(R.id.consistency,chartImage)
+                habit.entries?.let {
+                    if(it.size>0) {
+                        val chartImage =
+                            buildLineChartAndExportBitmap(app.applicationContext, habit.entries)
+                        collapsedView.setImageViewBitmap(R.id.consistency, chartImage)
+                    }
+
+                }
                 val completeIntent=Intent(app,UpdateHabitEntryBroadRecieve::class.java).apply {
                     putExtra("isUpgrade",true)
                     putExtra("habitId",habit.id)

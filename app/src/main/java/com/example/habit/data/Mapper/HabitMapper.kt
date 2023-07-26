@@ -28,7 +28,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
 
     override fun mapToHabitEntity(type: Habit): HabitEntity {
         return HabitEntity(
-            null,
+            type.id,
             type.title,
             type.description,
             type.reminderQuestion,

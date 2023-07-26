@@ -25,6 +25,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.habit.R
 import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
@@ -73,6 +74,7 @@ class HabitFragment : Fragment() {
         lateinit var image:ImageView
     }
 
+    private lateinit var habit: HabitView
     private var habitDurationReached: Long? = null
     private var totalHabitDuration: Long? = null
     private val viewModel: HabitViewModel by viewModels()
@@ -122,13 +124,12 @@ class HabitFragment : Fragment() {
         _calendarBinding = CalendarLayoutBinding.bind(binding.calendar.root)
         _weekDaysBinding = CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
 
-//        sendNotification(habitId!!.toInt())
-
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.habitUiState.collectLatest {
                     when (it) {
                         is HabitUiState.HabitData -> {
+                            habit=it.habit
                             bindHabitPageData(it.habit)
                         }
 
@@ -159,6 +160,15 @@ class HabitFragment : Fragment() {
                 }
             }
         }
+        binding.edit.setOnClickListener {
+            habit?.let {
+                val args = Bundle().apply {
+                    putBoolean("isUpdate", true)
+                    putParcelable("habit", habit)
+                }
+                findNavController().navigate(R.id.action_habitFragment_to_addHabitFragment, args)
+            }
+        }
         habitId?.let { viewModel.getHabit(it, getString(R.string.habit_not_found_error)) }
 
         return binding.root
@@ -185,7 +195,7 @@ class HabitFragment : Fragment() {
     private fun initialiseProgress(habit: HabitView) {
         totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
         habitDurationReached =
-            ChronoUnit.DAYS.between(habit.startDate, habit.startDate?.plusDays(1))
+            ChronoUnit.DAYS.between(habit.startDate,LocalDate.now())
         val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
         binding.habitProgress.progress = progress.roundToInt()
         binding.progressPercentage.text = "${DecimalFormat("#.#").format(progress)}%"
@@ -321,6 +331,7 @@ class HabitFragment : Fragment() {
         val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
         return calendarMonth.yearMonth.format(formatter)
     }
+
 
 
 

@@ -7,6 +7,7 @@ import com.example.habit.data.Mapper.HabitMapper
 import com.example.habit.data.Repository.HabitRepoImpl
 import com.example.habit.data.local.HabitDatabase
 import com.example.habit.domain.Repository.HabitRepo
+import com.example.habit.domain.UseCases.DeleteAlarmUseCase
 import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
 import dagger.Module
 import dagger.Provides
@@ -36,6 +37,11 @@ class HabitModule {
     @Provides
     fun providesScheduleAlarmUseCase(): ScheduleAlarmUseCase {
         return ScheduleAlarmUseCase()
+    }
+
+    @Provides
+    fun providesDeleteAlarmUseCase(): DeleteAlarmUseCase {
+        return DeleteAlarmUseCase()
     }
 
 //    @Provides

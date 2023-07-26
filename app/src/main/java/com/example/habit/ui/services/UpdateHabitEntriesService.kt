@@ -42,6 +42,7 @@ class UpdateHabitEntriesService : JobIntentService() {
 
     override fun onHandleWork(intent: Intent) {
         val isUpgrade = intent.getBooleanExtra("isUpgrade", false)
+        Log.e("TAG", "onHandleWork: $isUpgrade")
         val habitId = intent.getIntExtra("habitId", -1)
         val todayDate = intent.getStringExtra("todayDate")
         Log.e("TAG", "onHandleWork: ")
@@ -116,13 +117,6 @@ class UpdateHabitEntriesService : JobIntentService() {
             updateHabitEntriesUseCase(habitId = habitId, habitEntries.mapValues {
                 entryMapper.mapToEntry(it.value)
             }.toMutableMap() as HashMap<LocalDate, Entry>)
-            if (reminderOn) {
-                scheduleAlarmUseCase(
-                    habitId,
-                    reminderTime!!.plusDays(1),
-                    this@UpdateHabitEntriesService
-                )
-            }
         }
 
     }

@@ -40,8 +40,13 @@ class AddHabitFragment : Fragment() {
     private var isStart=false
     private var habit= HabitView()
 
+    private var isUpdate:Boolean=false
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isUpdate = arguments?.getBoolean("isUpdate")?:false
+        if(isUpdate) habit=arguments?.getParcelable("habit")!!
     }
 
     override fun onCreateView(
@@ -51,6 +56,9 @@ class AddHabitFragment : Fragment() {
         // Inflate the layout for this fragment
 
         _binding=FragmentAddHabitBinding.inflate(inflater,container,false)
+        if(isUpdate){
+            bindHabitData()
+        }
 
        lifecycleScope.launch {
            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -129,14 +137,13 @@ class AddHabitFragment : Fragment() {
         }
         setFragmentResultListener(DateFragment.DATE_RESULT) { _, bundle ->
             val date  = LocalDate.parse(bundle.getString(DateFragment.DATE))
-            val uiDateFormat = DateTimeFormatter.ofPattern("dd MMM yyyy")
             if (isStart) {
                 habit.startDate = date
-                binding.startDate.setText(date.format(uiDateFormat))
+                binding.startDate.setText(dateFormatter(date))
             }
             else {
                 habit.endDate = date
-                binding.endDate.setText(date.format(uiDateFormat))
+                binding.endDate.setText(dateFormatter(date))
             }
         }
         setFragmentResultListener(TimerFragment.TIME_RESULT){_,bundle ->
@@ -147,12 +154,38 @@ class AddHabitFragment : Fragment() {
             time?.let {
                 habit.reminderTime= localDateTime
             }
-            val formattedTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(time.time)
-            binding.reminder.text = "Daily at $formattedTime"
+            binding.reminder.text = "Daily at ${timeFormatter(time)}"
         }
+
+        binding.reminderSwitch.isChecked=true
 
         return binding.root
     }
+
+    private fun dateFormatter(date: LocalDate):String{
+        val uiDateFormat = DateTimeFormatter.ofPattern("dd MMM yyyy")
+        return date.format(uiDateFormat)
+    }
+    private fun timeFormatter(time: Calendar):String{
+        return SimpleDateFormat("hh:mm a", Locale.getDefault()).format(time.time)
+    }
+    private fun timeFormatter(time: LocalDateTime):String{
+        val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+        return time.format(formatter)
+    }
+
+    private fun bindHabitData() {
+        binding.title.setText(habit.title)
+        binding.reminder.text = "Daily at ${timeFormatter(habit.reminderTime!!)}"
+        binding.startDate.setText(dateFormatter(habit.startDate!!))
+        binding.endDate.setText(dateFormatter(habit.endDate!!))
+        binding.reminderQuestion.setText(habit.reminderQuestion)
+        binding.description.setText(habit.description)
+        binding.reminderSwitch.isChecked=habit.isReminderOn!!
+
+
+    }
+
     private fun showToast(message: String) {
         if(message.isNotBlank())
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

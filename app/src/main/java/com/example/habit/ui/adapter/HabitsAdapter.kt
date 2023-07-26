@@ -57,7 +57,7 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
         mapEntries?.mapValues {
             entries.add(Entry(it.value.timestamp?.dayOfMonth!!.toFloat(),it.value.score!!.toFloat()))
         }
-        if(entries.size>0) {
+        if(entries.size>3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
             dataset.color=binding.root.resources.getColor(R.color.orange)
@@ -97,6 +97,7 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
         }else{
             binding.consistency.isVisible=false
             binding.consistencyFg.isVisible=false
+            binding.graphTitle.isVisible=false
         }
 
 

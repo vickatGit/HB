@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:name=".HabitApp"
@@ -17,9 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Habit"
         tools:targetApi="31">
-        <service
-            android:name=".ui.services.someser"
-            android:exported="false" />
+
 
         <activity
             android:name=".ui.activity.HomeActivity"

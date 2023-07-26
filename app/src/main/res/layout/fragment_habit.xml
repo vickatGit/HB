@@ -57,6 +57,7 @@
             app:layout_constraintTop_toBottomOf="@+id/back" />
 
         <ImageView
+            android:id="@+id/edit"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/edit_icon"
@@ -76,21 +77,7 @@
             app:layout_constraintStart_toStartOf="@+id/start"
             app:layout_constraintTop_toBottomOf="@+id/header" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            app:layout_constraintTop_toBottomOf="@id/calendar_card"
-            android:layout_width="match_parent"
-            android:id="@+id/graph"
-            android:layout_height="200dp"/>
 
-
-        <ImageView
-            android:id="@+id/chart_image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:scaleType="fitXY"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/graph"/>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/habit_progress"
@@ -125,7 +112,6 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/calendar_card"
             android:layout_width="0dp"
-            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             app:cardBackgroundColor="@color/white"

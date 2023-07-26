@@ -2,7 +2,9 @@ package com.example.habit.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
 import androidx.room.MapInfo
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.habit.data.models.EntryEntity
@@ -14,7 +16,7 @@ import java.util.HashMap
 
 @Dao
 interface HabitDao {
-    @Upsert
+    @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun addHabit(habit: HabitEntity):Long
 
     @Delete

@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat
 import com.example.habit.R
 import com.example.habit.data.common.recievers.UpdateHabitEntryBroadRecieve
 import com.example.habit.domain.UseCases.GetHabitThumbUseCase
+import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
 import com.example.habit.ui.mapper.HabitMapper
 import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.services.UpdateHabitEntriesService
@@ -37,6 +38,7 @@ import javax.inject.Inject
 
 class NotificationBuilder @Inject constructor(
     val getHabitThumbUseCase: GetHabitThumbUseCase,
+    val scheduleAlarmUseCase: ScheduleAlarmUseCase,
     val habitMapper: HabitMapper
 ) {
     private val HABIT_UPDATE_NOTI_CHAN_NAME: CharSequence="habit_status_update_channel_name"
@@ -50,10 +52,11 @@ class NotificationBuilder @Inject constructor(
             withContext(Dispatchers.Main){
                 val collapsedView=RemoteViews(app.packageName, R.layout.collapsed_notification_layout)
                 habit.entries?.let {
-                    if(it.size>0) {
+                    if(it.size>3) {
                         val chartImage =
                             buildLineChartAndExportBitmap(app.applicationContext, habit.entries)
                         collapsedView.setImageViewBitmap(R.id.consistency, chartImage)
+                        collapsedView.setViewVisibility(R.id.consistency,View.VISIBLE)
                     }
 
                 }
@@ -88,6 +91,13 @@ class NotificationBuilder @Inject constructor(
                     notificationManager.createNotificationChannel(notificationChannel)
                 }
                 notificationManager.notify(0,notificationBuilder.build())
+                if (habit.isReminderOn!!) {
+                    scheduleAlarmUseCase(
+                        habitId,
+                        habit.reminderTime!!.plusMinutes(1),
+                        app
+                    )
+                }
 
             }
         }

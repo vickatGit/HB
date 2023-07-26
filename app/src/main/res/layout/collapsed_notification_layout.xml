@@ -48,6 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:scaleType="fitXY"
+        android:visibility="gone"
         android:background="@drawable/consistency_chart_fg"
         android:layout_marginTop="10dp" />
 

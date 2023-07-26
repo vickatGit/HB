@@ -94,7 +94,7 @@ class NotificationBuilder @Inject constructor(
                 if (habit.isReminderOn!!) {
                     scheduleAlarmUseCase(
                         habitId,
-                        habit.reminderTime!!.plusMinutes(1),
+                        habit.reminderTime!!.plusDays(1),
                         app
                     )
                 }

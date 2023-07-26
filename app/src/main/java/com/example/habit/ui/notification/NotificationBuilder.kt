@@ -72,7 +72,7 @@ class NotificationBuilder @Inject constructor(
                 }
 
                 val completePendingIntent=PendingIntent.getBroadcast(app,0,completeIntent,PendingIntent.FLAG_UPDATE_CURRENT)
-                val incompletePendingIntent=PendingIntent.getBroadcast(app,0,incompleteIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+                val incompletePendingIntent=PendingIntent.getBroadcast(app,1,incompleteIntent,PendingIntent.FLAG_UPDATE_CURRENT)
                 collapsedView.setOnClickPendingIntent(R.id.completed,completePendingIntent)
                 collapsedView.setOnClickPendingIntent(R.id.not_completed,incompletePendingIntent)
 

@@ -332,7 +332,12 @@ class HabitFragment : Fragment() {
         return calendarMonth.yearMonth.format(formatter)
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding=null
+        _calendarBinding=null
+        _weekDaysBinding=null
+    }
 
 
 

@@ -8,7 +8,7 @@ import com.example.habit.ui.services.UpdateHabitEntriesService
 
 class UpdateHabitEntryBroadRecieve : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.e("TAG", "onReceive: update", )
+        Log.e("TAG", "onReceive: update ${intent!!.getBooleanExtra("isUpgrade",false)}", )
         UpdateHabitEntriesService.enqueueWork(context!!,intent!!)
     }
 }

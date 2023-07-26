@@ -1,5 +1,6 @@
 package com.example.habit.ui.notification
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -13,6 +14,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RemoteViews
@@ -23,18 +25,23 @@ import com.example.habit.domain.UseCases.GetHabitThumbUseCase
 import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
 import com.example.habit.ui.mapper.HabitMapper
 import com.example.habit.ui.model.EntryView
+import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.services.UpdateHabitEntriesService
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.DecimalFormat
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class NotificationBuilder @Inject constructor(
     val getHabitThumbUseCase: GetHabitThumbUseCase,
@@ -51,6 +58,7 @@ class NotificationBuilder @Inject constructor(
             val habit = habitMapper.mapToHabit(getHabitThumbUseCase(habitId))
             withContext(Dispatchers.Main){
                 val collapsedView=RemoteViews(app.packageName, R.layout.collapsed_notification_layout)
+                collapsedView.setTextViewText(R.id.title,habit.title)
                 habit.entries?.let {
                     if(it.size>3) {
                         val chartImage =
@@ -60,6 +68,10 @@ class NotificationBuilder @Inject constructor(
                     }
 
                 }
+                val progress=initialiseProgress(habit.startDate!!,habit.endDate!!)
+                collapsedView.setTextViewText(R.id.progress_percentage,formatProgress(progress))
+                collapsedView.setProgressBar(R.id.progress,100,progress,false)
+
                 val completeIntent=Intent(app,UpdateHabitEntryBroadRecieve::class.java).apply {
                     putExtra("isUpgrade",true)
                     putExtra("habitId",habit.id)
@@ -171,6 +183,20 @@ class NotificationBuilder @Inject constructor(
             return createBitmapFromView(context,lineChart)
 
     }
+
+    private fun initialiseProgress(startDate:LocalDate,endDate:LocalDate): Int {
+        val totalHabitDuration = ChronoUnit.DAYS.between(startDate, endDate)
+        val habitDurationReached =
+            ChronoUnit.DAYS.between(startDate,LocalDate.now())
+        val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
+        return progress.roundToInt()
+
+    }
+
+    private fun formatProgress(progress:Int): String {
+        return "${DecimalFormat("#.#").format(progress)}%"
+    }
+
 
     fun createBitmapFromView(context: Context,view: View): Bitmap {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics

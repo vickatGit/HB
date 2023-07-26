@@ -1,6 +1,5 @@
 package com.example.habit.ui.fragment.Habit
 
-import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -8,17 +7,16 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
-import android.widget.RemoteViews
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -39,11 +37,7 @@ import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.notification.NotificationBuilder
 import com.example.habit.ui.viewmodel.HabitViewModel
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -51,7 +45,6 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.view.MonthDayBinder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -78,7 +71,7 @@ class HabitFragment : Fragment() {
     private var habitDurationReached: Long? = null
     private var totalHabitDuration: Long? = null
     private val viewModel: HabitViewModel by viewModels()
-    private var habitEntries: HashMap<LocalDate, EntryView> = hashMapOf()
+    private var habitEntries: HashMap<LocalDate, EntryView>   = hashMapOf()
 
 
     private var _binding: FragmentHabitBinding? = null
@@ -338,7 +331,6 @@ class HabitFragment : Fragment() {
         _calendarBinding=null
         _weekDaysBinding=null
     }
-
 
 
 }

@@ -7,6 +7,13 @@
         
     </style>
 
+    <style name="CircularProgressTheme" parent="Theme.AppCompat">
+        <!-- Customize the attributes for the CircularProgressIndicator here -->
+        <item name="colorAccent">@color/medium_orange</item>
+        <item name="android:textColorPrimary">@color/text_color</item>
+        <!-- Add any other desired attributes here -->
+    </style>
+
     <style name="MyTextInputEditText" parent="ThemeOverlay.Material3.TextInputEditText.FilledBox.Dense">
         <!-- left and right padding -->
         <item name="android:paddingStart" ns2:ignore="NewApi">0dp</item>

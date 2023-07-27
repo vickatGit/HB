@@ -4,4 +4,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="habit_encouragement_text">Let\'s Develop a Habit Together !</string>
     <string name="habit_not_found_error">There is No Such Habit</string>
+    <string name="habit_deletion_success_msg">Habit Deleted Successfully</string>
+    <string name="habit_deletion_failed_msg">Failed to Delete Habit</string>
 </resources>

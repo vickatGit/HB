@@ -3,6 +3,7 @@ package com.example.habit.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.habit.domain.UseCases.DeleteHabitUseCase
 import com.example.habit.domain.UseCases.GetHabitEntriesUseCase
 import com.example.habit.domain.UseCases.GetHabitUseCase
 import com.example.habit.domain.UseCases.UpdateHabitEntriesUseCase
@@ -26,7 +27,7 @@ class HabitViewModel @Inject constructor(
     private val getHabitUseCase: GetHabitUseCase,
     private val habitMapper: HabitMapper,
     private val entityMapper: EntryMapper,
-    private val getHabitEntriesUseCase: GetHabitEntriesUseCase,
+    private val deleteHabitUseCase: DeleteHabitUseCase,
     private val updateHabitEntriesUseCase: UpdateHabitEntriesUseCase
 ) : ViewModel() {
 
@@ -75,23 +76,36 @@ class HabitViewModel @Inject constructor(
         }
     }
 
-    private fun getHabitEntries(habitId: Int){
+    fun deleteHabit(habitId:Int,successMsg:String,errorMsg:String){
         viewModelScope.launch {
             _habitUiState.update { HabitUiState.Loading }
             try {
-                //here is the error
-                val habits = getHabitEntriesUseCase(habitId)?.mapValues {
-                    entityMapper.mapFromEntry(it.value)
-                } as HashMap<LocalDate,EntryView>
-//                val habits = getHabitEntriesUseCase(habitId)?.mapValues {
-//                    entityMapper.mapFromEntry(it.value)
-//                }?.toMutableMap() as HashMap<LocalDate,EntryView>
-                _habitUiState.update { HabitUiState.HabitEntries(habits) }
-            }catch (e:Exception){
-                Log.e("TAG", "getHabitEntries: ${e.printStackTrace()}", )
+                deleteHabitUseCase(habitId)
+                _habitUiState.update { HabitUiState.HabitDeleted(successMsg) }
+            }catch (e:java.lang.Exception){
                 _habitUiState.update { HabitUiState.Error(e.message) }
             }
         }
     }
+
+
+    /*-------------- This Function Not Working Properly--------------
+
+            private fun getHabitEntries(habitId: Int){
+                viewModelScope.launch {
+                    _habitUiState.update { HabitUiState.Loading }
+                    try {
+                        val habits = getHabitEntriesUseCase(habitId)?.mapValues {
+                            entityMapper.mapFromEntry(it.value)
+                        } as HashMap<LocalDate,EntryView>
+                        _habitUiState.update { HabitUiState.HabitEntries(habits) }
+                    }catch (e:Exception){
+                        Log.e("TAG", "getHabitEntries: ${e.printStackTrace()}", )
+                        _habitUiState.update { HabitUiState.Error(e.message) }
+                    }
+                }
+            }
+
+     */
 
 }

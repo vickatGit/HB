@@ -145,10 +145,16 @@ class HabitFragment : Fragment() {
                             bindDays()
                             binding.progress.isVisible = false
                         }
+                        is HabitUiState.HabitDeleted -> {
+                            binding.progress.isVisible=false
+                            Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
+                            findNavController().popBackStack()
+                        }
 
                         is HabitUiState.Nothing -> {
                             binding.progress.isVisible = false
                         }
+
                     }
                 }
             }
@@ -160,6 +166,12 @@ class HabitFragment : Fragment() {
                     putParcelable("habit", habit)
                 }
                 findNavController().navigate(R.id.action_habitFragment_to_addHabitFragment, args)
+            }
+        }
+        binding.delete.setOnClickListener {
+            habit?.let {
+                viewModel.deleteHabit(habitId = it.id!!,getString(R.string.habit_deletion_success_msg),getString(
+                                    R.string.habit_deletion_failed_msg))
             }
         }
         binding.back.setOnClickListener {

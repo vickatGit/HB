@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 interface HabitRepo {
     suspend fun addHabit(habit: Habit): Long
-    suspend fun removeHabit(habit: Habit)
+    suspend fun removeHabit(habitId: Int):Int
     fun getHabits(): Flow<List<HabitThumb>>
     suspend fun getHabit(habitId:Int):Habit
     suspend fun getHabitEntries(habitId: Int) : HashMap<LocalDate, Entry>?

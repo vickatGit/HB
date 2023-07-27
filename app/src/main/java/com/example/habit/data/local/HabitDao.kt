@@ -19,8 +19,6 @@ interface HabitDao {
     @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun addHabit(habit: HabitEntity):Long
 
-    @Delete
-    suspend fun removeHabit(habit: HabitEntity)
 
     @Query("SELECT * FROM HabitEntity")
     fun getHabits():Flow<List<HabitEntity>>

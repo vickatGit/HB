@@ -27,8 +27,8 @@ class HabitRepoImpl(
         return habitDao.addHabit(habit = habitMapper.mapToHabitEntity(habit))
     }
 
-    override suspend fun removeHabit(habit: Habit) {
-        habitDao.removeHabit(habit = habitMapper.mapToHabitEntity(habit))
+    override suspend fun removeHabit(habitId: Int): Int {
+        return habitDao.deleteHabit(habitId!!)
     }
 
     override fun getHabits(): Flow<List<HabitThumb>> {

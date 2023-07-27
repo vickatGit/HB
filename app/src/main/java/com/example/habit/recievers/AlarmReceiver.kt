@@ -1,4 +1,4 @@
-package com.example.habit.data.common.recievers
+package com.example.habit.recievers
 
 import android.content.BroadcastReceiver
 import android.content.Context

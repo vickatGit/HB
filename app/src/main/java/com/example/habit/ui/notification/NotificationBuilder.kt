@@ -18,7 +18,7 @@ import android.view.ViewGroup
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.habit.R
-import com.example.habit.data.common.recievers.UpdateHabitEntryBroadRecieve
+import com.example.habit.recievers.UpdateHabitEntryBroadRecieve
 import com.example.habit.domain.UseCases.GetHabitThumbUseCase
 import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
 import com.example.habit.ui.mapper.HabitMapper
@@ -67,12 +67,12 @@ class NotificationBuilder @Inject constructor(
                 collapsedView.setTextViewText(R.id.progress_percentage,formatProgress(progress))
                 collapsedView.setProgressBar(R.id.progress,100,progress.roundToInt(),false)
 
-                val completeIntent=Intent(app,UpdateHabitEntryBroadRecieve::class.java).apply {
+                val completeIntent=Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
                     putExtra("isUpgrade",true)
                     putExtra("habitId",habit.id)
                     putExtra("todayDate",LocalDate.now().toString())
                 }
-                val incompleteIntent=Intent(app,UpdateHabitEntryBroadRecieve::class.java).apply {
+                val incompleteIntent=Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
                     putExtra("isUpgrade",false)
                     putExtra("habitId",habit.id)
                     putExtra("todayDate",LocalDate.now().toString())
@@ -97,7 +97,7 @@ class NotificationBuilder @Inject constructor(
                     notificationBuilder.setChannelId(HABIT_UPDATE_NOTI_CHAN_ID)
                     notificationManager.createNotificationChannel(notificationChannel)
                 }
-                notificationManager.notify(0,notificationBuilder.build())
+                notificationManager.notify(habitId,notificationBuilder.build())
                 if (habit.isReminderOn!!) {
                     scheduleAlarmUseCase(
                         habitId,

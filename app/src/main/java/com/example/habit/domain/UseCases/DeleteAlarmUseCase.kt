@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat.getSystemService
-import com.example.habit.data.common.recievers.AlarmReceiver
+import com.example.habit.recievers.AlarmReceiver
 import java.time.LocalDateTime
 import java.time.ZoneId
 

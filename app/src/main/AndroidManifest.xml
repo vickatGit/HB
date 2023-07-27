@@ -33,12 +33,12 @@
             android:name=".ui.activity.MainActivity"
             android:exported="true" />
 
-        <receiver android:name=".data.common.recievers.AlarmReceiver" />
+        <receiver android:name=".recievers.AlarmReceiver" />
 
         <service android:name=".ui.services.UpdateHabitEntriesService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver android:name=".data.common.recievers.UpdateHabitEntryBroadRecieve"/>
+        <receiver android:name=".recievers.UpdateHabitEntryBroadRecieve"/>
     </application>
 
 </manifest>

@@ -162,6 +162,9 @@ class HabitFragment : Fragment() {
                 findNavController().navigate(R.id.action_habitFragment_to_addHabitFragment, args)
             }
         }
+        binding.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
         habitId?.let { viewModel.getHabit(it, getString(R.string.habit_not_found_error)) }
 
         return binding.root

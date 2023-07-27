@@ -158,6 +158,9 @@ class AddHabitFragment : Fragment() {
         }
 
         binding.reminderSwitch.isChecked=true
+        binding.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
         return binding.root
     }

@@ -77,6 +77,9 @@ class HabitsFragment : Fragment() {
                }
            }
        }
+        binding.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
         viewModel.getHabits()
 
         return binding.root

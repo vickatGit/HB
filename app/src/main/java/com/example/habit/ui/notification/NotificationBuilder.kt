@@ -1,6 +1,5 @@
 package com.example.habit.ui.notification
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -14,7 +13,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RemoteViews
@@ -25,14 +23,11 @@ import com.example.habit.domain.UseCases.GetHabitThumbUseCase
 import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
 import com.example.habit.ui.mapper.HabitMapper
 import com.example.habit.ui.model.EntryView
-import com.example.habit.ui.model.HabitView
-import com.example.habit.ui.services.UpdateHabitEntriesService
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,7 +65,7 @@ class NotificationBuilder @Inject constructor(
                 }
                 val progress=initialiseProgress(habit.startDate!!,habit.endDate!!)
                 collapsedView.setTextViewText(R.id.progress_percentage,formatProgress(progress))
-                collapsedView.setProgressBar(R.id.progress,100,progress,false)
+                collapsedView.setProgressBar(R.id.progress,100,progress.roundToInt(),false)
 
                 val completeIntent=Intent(app,UpdateHabitEntryBroadRecieve::class.java).apply {
                     putExtra("isUpgrade",true)
@@ -184,16 +179,15 @@ class NotificationBuilder @Inject constructor(
 
     }
 
-    private fun initialiseProgress(startDate:LocalDate,endDate:LocalDate): Int {
+    private fun initialiseProgress(startDate:LocalDate,endDate:LocalDate): Float {
         val totalHabitDuration = ChronoUnit.DAYS.between(startDate, endDate)
         val habitDurationReached =
             ChronoUnit.DAYS.between(startDate,LocalDate.now())
-        val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
-        return progress.roundToInt()
+        return (totalHabitDuration!! / 100f) * habitDurationReached!!
 
     }
 
-    private fun formatProgress(progress:Int): String {
+    private fun formatProgress(progress: Float): String {
         return "${DecimalFormat("#.#").format(progress)}%"
     }
 

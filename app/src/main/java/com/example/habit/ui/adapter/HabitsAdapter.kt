@@ -33,23 +33,26 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
 
     override fun onBindViewHolder(holder: HabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
-        holder.binding.habit.text = habit.title
-        initialiseProgress(habit,holder.binding)
-        initialiseConsistencyGraph(habit.entries,holder.binding)
-        holder.binding.habitContainer.setOnClickListener {
-            habitClick.habitClick(habitId = habit.id.toString())
+        holder.binding?.let {
+            initialiseProgress(habit,it)
+            it.habit.text = habit.title
+            initialiseConsistencyGraph(habit.entries, it)
+            it.habitContainer.setOnClickListener {
+                habitClick.habitClick(habitId = habit.id.toString())
+            }
         }
+
     }
-    private fun initialiseProgress(habit: HabitThumbView,binding:HabitItemLayoutBinding) {
+    private fun initialiseProgress(habit: HabitThumbView,binding:HabitItemLayoutBinding?) {
         val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
         val habitDurationReached =
             ChronoUnit.DAYS.between(habit.startDate, LocalDate.now())
         val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
-        binding.progress.progress = progress.roundToInt()
-        binding.progressPercentage.text = "${DecimalFormat("#.#").format(progress)}%"
+        binding?.progress?.progress = progress.roundToInt()
+        binding?.progressPercentage?.text = "${DecimalFormat("#.#").format(progress)}%"
     }
 
-    inner class HabitHolder(val binding: HabitItemLayoutBinding): RecyclerView.ViewHolder(binding.root)
+    inner class HabitHolder(var binding: HabitItemLayoutBinding?): RecyclerView.ViewHolder(binding!!.root)
 
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?, binding:HabitItemLayoutBinding) {
         //values for single line chart on the graph
@@ -100,7 +103,6 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
             binding.graphTitle.isVisible=false
         }
 
-
-
     }
+
 }

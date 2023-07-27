@@ -15,7 +15,7 @@ import java.util.Locale
 
 class ScheduleAlarmUseCase {
 
-    suspend operator fun invoke(id:Int,time: LocalDateTime,context:Context){
+    operator fun invoke(id:Int,time: LocalDateTime,context:Context){
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("habitId",id)

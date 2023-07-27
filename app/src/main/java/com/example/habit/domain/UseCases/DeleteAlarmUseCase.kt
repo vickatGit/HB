@@ -11,7 +11,7 @@ import java.time.ZoneId
 
 
 class DeleteAlarmUseCase {
-    suspend operator fun invoke(habitId:Int,context:Context,time: LocalDateTime){
+    operator fun invoke(habitId:Int,context:Context,time: LocalDateTime){
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("habitId",habitId)

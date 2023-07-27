@@ -26,6 +26,9 @@ class MyHabitsFragment : Fragment() {
         binding.habits.setOnClickListener {
             findNavController().navigate(R.id.action_myHabitsFragment_to_habitsFragment)
         }
+        binding.back.setOnClickListener {
+            findNavController().popBackStack()
+        }
         return binding.root
     }
 

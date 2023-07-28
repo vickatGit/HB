@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:background="#FFFFFF"
     tools:context=".ui.fragment.Habit.HabitFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -378,6 +379,32 @@
 
 
         </com.google.android.material.card.MaterialCardView>
+
+
+        <TextView
+            android:id="@+id/graph_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calendar View"
+            android:layout_marginTop="50dp"
+            app:layout_constraintStart_toStartOf="@id/start"
+            android:textColor="@color/habit_header_color"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:fontFamily="@font/bold"
+            app:layout_constraintTop_toBottomOf="@+id/calendar_card" />
+
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/consistency"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="50dp"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            android:layout_marginBottom="70dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/graph_header"/>
 
         <ProgressBar
             android:id="@+id/progress"

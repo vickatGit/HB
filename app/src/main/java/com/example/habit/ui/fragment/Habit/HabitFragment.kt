@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -29,6 +30,7 @@ import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentHabitBinding
+import com.example.habit.databinding.HabitItemLayoutBinding
 import com.example.habit.domain.UseCases.GetHabitThumbUseCase
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.fragment.Date.DayHolder
@@ -37,6 +39,13 @@ import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.notification.NotificationBuilder
 import com.example.habit.ui.viewmodel.HabitViewModel
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
@@ -54,8 +63,11 @@ import java.text.DecimalFormat
 import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAccessor
+import java.util.Date
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -66,6 +78,7 @@ class HabitFragment : Fragment() {
         const val HABIT_ID: String = "habit_id_key"
     }
 
+    private var maxScored: Int=0
     private lateinit var habit: HabitView
     private var habitDurationReached: Long? = null
     private var totalHabitDuration: Long? = null
@@ -193,6 +206,7 @@ class HabitFragment : Fragment() {
         bindStreakInfo()
         initialiseProgress(habit)
         initialiseCalendar(habit.startDate!!, habit.endDate!!)
+        initialiseConsistencyGraph(habit.entries)
         binding.streakEditSwitch.setOnCheckedChangeListener { _, isChecked ->
             isCalendarEditable = isChecked
             bindDays()
@@ -359,6 +373,75 @@ class HabitFragment : Fragment() {
         habitId?.let { viewModel.updateHabitEntries(it.toInt(), habitEntries) }
     }
 
+    private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
+        //values for single line chart on the graph
+        val entries:MutableList<Entry> = mutableListOf()
+        mapEntries?.mapValues {
+            if(it.value.score!!>maxScored) maxScored=it.value.score!!
+            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+        }
+        if(entries.size>3) {
+            //Each LineDateSet Represents data for sing line chart on Graph
+            val dataset = LineDataSet(entries, "")
+            val startColor =resources.getColor(R.color.orange_op_20)
+            val midColor = resources.getColor(R.color.orange_op_20)
+            val endColor = resources.getColor(R.color.transparent)
+            val gradientDrawable = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(startColor,midColor, endColor)
+            )
+
+            dataset.setDrawFilled(true)
+            dataset.fillDrawable = gradientDrawable
+            dataset.color=binding.root.resources.getColor(R.color.medium_orange)
+            dataset.lineWidth=3f
+            dataset.setDrawCircleHole(false)
+            dataset.setDrawCircles(false)
+            dataset.setDrawValues(false)
+            dataset.mode= LineDataSet.Mode.CUBIC_BEZIER
+
+            val xtAxis=binding.consistency.xAxis
+            val ylAxis=binding.consistency.axisLeft
+            val yrAxis=binding.consistency.axisRight
+
+            ylAxis.setLabelCount(3,true)
+            xtAxis.position=XAxis.XAxisPosition.BOTTOM
+            yrAxis.isEnabled=false
+
+            ylAxis.setDrawAxisLine(false)
+            xtAxis.setDrawGridLines(false)
+            ylAxis.gridColor=resources.getColor(R.color.consistency_graph_grid_color)
+            ylAxis.gridLineWidth=1.4f
+
+            xtAxis.valueFormatter=XAxisFormatter()
+            ylAxis.valueFormatter=YAxisFormatter()
+
+
+
+            //LineData object is Needed by Graph and to create LineData() object we Need to Pass list ILineDataSet objects
+            // since it has capability to show multiple Line chart on single graph whereas LineDataSet Object Represents one chart in a Graph
+            val datasets = mutableListOf<ILineDataSet>(dataset)
+            val chartLineData = LineData(datasets)
+
+            binding.consistency.description.isEnabled = false
+            binding.consistency.legend.isEnabled = false
+            binding.consistency.setTouchEnabled(false)
+            binding.consistency.isDragEnabled = false
+            binding.consistency.setScaleEnabled(false)
+            binding.consistency.setPinchZoom(false)
+            binding.consistency.isDoubleTapToZoomEnabled = false
+            binding.consistency.isHighlightPerTapEnabled = false
+            binding.consistency.isHighlightPerDragEnabled = false
+            binding.consistency.animateX(1000)
+
+            binding.consistency.data = chartLineData
+            binding.consistency.invalidate()
+        }else{
+            binding.consistency.isVisible=false
+            binding.graphHeader.isVisible=false
+        }
+
+    }
     private fun bindWeekDays() {
         (0 until weekDayBinding.root.childCount).forEach { index ->
             val childView: View = weekDayBinding.root.getChildAt(index)
@@ -380,6 +463,30 @@ class HabitFragment : Fragment() {
         _weekDaysBinding=null
     }
 
+    inner class YAxisFormatter:IAxisValueFormatter{
+        override fun getFormattedValue(value: Float, axis: AxisBase?): String {
+            Log.e("TAG", "getFormattedValue: $maxScored val $value = ${(maxScored/100)*(value*maxScored)}", )
+            return "${(maxScored/100)*value}%"
+        }
+
+        override fun getDecimalDigits(): Int {
+            return -1
+        }
+
+    }
+    inner class XAxisFormatter : IAxisValueFormatter{
+        override fun getFormattedValue(value: Float, axis: AxisBase?): String {
+            val date = Date(value.toLong())
+            val calendar = java.util.Calendar.getInstance()
+            calendar.time = date
+            return (calendar.get(java.util.Calendar.DAY_OF_MONTH).toString())
+        }
+
+        override fun getDecimalDigits(): Int {
+            return -1
+        }
+
+    }
 
 }
 

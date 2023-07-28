@@ -15,4 +15,5 @@
     <color name="orange_op_20">#33DD5001</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="habit_header_color">#181818</color>
+    <color name="consistency_graph_grid_color">#F5F1FF</color>
 </resources>

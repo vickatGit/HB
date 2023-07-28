@@ -206,11 +206,11 @@ class HabitFragment : Fragment() {
         var highestStreak=0
         var currentStreak=0
 
-        var streakCounter=0
-
         val habitList= mutableListOf<EntryView>()
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
+
+
 
         habitEntries.toSortedMap().mapValues {
 //            if(it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())){
@@ -238,7 +238,8 @@ class HabitFragment : Fragment() {
             ChronoUnit.DAYS.between(habit.startDate,LocalDate.now())
         val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
         binding.habitProgress.progress = progress.roundToInt()
-        binding.progressPercentage.text = "${DecimalFormat("#.#").format(progress)}%"
+        "${DecimalFormat("#.#").format(progress)}%".also { binding.progressPercentage.text = it }
+        "${DecimalFormat("#.#").format(progress)}% ${resources.getString(R.string.habit_post_completion_greet)}".also { binding.completionGreet.text = it }
     }
 
     private fun initialiseCalendar(startDate: LocalDate, endDate: LocalDate) {

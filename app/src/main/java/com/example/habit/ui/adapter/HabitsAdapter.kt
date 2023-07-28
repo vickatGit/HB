@@ -15,6 +15,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import java.text.DecimalFormat
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
@@ -58,7 +59,7 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
         //values for single line chart on the graph
         val entries:MutableList<Entry> = mutableListOf()
         mapEntries?.mapValues {
-            entries.add(Entry(it.value.timestamp?.dayOfMonth!!.toFloat(),it.value.score!!.toFloat()))
+            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
         }
         if(entries.size>3) {
             //Each LineDateSet Represents data for sing line chart on Graph

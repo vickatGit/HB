@@ -14,4 +14,5 @@
     <color name="nav_item_checked">#DD5001</color>
     <color name="orange_op_20">#33DD5001</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="habit_header_color">#181818</color>
 </resources>

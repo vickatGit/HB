@@ -64,7 +64,6 @@ import kotlin.math.roundToInt
 class HabitFragment : Fragment() {
     companion object {
         const val HABIT_ID: String = "habit_id_key"
-        lateinit var image:ImageView
     }
 
     private lateinit var habit: HabitView
@@ -191,6 +190,7 @@ class HabitFragment : Fragment() {
                 selectedDates.put(it.key, it.value.timestamp!!)
             }
         }
+        bindStreakInfo()
         initialiseProgress(habit)
         initialiseCalendar(habit.startDate!!, habit.endDate!!)
         binding.streakEditSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -198,6 +198,38 @@ class HabitFragment : Fragment() {
             bindDays()
         }
 
+    }
+
+    private fun bindStreakInfo() {
+        var daysMissed=0
+        var daysCompleted=0
+        var highestStreak=0
+        var currentStreak=0
+
+        var streakCounter=0
+
+        val habitList= mutableListOf<EntryView>()
+        habitList.addAll(habitEntries.values)
+        habitList.sortBy { it.timestamp }
+
+        habitEntries.toSortedMap().mapValues {
+//            if(it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())){
+            Log.e("TAG", "bindStreakInfo: ${it.value.completed}", )
+                if(it.value.completed){
+                    ++daysCompleted
+                    ++currentStreak
+                    if( highestStreak < currentStreak ) highestStreak = currentStreak else {}
+                }else{
+                    if( highestStreak < currentStreak ) highestStreak = currentStreak
+                    currentStreak=0
+                    ++daysMissed
+                }
+//            }
+        }
+        binding.currentStreak.text=currentStreak.toString()
+        binding.daysMissed.text=daysMissed.toString()
+        binding.highestStreak.text=highestStreak.toString()
+        binding.daysCompleted.text="$daysCompleted/${ChronoUnit.DAYS.between(habit.startDate, habit.endDate!!.plusDays(1))}"
     }
 
     private fun initialiseProgress(habit: HabitView) {

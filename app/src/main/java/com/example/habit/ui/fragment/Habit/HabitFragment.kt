@@ -43,6 +43,7 @@ import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.view.MonthDayBinder
+import com.kizitonwose.calendar.view.MonthScrollListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -249,6 +250,7 @@ class HabitFragment : Fragment() {
         bindDays()
         calendarBinding.calendarView.monthScrollListener = { calendarMonth: CalendarMonth ->
             calendarBinding.month.text = getMonthYearString(calendarMonth)
+            viewModel.setCurrentViewingMonth(calendarMonth.yearMonth)
         }
 
 
@@ -256,7 +258,7 @@ class HabitFragment : Fragment() {
         val endMonth = YearMonth.of(endDate.year, endDate.month)
 
         calendarBinding.calendarView.setup(startMonth, endMonth, firstDayOfWeekFromLocale())
-        calendarBinding.calendarView.scrollToMonth(startMonth)
+        calendarBinding.calendarView.scrollToMonth(viewModel.getCurrentViewingMonth()?:startMonth)
 
     }
 

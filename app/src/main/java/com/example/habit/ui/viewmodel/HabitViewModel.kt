@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +31,12 @@ class HabitViewModel @Inject constructor(
     private val deleteHabitUseCase: DeleteHabitUseCase,
     private val updateHabitEntriesUseCase: UpdateHabitEntriesUseCase
 ) : ViewModel() {
+
+    private var _currentViewingMonth: YearMonth?=null
+    fun getCurrentViewingMonth() = _currentViewingMonth
+    fun setCurrentViewingMonth(currentViewingMonth:YearMonth) {
+        this._currentViewingMonth=currentViewingMonth
+    }
 
     private var _habitUiState= MutableStateFlow<HabitUiState>(HabitUiState.Nothing)
     val habitUiState=_habitUiState.asStateFlow()

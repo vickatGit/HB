@@ -385,7 +385,7 @@
             android:id="@+id/graph_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Calendar View"
+            android:text="Graph Analysis"
             android:layout_marginTop="50dp"
             app:layout_constraintStart_toStartOf="@id/start"
             android:textColor="@color/habit_header_color"

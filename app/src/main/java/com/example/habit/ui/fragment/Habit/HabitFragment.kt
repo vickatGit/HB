@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
@@ -68,6 +69,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAccessor
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -378,6 +380,7 @@ class HabitFragment : Fragment() {
         val entries:MutableList<Entry> = mutableListOf()
         mapEntries?.mapValues {
             if(it.value.score!!>maxScored) maxScored=it.value.score!!
+            Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))}", )
             entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
         }
         if(entries.size>3) {
@@ -400,12 +403,16 @@ class HabitFragment : Fragment() {
             dataset.setDrawValues(false)
             dataset.mode= LineDataSet.Mode.CUBIC_BEZIER
 
+
+
             val xtAxis=binding.consistency.xAxis
             val ylAxis=binding.consistency.axisLeft
             val yrAxis=binding.consistency.axisRight
 
-            ylAxis.setLabelCount(3,true)
+//            ylAxis.setLabelCount(3,true)
+            xtAxis.setLabelCount(7,true)
             xtAxis.position=XAxis.XAxisPosition.BOTTOM
+            xtAxis.labelRotationAngle=320f
             yrAxis.isEnabled=false
 
             ylAxis.setDrawAxisLine(false)
@@ -414,7 +421,7 @@ class HabitFragment : Fragment() {
             ylAxis.gridLineWidth=1.4f
 
             xtAxis.valueFormatter=XAxisFormatter()
-            ylAxis.valueFormatter=YAxisFormatter()
+//            ylAxis.valueFormatter=YAxisFormatter()
 
 
 
@@ -425,13 +432,14 @@ class HabitFragment : Fragment() {
 
             binding.consistency.description.isEnabled = false
             binding.consistency.legend.isEnabled = false
-            binding.consistency.setTouchEnabled(false)
-            binding.consistency.isDragEnabled = false
-            binding.consistency.setScaleEnabled(false)
-            binding.consistency.setPinchZoom(false)
-            binding.consistency.isDoubleTapToZoomEnabled = false
+            binding.consistency.setTouchEnabled(true)
             binding.consistency.isHighlightPerTapEnabled = false
             binding.consistency.isHighlightPerDragEnabled = false
+            binding.consistency.isDragEnabled = true
+            binding.consistency.setScaleEnabled(true)
+            // if disabled, scaling can be done on x- and y-axis separately
+            binding.consistency.setPinchZoom(false)
+//            binding.consistency.setViewPortOffsets(10f, 0f, 10f, 0f)
             binding.consistency.animateX(1000)
 
             binding.consistency.data = chartLineData
@@ -465,8 +473,12 @@ class HabitFragment : Fragment() {
 
     inner class YAxisFormatter:IAxisValueFormatter{
         override fun getFormattedValue(value: Float, axis: AxisBase?): String {
-            Log.e("TAG", "getFormattedValue: $maxScored val $value = ${(maxScored/100)*(value*maxScored)}", )
-            return "${(maxScored/100)*value}%"
+            var des:String=((value/ maxScored) * 100).toInt().toString()
+    //  -------------   this is a workaround for formatting data   ---------------
+    //  -------------   because here we are not getting expected   ---------------
+    //  -------------   result to format the data from MPAndroid chart   ------------
+            des = des.substring(0, des.length - 1)+"0"
+            return "${des}%"
         }
 
         override fun getDecimalDigits(): Int {
@@ -474,12 +486,11 @@ class HabitFragment : Fragment() {
         }
 
     }
-    inner class XAxisFormatter : IAxisValueFormatter{
+    inner class XAxisFormatter : IAxisValueFormatter {
+        private val dateFormatter = SimpleDateFormat("d MMM", Locale.getDefault())
         override fun getFormattedValue(value: Float, axis: AxisBase?): String {
             val date = Date(value.toLong())
-            val calendar = java.util.Calendar.getInstance()
-            calendar.time = date
-            return (calendar.get(java.util.Calendar.DAY_OF_MONTH).toString())
+            return dateFormatter.format(date)
         }
 
         override fun getDecimalDigits(): Int {

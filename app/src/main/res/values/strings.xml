@@ -7,4 +7,5 @@
     <string name="habit_deletion_success_msg">Habit Deleted Successfully</string>
     <string name="habit_deletion_failed_msg">Failed to Delete Habit</string>
     <string name="habit_post_completion_greet">of your goal is achieved</string>
+    <string name="habit_formed_text">Congrats! Habit Formed</string>
 </resources>

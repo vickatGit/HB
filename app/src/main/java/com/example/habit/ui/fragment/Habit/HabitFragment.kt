@@ -439,7 +439,6 @@ class HabitFragment : Fragment() {
             binding.consistency.setScaleEnabled(true)
             // if disabled, scaling can be done on x- and y-axis separately
             binding.consistency.setPinchZoom(false)
-//            binding.consistency.setViewPortOffsets(10f, 0f, 10f, 0f)
             binding.consistency.animateX(1000)
 
             binding.consistency.data = chartLineData

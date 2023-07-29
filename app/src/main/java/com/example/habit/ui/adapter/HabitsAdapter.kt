@@ -46,9 +46,13 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
     }
     private fun initialiseProgress(habit: HabitThumbView,binding:HabitItemLayoutBinding?) {
         val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
-        val habitDurationReached =
-            ChronoUnit.DAYS.between(habit.startDate, LocalDate.now())
-        val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
+        var daysCompleted = 0
+        habit.entries?.mapValues {
+//            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
+            if (it.value.completed) ++daysCompleted
+//            }
+        }
+        val progress = (totalHabitDuration!! / 100f) * daysCompleted!!
         binding?.progress?.progress = progress.roundToInt()
         binding?.progressPercentage?.text = "${DecimalFormat("#.#").format(progress)}%"
     }

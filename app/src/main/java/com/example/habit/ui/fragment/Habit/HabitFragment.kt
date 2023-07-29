@@ -1,23 +1,15 @@
 package com.example.habit.ui.fragment.Habit
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -30,7 +22,6 @@ import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentHabitBinding
-import com.example.habit.databinding.HabitItemLayoutBinding
 import com.example.habit.domain.UseCases.GetHabitThumbUseCase
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.fragment.Date.DayHolder
@@ -46,7 +37,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -54,20 +44,15 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.view.MonthDayBinder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.time.delay
-import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalAccessor
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -206,7 +191,6 @@ class HabitFragment : Fragment() {
             }
         }
         bindStreakInfo()
-        initialiseProgress(habit)
         initialiseCalendar(habit.startDate!!, habit.endDate!!)
         initialiseConsistencyGraph(habit.entries)
         binding.streakEditSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -246,13 +230,13 @@ class HabitFragment : Fragment() {
         binding.daysMissed.text=daysMissed.toString()
         binding.highestStreak.text=highestStreak.toString()
         binding.daysCompleted.text="$daysCompleted/${ChronoUnit.DAYS.between(habit.startDate, habit.endDate!!.plusDays(1))}"
+        initialiseProgress(daysCompleted)
     }
 
-    private fun initialiseProgress(habit: HabitView) {
+    private fun initialiseProgress(daysCompleted: Int) {
         totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
-        habitDurationReached =
-            ChronoUnit.DAYS.between(habit.startDate,LocalDate.now())
-        val progress = (totalHabitDuration!! / 100f) * habitDurationReached!!
+//        habitDurationReached = ChronoUnit.DAYS.between(habit.startDate,LocalDate.now())
+        val progress = (totalHabitDuration!! / 100f) * daysCompleted!!
         binding.habitProgress.progress = progress.roundToInt()
         "${DecimalFormat("#.#").format(progress)}%".also { binding.progressPercentage.text = it }
         "${DecimalFormat("#.#").format(progress)}% ${resources.getString(R.string.habit_post_completion_greet)}".also { binding.completionGreet.text = it }

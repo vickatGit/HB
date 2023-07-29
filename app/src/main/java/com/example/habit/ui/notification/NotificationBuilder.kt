@@ -43,61 +43,76 @@ class NotificationBuilder @Inject constructor(
     val scheduleAlarmUseCase: ScheduleAlarmUseCase,
     val habitMapper: HabitMapper
 ) {
-    private val HABIT_UPDATE_NOTI_CHAN_NAME: CharSequence="habit_status_update_channel_name"
-    private val HABIT_UPDATE_NOTI_CHAN_ID: String="habit_status_update_channel_id"
+    private val HABIT_UPDATE_NOTI_CHAN_NAME: CharSequence = "habit_status_update_channel_name"
+    private val HABIT_UPDATE_NOTI_CHAN_ID: String = "habit_status_update_channel_id"
 
-    fun sendNotification(app:Context, habitId: Int){
-        Log.e("TAG", "sendNotification: ", )
+    fun sendNotification(app: Context, habitId: Int) {
+        Log.e("TAG", "sendNotification: ")
 
         CoroutineScope(Dispatchers.Default).launch {
             val habit = habitMapper.mapToHabit(getHabitThumbUseCase(habitId))
-            withContext(Dispatchers.Main){
-                val collapsedView=RemoteViews(app.packageName, R.layout.collapsed_notification_layout)
-                collapsedView.setTextViewText(R.id.title,habit.title)
+            withContext(Dispatchers.Main) {
+                val collapsedView =
+                    RemoteViews(app.packageName, R.layout.collapsed_notification_layout)
+                collapsedView.setTextViewText(R.id.title, habit.title)
                 habit.entries?.let {
-                    if(it.size>3) {
+                    if (it.size > 3) {
                         val chartImage =
                             buildLineChartAndExportBitmap(app.applicationContext, habit.entries)
                         collapsedView.setImageViewBitmap(R.id.consistency, chartImage)
-                        collapsedView.setViewVisibility(R.id.consistency,View.VISIBLE)
+                        collapsedView.setViewVisibility(R.id.consistency, View.VISIBLE)
                     }
 
                 }
-                val progress=initialiseProgress(habit.startDate!!,habit.endDate!!)
-                collapsedView.setTextViewText(R.id.progress_percentage,formatProgress(progress))
-                collapsedView.setProgressBar(R.id.progress,100,progress.roundToInt(),false)
+                val progress = initialiseProgress(habit.startDate!!, habit.endDate!!, habit.entries)
+                collapsedView.setTextViewText(R.id.progress_percentage, formatProgress(progress))
+                collapsedView.setProgressBar(R.id.progress, 100, progress.roundToInt(), false)
 
-                val completeIntent=Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
-                    putExtra("isUpgrade",true)
-                    putExtra("habitId",habit.id)
-                    putExtra("todayDate",LocalDate.now().toString())
+                val completeIntent = Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
+                    putExtra("isUpgrade", true)
+                    putExtra("habitId", habit.id)
+                    putExtra("todayDate", LocalDate.now().toString())
                 }
-                val incompleteIntent=Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
-                    putExtra("isUpgrade",false)
-                    putExtra("habitId",habit.id)
-                    putExtra("todayDate",LocalDate.now().toString())
+                val incompleteIntent = Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
+                    putExtra("isUpgrade", false)
+                    putExtra("habitId", habit.id)
+                    putExtra("todayDate", LocalDate.now().toString())
                 }
 
-                val completePendingIntent=PendingIntent.getBroadcast(app,0,completeIntent,PendingIntent.FLAG_UPDATE_CURRENT)
-                val incompletePendingIntent=PendingIntent.getBroadcast(app,1,incompleteIntent,PendingIntent.FLAG_UPDATE_CURRENT)
-                collapsedView.setOnClickPendingIntent(R.id.completed,completePendingIntent)
-                collapsedView.setOnClickPendingIntent(R.id.not_completed,incompletePendingIntent)
+                val completePendingIntent = PendingIntent.getBroadcast(
+                    app,
+                    0,
+                    completeIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                val incompletePendingIntent = PendingIntent.getBroadcast(
+                    app,
+                    1,
+                    incompleteIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                collapsedView.setOnClickPendingIntent(R.id.completed, completePendingIntent)
+                collapsedView.setOnClickPendingIntent(R.id.not_completed, incompletePendingIntent)
 
 
-
-                val notificationBuilder=NotificationCompat.Builder(app).apply {
+                val notificationBuilder = NotificationCompat.Builder(app).apply {
                     setSmallIcon(R.drawable.habits_icon)
                     setAutoCancel(true)
                     setStyle(NotificationCompat.DecoratedCustomViewStyle())
                     setCustomContentView(collapsedView)
                 }
-                val notificationManager= app.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                val notificationManager =
+                    app.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val notificationChannel = NotificationChannel(HABIT_UPDATE_NOTI_CHAN_ID,HABIT_UPDATE_NOTI_CHAN_NAME,NotificationManager.IMPORTANCE_DEFAULT)
+                    val notificationChannel = NotificationChannel(
+                        HABIT_UPDATE_NOTI_CHAN_ID,
+                        HABIT_UPDATE_NOTI_CHAN_NAME,
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    )
                     notificationBuilder.setChannelId(HABIT_UPDATE_NOTI_CHAN_ID)
                     notificationManager.createNotificationChannel(notificationChannel)
                 }
-                notificationManager.notify(habitId,notificationBuilder.build())
+                notificationManager.notify(habitId, notificationBuilder.build())
                 if (habit.isReminderOn!!) {
                     scheduleAlarmUseCase(
                         habitId,
@@ -116,14 +131,19 @@ class NotificationBuilder @Inject constructor(
     ): Bitmap {
 
         //values for single line chart on the graph
-        val lineChart=LineChart(context)
+        val lineChart = LineChart(context)
         val layoutParams = ViewGroup.LayoutParams(200, 100)
         lineChart.layoutParams = layoutParams
-        val entries:MutableList<Entry> = mutableListOf()
+        val entries: MutableList<Entry> = mutableListOf()
         mapEntries?.mapValues {
-            entries.add(Entry(it.value.timestamp?.dayOfMonth!!.toFloat(),it.value.score!!.toFloat()))
+            entries.add(
+                Entry(
+                    it.value.timestamp?.dayOfMonth!!.toFloat(),
+                    it.value.score!!.toFloat()
+                )
+            )
         }
-        if(entries.size>0) {
+        if (entries.size > 0) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
             val startColor = context.resources.getColor(R.color.orange)
@@ -131,26 +151,26 @@ class NotificationBuilder @Inject constructor(
             val endColor = context.resources.getColor(R.color.transparent)
             val gradientDrawable = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(startColor,midColor, endColor)
+                intArrayOf(startColor, midColor, endColor)
             )
 
             dataset.setDrawFilled(true)
             dataset.fillDrawable = gradientDrawable
 
-            dataset.color=context.resources.getColor(R.color.orange)
-            dataset.lineWidth=3f
+            dataset.color = context.resources.getColor(R.color.orange)
+            dataset.lineWidth = 3f
             dataset.setDrawCircleHole(false)
             dataset.setDrawCircles(false)
             dataset.setDrawValues(false)
-            dataset.mode= LineDataSet.Mode.CUBIC_BEZIER
+            dataset.mode = LineDataSet.Mode.CUBIC_BEZIER
 
-            val xtAxis=lineChart.xAxis
-            val ylAxis=lineChart.axisLeft
-            val yrAxis=lineChart.axisRight
-            xtAxis.labelCount=7
-            xtAxis.isEnabled=false
-            ylAxis.isEnabled=false
-            yrAxis.isEnabled=false
+            val xtAxis = lineChart.xAxis
+            val ylAxis = lineChart.axisLeft
+            val yrAxis = lineChart.axisRight
+            xtAxis.labelCount = 7
+            xtAxis.isEnabled = false
+            ylAxis.isEnabled = false
+            yrAxis.isEnabled = false
 
             //LineData object is Needed by Graph and to create LineData() object we Need to Pass list ILineDataSet objects
             // since it has capability to show multiple Line chart on single graph whereas LineDataSet Object Represents one chart in a Graph
@@ -175,15 +195,23 @@ class NotificationBuilder @Inject constructor(
 
         }
 
-            return createBitmapFromView(context,lineChart)
+        return createBitmapFromView(context, lineChart)
 
     }
 
-    private fun initialiseProgress(startDate:LocalDate,endDate:LocalDate): Float {
+    private fun initialiseProgress(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        habitEntries: HashMap<LocalDate, EntryView>?
+    ): Float {
         val totalHabitDuration = ChronoUnit.DAYS.between(startDate, endDate)
-        val habitDurationReached =
-            ChronoUnit.DAYS.between(startDate,LocalDate.now())
-        return (totalHabitDuration!! / 100f) * habitDurationReached!!
+        var daysCompleted = 0
+        habitEntries?.mapValues {
+//            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
+                if (it.value.completed) ++daysCompleted
+//            }
+        }
+        return (totalHabitDuration!! / 100f) * daysCompleted!!
 
     }
 
@@ -192,7 +220,7 @@ class NotificationBuilder @Inject constructor(
     }
 
 
-    fun createBitmapFromView(context: Context,view: View): Bitmap {
+    fun createBitmapFromView(context: Context, view: View): Bitmap {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics
         val width = displayMetrics.widthPixels
         val heightInDp = 100
@@ -220,10 +248,6 @@ class NotificationBuilder @Inject constructor(
 
         return bitmap
     }
-
-
-
-
 
 
 }

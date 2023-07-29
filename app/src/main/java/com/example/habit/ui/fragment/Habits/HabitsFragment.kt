@@ -19,6 +19,7 @@ import com.example.habit.R
 import com.example.habit.databinding.FragmentHabitsBinding
 import com.example.habit.ui.adapter.HabitsAdapter
 import com.example.habit.ui.callback.HabitClick
+import com.example.habit.ui.fragment.CompletedHabitFragment.CompletedHabitFragment
 import com.example.habit.ui.fragment.Habit.HabitFragment
 import com.example.habit.ui.model.HabitThumbView
 import com.example.habit.ui.viewmodel.HabitsViewModel
@@ -29,14 +30,20 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HabitsFragment : Fragment() {
 
+    companion object{
+        const val IS_COMPLETED_HABITS="isCompleted"
+    }
+
     private var _binding: FragmentHabitsBinding? = null
     private val binding get() = _binding!!
     private val viewModel : HabitsViewModel by viewModels()
     private var habits= mutableListOf<HabitThumbView>()
     private lateinit var habitsAdapter: HabitsAdapter
 
+    private var isCompleted=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isCompleted=arguments?.getBoolean(IS_COMPLETED_HABITS,false)!!
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -47,10 +54,17 @@ class HabitsFragment : Fragment() {
         _binding=FragmentHabitsBinding.inflate(inflater,container,false)
         habitsAdapter= HabitsAdapter(habits, object : HabitClick {
             override fun habitClick(habitId: String) {
-                findNavController().navigate(
-                    R.id.action_habitsFragment_to_habitFragment,
-                    Bundle().apply { putString(HabitFragment.HABIT_ID,habitId) }
-                )
+                if(isCompleted){
+                    findNavController().navigate(
+                        R.id.action_habitsFragment_to_completedHabitFragment,
+                        Bundle().apply { putString(CompletedHabitFragment.HABIT_ID, habitId) }
+                    )
+                }else {
+                    findNavController().navigate(
+                        R.id.action_habitsFragment_to_habitFragment,
+                        Bundle().apply { putString(HabitFragment.HABIT_ID, habitId) }
+                    )
+                }
             }
         })
         binding.habits.layoutManager=GridLayoutManager(requireContext(),1)
@@ -80,7 +94,7 @@ class HabitsFragment : Fragment() {
         binding.back.setOnClickListener {
             findNavController().popBackStack()
         }
-        viewModel.getHabits()
+        if(isCompleted) viewModel.getCompletedHabits() else viewModel.getHabits()
 
         return binding.root
     }

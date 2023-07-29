@@ -26,6 +26,9 @@ interface HabitDao {
     @Query("SELECT * FROM HabitEntity WHERE id = :habitId")
     suspend fun getHabit(habitId:Int):HabitEntity?
 
+    @Query("SELECT * FROM HabitEntity WHERE endDate < :date")
+    fun getCompletedHabits(date: LocalDate):Flow<List<HabitEntity>>
+
     @Query("UPDATE HabitEntity SET entryList = :entryList WHERE id = :habitId")
     suspend fun updateHabitEntries(habitId: Int,entryList : Map<LocalDate,EntryEntity>?):Int
 

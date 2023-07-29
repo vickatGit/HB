@@ -45,6 +45,7 @@ import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.view.MonthDayBinder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -60,6 +61,7 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
+@AndroidEntryPoint
 class CompletedHabitFragment : Fragment() {
 
 
@@ -107,6 +109,9 @@ class CompletedHabitFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding=FragmentCompletedHabitBinding.inflate(inflater,container,false)
+        _calendarBinding = CalendarLayoutBinding.bind(binding.calendar.root)
+        _weekDaysBinding = CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
+
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.habitUiState.collectLatest {
@@ -164,7 +169,7 @@ class CompletedHabitFragment : Fragment() {
             binding.calendar.root.isVisible=isChecked
         }
         binding.graphToggle.setOnCheckedChangeListener { _, isChecked ->
-            binding.graphToggle.isVisible=isChecked
+            binding.consistency.isVisible=isChecked
         }
         return binding.root
     }

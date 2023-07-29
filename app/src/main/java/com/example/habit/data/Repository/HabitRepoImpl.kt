@@ -53,6 +53,14 @@ class HabitRepoImpl(
         }
     }
 
+    override fun getCompletedHabits(): Flow<List<HabitThumb>> {
+        return habitDao.getCompletedHabits(LocalDate.now()).map {
+            it.map {
+                habitMapper.mapFromHabitEntity(it)
+            }
+        }
+    }
+
     override suspend fun getHabitEntries(habitId: Int): HashMap<LocalDate, Entry>? {
         val habitEntries = habitDao.getHabitEntries(habitId)?.toMutableMap()
         Log.e("TAG", "getHabitEntries: repo $habitEntries", )

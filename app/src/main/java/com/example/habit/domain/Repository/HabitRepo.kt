@@ -16,6 +16,8 @@ interface HabitRepo {
     suspend fun getHabit(habitId:Int):Habit
     suspend fun getHabitEntries(habitId: Int) : HashMap<LocalDate, Entry>?
     suspend fun updateHabitEntries(habitId: Int,entries:HashMap<LocalDate,Entry>) : Int
-
     suspend fun getHabitThumb(habitId: Int): Habit
+
+    fun getCompletedHabits(): Flow<List<HabitThumb>>
+
 }

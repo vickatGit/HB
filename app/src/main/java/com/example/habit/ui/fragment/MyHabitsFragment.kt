@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.habit.R
 import com.example.habit.databinding.FragmentMyHabitsBinding
+import com.example.habit.ui.fragment.Habits.HabitsFragment
 
 class MyHabitsFragment : Fragment() {
 
@@ -24,7 +25,14 @@ class MyHabitsFragment : Fragment() {
             findNavController().navigate(R.id.action_myHabitsFragment_to_addHabitFragment)
         }
         binding.habits.setOnClickListener {
-            findNavController().navigate(R.id.action_myHabitsFragment_to_habitsFragment)
+            findNavController().navigate(R.id.action_myHabitsFragment_to_habitsFragment,Bundle().apply {
+                putBoolean(HabitsFragment.IS_COMPLETED_HABITS,false)
+            })
+        }
+        binding.completedHabits.setOnClickListener {
+            findNavController().navigate(R.id.action_myHabitsFragment_to_habitsFragment,Bundle().apply {
+                putBoolean(HabitsFragment.IS_COMPLETED_HABITS,true)
+            })
         }
         binding.back.setOnClickListener {
             findNavController().popBackStack()

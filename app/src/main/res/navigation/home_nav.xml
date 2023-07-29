@@ -55,6 +55,13 @@
         <action
             android:id="@+id/action_habitsFragment_to_habitFragment"
             app:destination="@id/habitFragment" />
+        <action
+            android:id="@+id/action_habitsFragment_to_completedHabitFragment"
+            app:destination="@id/completedHabitFragment" />
+        <argument
+            android:name="isCompleted"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/menteesFragment"
@@ -95,4 +102,9 @@
             android:id="@+id/action_habitFragment_to_addHabitFragment"
             app:destination="@id/addHabitFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/completedHabitFragment"
+        android:name="com.example.habit.ui.fragment.CompletedHabitFragment.CompletedHabitFragment"
+        android:label="fragment_completed_habit"
+        tools:layout="@layout/fragment_completed_habit" />
 </navigation>

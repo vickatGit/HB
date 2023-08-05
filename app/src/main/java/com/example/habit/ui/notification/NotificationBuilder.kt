@@ -46,7 +46,7 @@ class NotificationBuilder @Inject constructor(
     private val HABIT_UPDATE_NOTI_CHAN_NAME: CharSequence = "habit_status_update_channel_name"
     private val HABIT_UPDATE_NOTI_CHAN_ID: String = "habit_status_update_channel_id"
 
-    fun sendNotification(app: Context, habitId: Int) {
+    fun sendNotification(app: Context, habitId: String) {
         Log.e("TAG", "sendNotification: ")
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -112,13 +112,14 @@ class NotificationBuilder @Inject constructor(
                     notificationBuilder.setChannelId(HABIT_UPDATE_NOTI_CHAN_ID)
                     notificationManager.createNotificationChannel(notificationChannel)
                 }
+                val habitId=5
                 notificationManager.notify(habitId, notificationBuilder.build())
                 if (habit.isReminderOn!!) {
-                    scheduleAlarmUseCase(
-                        habitId,
-                        habit.reminderTime!!.plusDays(1),
-                        app
-                    )
+//                    scheduleAlarmUseCase(
+//                        habitId,
+//                        habit.reminderTime!!.plusDays(1),
+//                        app
+//                    )
                 }
 
             }

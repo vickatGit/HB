@@ -86,7 +86,7 @@ class HabitModule {
     fun provideRetrofit(app: Application, httpClient: OkHttpClient ): Retrofit {
         return Retrofit.Builder().apply {
             client(httpClient)
-            baseUrl("https://39fc-2409-4042-4d90-a830-4154-3528-a113-7c22.ngrok-free.app/")
+            baseUrl("https://6f57-2409-4042-4d90-a830-85bd-874b-e2c7-532c.ngrok-free.app/")
             addConverterFactory(GsonConverterFactory.create())
         }.build()
     }

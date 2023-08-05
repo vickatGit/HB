@@ -1,14 +1,19 @@
 package com.example.habit.data.Mapper
 
+import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.HabitEntity
+import com.example.habit.data.network.model.HabitsListModel.HabitModel
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+
 class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
-    HabitMapperI<HabitEntity?, HabitThumb, Habit> {
+    HabitMapperI<HabitEntity?, HabitThumb, Habit,HabitModel> {
     override fun mapFromHabitEntity(type: HabitEntity?): HabitThumb {
         return HabitThumb(
             type?.id!!,
@@ -47,7 +52,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
 
     override fun mapToHabit(type: HabitEntity?): Habit {
         return Habit(
-            type?.id,
+            type?.id!!,
             type?.title,
             type?.description,
             type?.reminderQuestion,
@@ -62,6 +67,47 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             }
 
         )
+    }
+
+    override fun mapToHabitEntityFromHabitModel(type: HabitModel): HabitEntity {
+        return HabitEntity(
+            type.id!!,
+            type.title,
+            type.description,
+            type.reminderQuestion,
+            localDateConverter(type.startDate!!),
+            localDateConverter(type.endDate!!),
+            type.isReminderOn,
+            localDateTimeConverter(type.reminderTime!!),
+            type.entries?.map {
+                it?.let {
+                    entryMapper.mapFromEntryModel(it)
+                }
+            }?.associateBy { it?.timestamp!! } as? HashMap<LocalDate,EntryEntity>
+
+
+        )
+    }
+
+    private fun localDateConverter(date:String): LocalDate? {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            LocalDate.parse(date, formatter)
+        } catch (e: Exception) {
+            System.err.println("Error parsing the date-time string: " + e.message)
+            null
+        }
+    }
+
+    private fun localDateTimeConverter(date:String): LocalDateTime? {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            LocalDateTime.parse(date, formatter)
+        } catch (e: java.lang.Exception) {
+            System.err.println("Error parsing the date-time string: " + e.message)
+            null
+        }
+
     }
 
 }

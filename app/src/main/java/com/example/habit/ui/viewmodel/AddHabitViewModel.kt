@@ -33,25 +33,25 @@ class AddHabitViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     _uiState.update { AddHabitUiState.Loading }
-                    val id = addHabitUseCase(habit = habitMapper.mapFromHabit(habit))
-                    Log.e("TAG", "addHabit: $id", )
-                    if (id > 0) {
+                    addHabitUseCase(habit = habitMapper.mapFromHabit(habit))
+//                    Log.e("TAG", "addHabit: $id", )
+//                    if (id > 0) {
                         Log.e("TAG", "addHabit: Insertion Success",)
-                        if(habit.isReminderOn!!) {
-                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
-                            scheduleAlarmUseCase(
-                                id.toInt(),
-                                reminderTime,
-                                context = context
-                            )
-                        }else{
-                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
-                        }
+//                        if(habit.isReminderOn!!) {
+//                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
+//                            scheduleAlarmUseCase(
+//                                id.toInt(),
+//                                reminderTime,
+//                                context = context
+//                            )
+//                        }else{
+//                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
+//                        }
                         _uiState.update { AddHabitUiState.Success("Habit is Added") }
-                    } else {
-                        Log.e("TAG", "addHabit: Insertion failed",)
-                        _uiState.update { AddHabitUiState.Error("Failed to Add Habit") }
-                    }
+//                    } else {
+//                        Log.e("TAG", "addHabit: Insertion failed",)
+//                        _uiState.update { AddHabitUiState.Error("Failed to Add Habit") }
+//                    }
                 } catch (e: Exception) {
                     Log.e("TAG", "addHabit: Insertion failed some error occurred ${e.message}",)
                     _uiState.update { AddHabitUiState.Error(e.message?:"") }

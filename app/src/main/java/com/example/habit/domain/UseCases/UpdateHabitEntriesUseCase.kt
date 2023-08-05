@@ -9,7 +9,7 @@ import javax.inject.Inject
 class UpdateHabitEntriesUseCase @Inject constructor(
     private val habitRepo: HabitRepo
 ) {
-    suspend operator fun invoke(habitId:Int,entries:HashMap<LocalDate,Entry>):Int{
+    suspend operator fun invoke(habitId:String,entries:HashMap<LocalDate,Entry>):Int{
         return habitRepo.updateHabitEntries(habitId = habitId, entries = entries)
     }
 }

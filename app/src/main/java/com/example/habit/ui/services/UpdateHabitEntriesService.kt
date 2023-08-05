@@ -43,12 +43,12 @@ class UpdateHabitEntriesService : JobIntentService() {
     override fun onHandleWork(intent: Intent) {
         val isUpgrade = intent.getBooleanExtra("isUpgrade", false)
         Log.e("TAG", "onHandleWork: $isUpgrade")
-        val habitId = intent.getIntExtra("habitId", -1)
+        val habitId = intent.getStringExtra("habitId")
         val todayDate = intent.getStringExtra("todayDate")
         Log.e("TAG", "onHandleWork: ")
         CoroutineScope(Dispatchers.IO).launch {
             var entries = hashMapOf<LocalDate, Entry>()
-            val habit = getHabitThumbUseCase(habitId = habitId!!.toInt())
+            val habit = getHabitThumbUseCase(habitId = habitId!!)
             Log.e("TAG", "onHandleWork: ${Gson().toJson(habit)}")
             habit.entries?.let {
                 entries = it
@@ -66,7 +66,7 @@ class UpdateHabitEntriesService : JobIntentService() {
     }
 
     private fun selectDate(
-        habitId: Int,
+        habitId: String,
         date: LocalDate?,
         isUpgrade: Boolean,
         habitEntries: java.util.HashMap<LocalDate, EntryView>,
@@ -89,7 +89,7 @@ class UpdateHabitEntriesService : JobIntentService() {
 
 
     private fun updateEntries(
-        habitId: Int,
+        habitId: String,
         date: LocalDate,
         isUpgrade: Boolean,
         habitEntries: HashMap<LocalDate, EntryView>,
@@ -114,7 +114,7 @@ class UpdateHabitEntriesService : JobIntentService() {
         habitEntries.putAll(habitList.associateBy { it.timestamp!! })
 
         CoroutineScope(Dispatchers.IO).launch {
-            updateHabitEntriesUseCase(habitId = habitId, habitEntries.mapValues {
+            updateHabitEntriesUseCase(habitId, habitEntries.mapValues {
                 entryMapper.mapToEntry(it.value)
             }.toMutableMap() as HashMap<LocalDate, Entry>)
         }

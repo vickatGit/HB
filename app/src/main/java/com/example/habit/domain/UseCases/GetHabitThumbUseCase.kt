@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetHabitThumbUseCase @Inject constructor(
     private val habitRepo: HabitRepo
 ) {
-    suspend operator fun invoke( habitId : Int): Habit {
+    suspend operator fun invoke( habitId : String): Habit {
         return habitRepo.getHabitThumb(habitId)
     }
 }

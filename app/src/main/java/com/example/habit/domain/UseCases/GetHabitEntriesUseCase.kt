@@ -10,7 +10,7 @@ import javax.inject.Inject
 class GetHabitEntriesUseCase @Inject constructor(
     private val habitRepo: HabitRepo
 ) {
-    suspend operator fun invoke(habitId: Int):HashMap<LocalDate,Entry>?{
+    suspend operator fun invoke(habitId: String):HashMap<LocalDate,Entry>?{
         Log.e("TAG", "invoke: GetHabitEntriesUseCase", )
         return habitRepo.getHabitEntries(habitId = habitId)
     }

@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.util.HashMap
 @Parcelize
 data class HabitThumb(
-    var id:Int,
+    var id:String,
     var title:String?,
     var startDate: LocalDate?,
     var endDate: LocalDate?,

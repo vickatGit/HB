@@ -1,8 +1,14 @@
 package com.example.habit.data.Mapper
 
-interface EntryMapperI<A,V> {
+/**
+ * A = EntryEntity
+ * V = Entry
+ * D = EntryModel (Network)
+ */
+interface EntryMapperI<A,V,D> {
     fun mapToEntry(type : A):V
 
     fun mapFromEntry(type : V) : A
+    fun mapFromEntryModel(type : D) : A
 
 }

@@ -358,7 +358,7 @@ class HabitFragment : Fragment() {
             }
         }
         habitEntries.putAll(habitList.associateBy { it.timestamp!! })
-        habitId?.let { viewModel.updateHabitEntries(it.toInt(), habitEntries) }
+        habitId?.let { viewModel.updateHabitEntries(it, habitEntries) }
     }
 
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {

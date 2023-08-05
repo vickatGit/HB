@@ -29,7 +29,7 @@ class HabitsViewModel @Inject constructor(
         viewModelScope.launch {
             _habitsState.update { HabitsUiState.Loading }
             try {
-                getHabitUseCase().collect { habits ->
+                getHabitUseCase(this).collect { habits ->
                     _habitsState.update {
                         HabitsUiState.HabitsFetched(
                             habits.map {

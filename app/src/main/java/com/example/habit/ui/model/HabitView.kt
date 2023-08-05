@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 @Parcelize
 data class HabitView(
-    var id:Int?=null,
+    var id:String,
     var title:String?,
     var description:String?,
     var reminderQuestion:String?,
@@ -17,5 +17,5 @@ data class HabitView(
     var reminderTime: LocalDateTime?,
     var entries:HashMap<LocalDate,EntryView>? = null
 ) : Parcelable {
-    constructor():this(null,null,null,null,null,null,null,null,null)
+    constructor():this("",null,null,null,null,null,null,null,null)
 }

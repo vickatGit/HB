@@ -8,13 +8,16 @@ import com.example.habit.data.Mapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper
 import com.example.habit.data.local.HabitDao
 import com.example.habit.data.network.HabitApi
+import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,22 +30,31 @@ class HabitRepoImpl(
     private val habitApi:HabitApi,
     private val connectivityManager: ConnectivityManager
 ) : HabitRepo {
-    override suspend fun addHabit(habit: Habit): Long {
-        return habitDao.addHabit(habit = habitMapper.mapToHabitEntity(habit))
+    override suspend fun addHabit(habit: Habit) {
+        habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit)))
     }
 
-    override suspend fun removeHabit(habitId: Int): Int {
-        return habitDao.deleteHabit(habitId!!)
+    override suspend fun removeHabit(habitId: String): Int {
+        return habitDao.deleteHabit(habitId)
     }
 
-    override fun getHabits(): Flow<List<HabitThumb>> {
+    override fun getHabits(coroutineScope:CoroutineScope): Flow<List<HabitThumb>> {
         if(isInternetConnected()){
-            habitApi.getHabits().enqueue(object : Callback<Any> {
-                override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    Log.e("TAG", "onResponse: $response", )
+            habitApi.getHabits().enqueue(object : Callback<HabitsListModel> {
+                override fun onResponse(call: Call<HabitsListModel>, response: Response<HabitsListModel>) {
+                    Log.e("TAG", "onResponse: getHabits $response", )
+                    if(response.code()==200) {
+                        val habitList = response.body()
+                        val habits = habitList!!.data.map { habit ->
+                            habitMapper.mapToHabitEntityFromHabitModel(habit)
+                        }
+                        coroutineScope.launch {
+                            habitDao.addHabit(habits)
+                        }
+                    }
                 }
 
-                override fun onFailure(call: Call<Any>, t: Throwable) {
+                override fun onFailure(call: Call<HabitsListModel>, t: Throwable) {
                     Log.e("TAG", "onFailure: ${t.printStackTrace()}", )
                 }
             })
@@ -54,14 +66,14 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun getHabit(habitId: Int): Habit {
+    override suspend fun getHabit(habitId: String): Habit {
         return habitDao.getHabit(habitId).let {
             Log.e("TAG", "getHabit: data" + habitId)
             habitMapper.mapToHabit(habitDao.getHabit(habitId))
         }
     }
 
-    override suspend fun getHabitThumb(habitId: Int): Habit {
+    override suspend fun getHabitThumb(habitId: String): Habit {
         return habitDao.getHabit(habitId).let {
             Log.e("TAG", "getHabit: data" + habitId)
             habitMapper.mapToHabit(habitDao.getHabit(habitId))
@@ -76,7 +88,7 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun getHabitEntries(habitId: Int): HashMap<LocalDate, Entry>? {
+    override suspend fun getHabitEntries(habitId: String): HashMap<LocalDate, Entry>? {
         val habitEntries = habitDao.getHabitEntries(habitId)?.toMutableMap()
         Log.e("TAG", "getHabitEntries: repo $habitEntries", )
         return if(habitEntries!=null){
@@ -86,7 +98,7 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun updateHabitEntries(habitId: Int, entries: HashMap<LocalDate, Entry>): Int {
+    override suspend fun updateHabitEntries(habitId: String, entries: HashMap<LocalDate, Entry>): Int {
         Log.e("TAG", "updateHabitEntries: from repo entry src ${Gson().toJson(entries)}", )
         return habitDao.updateHabitEntries(
             habitId,

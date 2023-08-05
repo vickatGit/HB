@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetHabitUseCase @Inject constructor(
     private val habitRepo: HabitRepo
 ) {
-    suspend operator fun invoke(habitId:Int): Habit {
+    suspend operator fun invoke(habitId:String): Habit {
         return habitRepo.getHabit(habitId)
     }
 }

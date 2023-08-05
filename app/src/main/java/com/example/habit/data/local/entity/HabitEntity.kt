@@ -10,8 +10,8 @@ import java.time.LocalDateTime
 @Parcelize
 @Entity
 data class HabitEntity(
-    @PrimaryKey(autoGenerate = true)
-    var id:Int?=null,
+    @PrimaryKey
+    var id:String,
     var title:String?,
     var description:String?,
     var reminderQuestion:String?,
@@ -21,5 +21,5 @@ data class HabitEntity(
     var reminderTime:LocalDateTime?,
     var entryList: Map<LocalDate, EntryEntity>? = null
 ) : Parcelable{
-    constructor():this(null,null,null,null,null,null,null,null,null)
+    constructor():this("",null,null,null,null,null,null,null,null)
 }

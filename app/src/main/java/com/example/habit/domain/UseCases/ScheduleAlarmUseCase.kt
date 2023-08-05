@@ -15,21 +15,21 @@ import java.util.Locale
 
 class ScheduleAlarmUseCase {
 
-    operator fun invoke(id:Int,time: LocalDateTime,context:Context){
+    operator fun invoke(id:String,time: LocalDateTime,context:Context){
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("habitId",id)
         }
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
-            PendingIntent.getBroadcast(
-                context,
-                id,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-        )
+//        alarmManager.setExactAndAllowWhileIdle(
+//            AlarmManager.RTC_WAKEUP,
+//            time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
+//            PendingIntent.getBroadcast(
+//                context,
+//                id,
+//                intent,
+//                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//            )
+//        )
         val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
         val formattedTime = timeFormat.format(Date(time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000))
 

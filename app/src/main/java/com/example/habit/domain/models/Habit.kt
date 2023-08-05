@@ -10,7 +10,7 @@ import java.util.HashMap
 
 @Parcelize
 data class Habit(
-    var id:Int?=null,
+    var id:String,
     var title:String?,
     var description:String?,
     var reminderQuestion:String?,
@@ -20,5 +20,5 @@ data class Habit(
     var reminderTime: LocalDateTime?,
     var entries:HashMap<LocalDate,Entry>? = null
 ) : Parcelable{
-    constructor():this(null,null,null,null,null,null,null,null,null)
+    constructor():this("",null,null,null,null,null,null,null,null)
 }

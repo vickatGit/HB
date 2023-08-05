@@ -45,7 +45,7 @@ class HabitViewModel @Inject constructor(
         viewModelScope.launch {
             _habitUiState.update { HabitUiState.Loading }
             try {
-                val habit = getHabitUseCase(habitId.toInt())
+                val habit = getHabitUseCase(habitId)
                 if(habit!=null)
                     _habitUiState.update { HabitUiState.HabitData(habit = habitMapper.mapToHabit(habit)) }
                 else
@@ -56,7 +56,7 @@ class HabitViewModel @Inject constructor(
         }
     }
 
-    fun updateHabitEntries(habitId: Int,entries : HashMap<LocalDate,EntryView>){
+    fun updateHabitEntries(habitId: String,entries : HashMap<LocalDate,EntryView>){
         viewModelScope.launch {
             _habitUiState.update { HabitUiState.Loading }
             try {
@@ -83,7 +83,7 @@ class HabitViewModel @Inject constructor(
         }
     }
 
-    fun deleteHabit(habitId:Int,successMsg:String,errorMsg:String){
+    fun deleteHabit(habitId:String,successMsg:String,errorMsg:String){
         viewModelScope.launch {
             _habitUiState.update { HabitUiState.Loading }
             try {

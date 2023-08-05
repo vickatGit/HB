@@ -1,7 +1,6 @@
 package com.example.habit.data.Mapper
 
-import com.example.habit.data.models.EntryEntity
-import com.example.habit.data.models.HabitEntity
+import com.example.habit.data.local.entity.HabitEntity
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb

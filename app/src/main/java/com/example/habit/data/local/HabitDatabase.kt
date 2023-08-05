@@ -8,7 +8,7 @@ import com.example.habit.data.local.TypeConverters.EntryConverter
 import com.example.habit.data.local.TypeConverters.EntryMapConverter
 import com.example.habit.data.local.TypeConverters.LocalDateConverter
 import com.example.habit.data.local.TypeConverters.LocalDateTimeConvertor
-import com.example.habit.data.models.HabitEntity
+import com.example.habit.data.local.entity.HabitEntity
 
 @Database(entities = [HabitEntity::class], version = 7)
 @TypeConverters(LocalDateConverter::class,DurationConverter::class,LocalDateTimeConvertor::class,EntryMapConverter::class,EntryConverter::class)

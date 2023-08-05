@@ -4,8 +4,6 @@ import android.util.Log
 import com.example.habit.data.Mapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper
 import com.example.habit.data.local.HabitDao
-import com.example.habit.data.models.EntryEntity
-import com.example.habit.data.models.HabitEntity
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.Habit
@@ -13,10 +11,7 @@ import com.example.habit.domain.models.HabitThumb
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.sql.Timestamp
 import java.time.LocalDate
-import java.time.format.DateTimeParseException
-import javax.inject.Inject
 
 class HabitRepoImpl(
     val habitDao: HabitDao,

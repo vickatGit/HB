@@ -1,8 +1,7 @@
-package com.example.habit.data.models
+package com.example.habit.data.local.entity
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.sql.Timestamp
 import java.time.LocalDate
 
 @Parcelize

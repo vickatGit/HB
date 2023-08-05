@@ -210,7 +210,7 @@ class CompletedHabitFragment : Fragment() {
                 ++daysMissed
             }
         }
-        binding.totalDays.text="${daysMissed+daysCompleted}"
+        binding.totalDays.text="${ChronoUnit.DAYS.between(habit.startDate, habit.endDate!!.plusDays(1))}"
         binding.daysMissed.text=daysMissed.toString()
         binding.highestStreak.text=highestStreak.toString()
         initialiseProgress(daysCompleted)

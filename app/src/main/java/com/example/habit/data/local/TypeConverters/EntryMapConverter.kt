@@ -2,7 +2,7 @@ package com.example.habit.data.local.TypeConverters
 
 import android.util.Log
 import androidx.room.TypeConverter
-import com.example.habit.data.models.EntryEntity
+import com.example.habit.data.local.entity.EntryEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalDate

@@ -123,7 +123,25 @@ class HabitRepoImpl(
         return habitDao.getUnSyncedHabits()
     }
 
-    override fun deleteFromRemote(habitId: String) {
+    override suspend fun deleteFromRemote(habitId: String) {
+        habitApi.deleteHabit(habitId).enqueue(object : Callback<Any> {
+            override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                Log.e("TAG", "onResponse: deleteFromRemote $response", )
+                if(response.code()==200){
+                    CoroutineScope(Dispatchers.IO).launch {
+                        habitDao.updateDeleteStatus(
+                            habitId = habitId,
+                            shouldDelete = HabitRecordSyncType.DeletedHabit
+                        )
+                        getHabits(CoroutineScope(Dispatchers.IO))
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<Any>, t: Throwable) {
+                Log.e("TAG", "onFailure: addOrUpdateHabitToRemote", )
+            }
+        })
     }
 
     override fun addOrUpdateHabitToRemote(habit: HabitEntity) {
@@ -173,6 +191,10 @@ class HabitRepoImpl(
             }
 
         })
+    }
+
+    override suspend fun deleteFromLocal(habitId: String): Int {
+        return habitDao.deleteHabit(habitId = habitId)
     }
 
     //Not Using this function

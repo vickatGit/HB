@@ -21,10 +21,11 @@ interface HabitRepo {
     suspend fun getHabitThumb(habitId: String): Habit
     fun getCompletedHabits(): Flow<List<HabitThumb>>
     fun getUnSyncedHabits(): Flow<List<HabitEntity>>
-    fun deleteFromRemote(habitId: String)
+    suspend fun deleteFromRemote(habitId: String)
     fun addOrUpdateHabitToRemote(habit: HabitEntity)
     fun updateHabitToRemote(habit: HabitEntity)
     fun updateHabitEntriesToRemote(habitId:String, entryList: Map<LocalDate, EntryEntity>?)
+    suspend fun deleteFromLocal(id: String): Int
 
 
 }

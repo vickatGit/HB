@@ -125,7 +125,7 @@ class HabitModule {
 
     @Provides
     @Singleton
-    fun getSyncRequest(app: Application): OneTimeWorkRequest {
+    fun getSyncRequest(): OneTimeWorkRequest {
 
         val syncRequest= OneTimeWorkRequestBuilder<SyncManager>().apply {
             setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))

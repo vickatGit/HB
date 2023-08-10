@@ -21,8 +21,8 @@ interface HabitDao {
 
 
 
-    @Query("SELECT * FROM HabitEntity")
-    fun getHabits():Flow<List<HabitEntity>>
+    @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType")
+    fun getHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM HabitEntity WHERE id = :habitId")
     suspend fun getHabit(habitId:String): HabitEntity?
@@ -49,5 +49,8 @@ interface HabitDao {
 
     @Query("UPDATE HabitEntity SET habitSyncType=:shouldDelete WHERE id = :habitId")
     suspend fun updateDeleteStatus(habitId: String,shouldDelete:HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Int
+
+    @Query("DELETE FROM HabitEntity WHERE id=:habitId")
+    suspend fun deleteHabit(habitId: String):Int
 
 }

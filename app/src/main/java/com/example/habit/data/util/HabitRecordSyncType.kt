@@ -4,6 +4,7 @@ enum class HabitRecordSyncType {
     SyncedHabit,
     AddHabit,
     DeleteHabit,
+    DeletedHabit,
     UpdateHabit,
     UpdateHabitEntries
 

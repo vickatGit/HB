@@ -27,4 +27,8 @@ class EntryMapper : EntryMapperI<EntryEntity,Entry,EntryModel> {
             null
         }
     }
+
+    override fun mapToEntryModel(type: EntryEntity): EntryModel {
+        return EntryModel(type.score,type.completed,null, timestamp = type.timestamp.toString())
+    }
 }

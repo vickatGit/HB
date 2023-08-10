@@ -1,30 +1,39 @@
 package com.example.habit.di
 
 import android.app.Application
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.app.job.JobService
+import android.content.ComponentName
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.room.Room
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.habit.data.Mapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper
+import com.example.habit.data.NetworkChangeJob
 import com.example.habit.data.Repository.HabitRepoImpl
+import com.example.habit.data.SyncManager
 import com.example.habit.data.local.HabitDatabase
 import com.example.habit.data.network.HabitApi
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.UseCases.DeleteAlarmUseCase
 import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
-import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import java.time.Duration
 import javax.inject.Singleton
 
@@ -47,8 +56,15 @@ class HabitModule {
 
     @Provides
     @Singleton
-    fun provideHabitRepo(habitDatabase: HabitDatabase,habitApi: HabitApi,connectivityManager: ConnectivityManager):HabitRepo{
-        return HabitRepoImpl(habitDatabase.habitDao,HabitMapper(EntryMapper()),EntryMapper(),habitApi,connectivityManager)
+    fun provideHabitRepo(app: Application,habitDatabase: HabitDatabase,habitApi: HabitApi,connectivityManager: ConnectivityManager,syncRequest: OneTimeWorkRequest):HabitRepo{
+        return HabitRepoImpl(habitDatabase.habitDao,
+            HabitMapper(EntryMapper()),
+            EntryMapper(),
+            habitApi,
+            connectivityManager,
+            syncRequest,
+            WorkManager.getInstance(app)
+        )
     }
 
     @Provides
@@ -60,16 +76,6 @@ class HabitModule {
     fun providesDeleteAlarmUseCase(): DeleteAlarmUseCase {
         return DeleteAlarmUseCase()
     }
-
-//    @Provides
-//    fun dataHabitMapper(entryMapper: EntryMapper): HabitMapper {
-//       return HabitMapper(entryMapper)
-//    }
-
-//    @Provides
-//    fun dataEntryMapper(): EntryMapper {
-//        return EntryMapper()
-//    }
 
     @Provides
     fun uiHabitMapper(entryMapper : com.example.habit.ui.mapper.EntryMapper):com.example.habit.ui.mapper.HabitMapper{
@@ -86,7 +92,7 @@ class HabitModule {
     fun provideRetrofit(app: Application, httpClient: OkHttpClient ): Retrofit {
         return Retrofit.Builder().apply {
             client(httpClient)
-            baseUrl("https://6f57-2409-4042-4d90-a830-85bd-874b-e2c7-532c.ngrok-free.app/")
+            baseUrl("http://192.168.43.53:8080/")
             addConverterFactory(GsonConverterFactory.create())
         }.build()
     }
@@ -117,5 +123,23 @@ class HabitModule {
         return app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
+    @Provides
+    @Singleton
+    fun getSyncRequest(app: Application): OneTimeWorkRequest {
+
+        val syncRequest= OneTimeWorkRequestBuilder<SyncManager>().apply {
+            setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
+            setInitialDelay(Duration.ofSeconds(0))
+        }.build()
+        return syncRequest
+    }
+
+
+
+//    @Provides
+//    @Singleton
+//    fun provideWorkManager(app: Application): WorkManager {
+//        return WorkManager.getInstance(app)
+//    }
 
 }

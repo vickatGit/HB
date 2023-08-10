@@ -10,5 +10,6 @@ interface EntryMapperI<A,V,D> {
 
     fun mapFromEntry(type : V) : A
     fun mapFromEntryModel(type : D) : A
+    fun mapToEntryModel(type : A) : D
 
 }

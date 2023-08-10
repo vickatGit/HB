@@ -28,8 +28,11 @@ class HabitsViewModel @Inject constructor(
     fun getHabits() {
         viewModelScope.launch {
             _habitsState.update { HabitsUiState.Loading }
+            val statD=System.currentTimeMillis()
             try {
                 getHabitUseCase(this).collect { habits ->
+                    val endD=System.currentTimeMillis()
+                    Log.e("TAG", "getHabits: milli ${endD-statD}", )
                     _habitsState.update {
                         HabitsUiState.HabitsFetched(
                             habits.map {

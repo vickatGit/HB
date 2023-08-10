@@ -30,6 +30,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 @AndroidEntryPoint
 class AddHabitFragment : Fragment() {
@@ -39,7 +40,6 @@ class AddHabitFragment : Fragment() {
     private val viewModel:AddHabitViewModel by viewModels()
     private var isStart=false
     private var habit= HabitView()
-
     private var isUpdate:Boolean=false
 
 
@@ -58,6 +58,8 @@ class AddHabitFragment : Fragment() {
         _binding=FragmentAddHabitBinding.inflate(inflater,container,false)
         if(isUpdate){
             bindHabitData()
+        }else{
+           habit.id=UUID.randomUUID().toString()
         }
 
        lifecycleScope.launch {
@@ -123,7 +125,10 @@ class AddHabitFragment : Fragment() {
                     habit.title = title
                     habit.description = description
                     habit.reminderQuestion=reminderQuestion
-                    viewModel.addHabit(habit, requireContext())
+                    if(isUpdate)
+                        viewModel.updateHabit(habit, requireContext())
+                    else
+                        viewModel.addHabit(habit, requireContext())
                 }
             }
         }
@@ -185,8 +190,6 @@ class AddHabitFragment : Fragment() {
         binding.reminderQuestion.setText(habit.reminderQuestion)
         binding.description.setText(habit.description)
         binding.reminderSwitch.isChecked=habit.isReminderOn!!
-
-
     }
 
     private fun showToast(message: String) {

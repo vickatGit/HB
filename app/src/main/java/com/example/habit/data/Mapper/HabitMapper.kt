@@ -3,6 +3,7 @@ package com.example.habit.data.Mapper
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.HabitEntity
 import com.example.habit.data.network.model.HabitsListModel.HabitModel
+import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
@@ -30,7 +31,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
     }
 
 
-    override fun mapToHabitEntity(type: Habit): HabitEntity {
+    override fun mapToHabitEntity(type: Habit, syncType: HabitRecordSyncType): HabitEntity {
         return HabitEntity(
             type.id,
             type.title,
@@ -44,7 +45,8 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                 it.mapValues {
                     entryMapper.mapFromEntry(it.value)
                 }
-            }
+            },
+            syncType
 
 
         )
@@ -108,6 +110,23 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             null
         }
 
+    }
+
+    override fun mapHabitModelToFromHabitEntity(type: HabitEntity?): HabitModel {
+        type!!
+        return HabitModel(
+            id=type.id,
+            title = type.title,
+            description = type.description,
+            reminderQuestion = type.reminderQuestion,
+            isReminderOn = type.isReminderOn,
+            endDate = type.endDate.toString(),
+            startDate = type.startDate.toString(),
+            reminderTime = type.reminderTime.toString(),
+            entries = type.entryList?.values?.map {
+                entryMapper.mapToEntryModel(it)
+            }
+        )
     }
 
 }

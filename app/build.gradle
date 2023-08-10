@@ -67,6 +67,9 @@ dependencies {
     //Dagger-Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+        //with WorkManager
+    implementation 'androidx.hilt:hilt-work:1.0.0'
+    kapt 'androidx.hilt:hilt-compiler:1.0.0'
 
 
     //ViewModel delegation
@@ -97,5 +100,12 @@ dependencies {
 
     //Chucker HTTP Interceptor
     implementation 'com.github.chuckerteam.chucker:library:4.0.0'
+
+    //Workmanager
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
+
+    //AutoStarter
+    implementation 'com.github.judemanutd:autostarter:1.1.0'
+
 
 }

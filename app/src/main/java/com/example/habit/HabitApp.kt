@@ -40,6 +40,7 @@ class HabitApp : Application(),Configuration.Provider {
 
     override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder()
+            .setMinimumLoggingLevel(Log.ERROR)
             .setWorkerFactory(hiltWorkerFactory)
             .build()
     }

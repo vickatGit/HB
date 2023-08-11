@@ -20,8 +20,15 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.habit.data.Mapper.HabitMapper
+import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import java.time.Duration
 import javax.inject.Inject
 
@@ -36,14 +43,33 @@ class NetworkChangeJob : JobService() {
     @Inject
     lateinit var syncRequest: OneTimeWorkRequest
 
+
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.e("TAG", "onStartJob: invoked again NetworkChangeJob")
-        WorkManager.getInstance(this).cancelAllWorkByTag("sync")
-        WorkManager.getInstance(this).enqueueUniqueWork("dds",ExistingWorkPolicy.REPLACE,OneTimeWorkRequestBuilder<SyncManager>().apply {
-            setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
-            setInitialDelay(Duration.ofSeconds(0))
+        CoroutineScope(Dispatchers.IO).launch {
+            habitRepo.getUnSyncedHabits().collect{ habits ->
+                habits.forEach { habit->
+                    when(habit.habitSyncType){
+                        HabitRecordSyncType.AddHabit -> {
+                            habitRepo.addOrUpdateHabitToRemote(habit)
+                        }
+                        HabitRecordSyncType.UpdateHabit -> {
+                            habitRepo.updateHabitToRemote(habit)
+                        }
+                        else -> {
 
-        }.build())
+                        }
+                    }
+                }
+            }
+        }
+
+//        WorkManager.getInstance(this).cancelAllWork()
+//        WorkManager.getInstance(this).enqueueUniqueWork("dds",ExistingWorkPolicy.KEEP,OneTimeWorkRequestBuilder<SyncManager>().apply {
+//            setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
+//            setInitialDelay(Duration.ofSeconds(0))
+//
+//        }.build())
         showNotification(this,"smaple","sample")
         return true
     }

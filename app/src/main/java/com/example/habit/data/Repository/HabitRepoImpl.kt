@@ -4,11 +4,15 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
+import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.habit.data.Mapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper
+import com.example.habit.data.SyncManager
 import com.example.habit.data.local.HabitDao
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.HabitEntity
@@ -29,6 +33,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Duration
 import java.time.LocalDate
 
 class HabitRepoImpl(
@@ -43,37 +48,39 @@ class HabitRepoImpl(
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)))
         if(isInternetConnected()){
-//            WorkManager.getInstance().enqueueUniqueWork("dds",ExistingWorkPolicy.REPLACE,
-//                OneTimeWorkRequestBuilder<SyncManager>().apply {
-//                setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
-//                setInitialDelay(Duration.ofSeconds(0))
-//
-//            }.build())
+            addOrUpdateHabitToRemote(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit))
         }
     }
     override suspend fun updateHabit(habit: Habit) {
-        val habit=habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)
-        habit.habitSyncType=HabitRecordSyncType.UpdateHabit
-        habitDao.updateHabit(habit)
+        val habitEntity=habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)
+        habitEntity.habitSyncType=HabitRecordSyncType.UpdateHabit
+        habitDao.updateHabit(habitEntity)
         if(isInternetConnected()){
-            workManager.enqueue(syncRequest)
+            updateHabitToRemote(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit))
         }
     }
 
     override suspend fun removeHabit(habitId: String): Int {
         val res = habitDao.updateDeleteStatus(habitId)
         if(isInternetConnected()){
-            workManager.enqueueUniqueWork("sync",ExistingWorkPolicy.REPLACE,syncRequest)
+            workManager.enqueueUniqueWork("dds",ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequestBuilder<SyncManager>().apply {
+                      
+                    setInitialDelay(Duration.ofSeconds(0))
+
+                }.build())
         }
         return res
 //        return habitDao.deleteHabit(habitId)
     }
 
     override fun getHabits(coroutineScope:CoroutineScope): Flow<List<HabitThumb>> {
+        Log.e("TAG", "onResponse: getHabits local", )
         if(isInternetConnected()){
             habitApi.getHabits().enqueue(object : Callback<HabitsListModel> {
                 override fun onResponse(call: Call<HabitsListModel>, response: Response<HabitsListModel>) {
                     if(response.code()==200) {
+                        Log.e("TAG", "onResponse: getHabits", )
                         val habitList = response.body()
                         val habits = habitList!!.data.map { habit ->
                             habitMapper.mapToHabitEntityFromHabitModel(habit)
@@ -133,24 +140,24 @@ class HabitRepoImpl(
                             habitId = habitId,
                             shouldDelete = HabitRecordSyncType.DeletedHabit
                         )
-                        getHabits(CoroutineScope(Dispatchers.IO))
+//                        getHabits(CoroutineScope(Dispatchers.IO))
                     }
                 }
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {
-                Log.e("TAG", "onFailure: addOrUpdateHabitToRemote", )
+                Log.e("TAG", "onFailure: deleteFromRemote", )
             }
         })
     }
 
-    override fun addOrUpdateHabitToRemote(habit: HabitEntity) {
+    override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity) {
         habitApi.addHabit(habitMapper.mapHabitModelToFromHabitEntity(habit)).enqueue(object :
             Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 Log.e("TAG", "onResponse: addOrUpdateHabitToRemote $response", )
                 if(response.code()==200){
-                    getHabits(CoroutineScope(Dispatchers.IO))
+//                    getHabits(CoroutineScope(Dispatchers.IO))
                 }
             }
 
@@ -161,12 +168,11 @@ class HabitRepoImpl(
         })
     }
 
-    override fun updateHabitToRemote(habit: HabitEntity) {
+    override suspend fun updateHabitToRemote(habit: HabitEntity) {
         habitApi.updateHabit(habitMapper.mapHabitModelToFromHabitEntity(habit),habit.id).enqueue(object : Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 Log.e("TAG", "onResponse: updateHabitToRemote $response", )
                 if(response.code()==200){
-//                    getHabits(CoroutineScope(Dispatchers.IO))
                 }
             }
 
@@ -177,7 +183,7 @@ class HabitRepoImpl(
         })
     }
 
-    override fun updateHabitEntriesToRemote(habitId: String,entryList: Map<LocalDate, EntryEntity>?) {
+    override suspend fun updateHabitEntriesToRemote(habitId: String,entryList: Map<LocalDate, EntryEntity>?) {
         habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),habitId).enqueue(object : Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 Log.e("TAG", "onResponse: updateHabitEntriesToRemote $response", )
@@ -217,7 +223,13 @@ class HabitRepoImpl(
             }.toMutableMap()
         )
         if(isInternetConnected()){
-            workManager.enqueue(syncRequest)
+//            workManager.cancelAllWork()
+            workManager.enqueueUniqueWork("dds",ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequestBuilder<SyncManager>().apply {
+                      
+                    setInitialDelay(Duration.ofSeconds(0))
+
+                }.build())
         }
         return res
     }

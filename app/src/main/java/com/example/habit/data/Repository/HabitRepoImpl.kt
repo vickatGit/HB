@@ -63,12 +63,7 @@ class HabitRepoImpl(
     override suspend fun removeHabit(habitId: String): Int {
         val res = habitDao.updateDeleteStatus(habitId)
         if(isInternetConnected()){
-            workManager.enqueueUniqueWork("dds",ExistingWorkPolicy.KEEP,
-                OneTimeWorkRequestBuilder<SyncManager>().apply {
-                      
-                    setInitialDelay(Duration.ofSeconds(0))
-
-                }.build())
+            deleteFromRemote(habitId)
         }
         return res
 //        return habitDao.deleteHabit(habitId)
@@ -140,7 +135,7 @@ class HabitRepoImpl(
                             habitId = habitId,
                             shouldDelete = HabitRecordSyncType.DeletedHabit
                         )
-//                        getHabits(CoroutineScope(Dispatchers.IO))
+                        deleteFromLocal(habitId)
                     }
                 }
             }

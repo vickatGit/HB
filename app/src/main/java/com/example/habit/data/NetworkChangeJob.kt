@@ -13,23 +13,13 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.work.Constraints
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.habit.data.Mapper.HabitMapper
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import java.time.Duration
 import javax.inject.Inject
 
 
@@ -57,7 +47,7 @@ class NetworkChangeJob : JobService() {
                             habitRepo.updateHabitToRemote(habit)
                         }
                         HabitRecordSyncType.DeleteHabit -> {
-                            habitRepo.deleteFromRemote(habit.id)
+                            habitRepo.deleteFromRemote(habit.id, habit.serverId)
                         }
                         HabitRecordSyncType.DeletedHabit -> {
                             habitRepo.deleteFromLocal(habit.id)

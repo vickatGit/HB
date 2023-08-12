@@ -83,11 +83,11 @@ class HabitViewModel @Inject constructor(
         }
     }
 
-    fun deleteHabit(habitId:String,successMsg:String,errorMsg:String){
+    fun deleteHabit(habitServerId:String?, habitId:String?,successMsg:String,errorMsg:String){
         viewModelScope.launch {
             _habitUiState.update { HabitUiState.Loading }
             try {
-                deleteHabitUseCase(habitId)
+                deleteHabitUseCase(habitServerId,habitId)
                 _habitUiState.update { HabitUiState.HabitDeleted(successMsg) }
             }catch (e:java.lang.Exception){
                 _habitUiState.update { HabitUiState.Error(e.message) }

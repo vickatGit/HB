@@ -170,7 +170,7 @@ class HabitFragment : Fragment() {
         }
         binding.delete.setOnClickListener {
             habit?.let {
-                viewModel.deleteHabit(habitId = it.id!!,getString(R.string.habit_deletion_success_msg),getString(
+                viewModel.deleteHabit(habitServerId = it.serverId,habitId = it.id,getString(R.string.habit_deletion_success_msg),getString(
                                     R.string.habit_deletion_failed_msg))
             }
         }

@@ -4,7 +4,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
@@ -60,10 +59,10 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun removeHabit(habitId: String): Int {
-        val res = habitDao.updateDeleteStatus(habitId)
+    override suspend fun removeHabit(habitServerId:String? , habitId: String?): Int {
+        val res = habitDao.updateDeleteStatus(habitId!!)
         if(isInternetConnected()){
-            deleteFromRemote(habitId)
+            deleteFromRemote(habitId,habitServerId)
         }
         return res
 //        return habitDao.deleteHabit(habitId)
@@ -125,25 +124,29 @@ class HabitRepoImpl(
         return habitDao.getUnSyncedHabits()
     }
 
-    override suspend fun deleteFromRemote(habitId: String) {
-        habitApi.deleteHabit(habitId).enqueue(object : Callback<Any> {
-            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                Log.e("TAG", "onResponse: deleteFromRemote $response", )
-                if(response.code()==200){
-                    CoroutineScope(Dispatchers.IO).launch {
-                        habitDao.updateDeleteStatus(
-                            habitId = habitId,
-                            shouldDelete = HabitRecordSyncType.DeletedHabit
-                        )
-                        deleteFromLocal(habitId)
+    override suspend fun deleteFromRemote(habitId: String, habitServerId: String?) {
+        if(habitServerId!=null) {
+            habitApi.deleteHabit(habitServerId).enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    Log.e("TAG", "onResponse: deleteFromRemote $response",)
+                    if (response.code() == 200) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            habitDao.updateDeleteStatus(
+                                habitId = habitId,
+                                shouldDelete = HabitRecordSyncType.DeletedHabit
+                            )
+                            deleteFromLocal(habitId)
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<Any>, t: Throwable) {
-                Log.e("TAG", "onFailure: deleteFromRemote", )
-            }
-        })
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.e("TAG", "onFailure: deleteFromRemote",)
+                }
+            })
+        }else{
+            deleteFromLocal(habitId)
+        }
     }
 
     override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity) {

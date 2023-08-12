@@ -13,7 +13,7 @@ import java.time.LocalDate
 interface HabitRepo {
     suspend fun addHabit(habit: Habit)
     suspend fun updateHabit(habit: Habit)
-    suspend fun removeHabit(habitId: String):Int
+    suspend fun removeHabit(habitServerId :String? , habitId: String?):Int
     fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>>
     suspend fun getHabit(habitId:String):Habit
     suspend fun getHabitEntries(habitId: String) : HashMap<LocalDate, Entry>?
@@ -21,7 +21,7 @@ interface HabitRepo {
     suspend fun getHabitThumb(habitId: String): Habit
     fun getCompletedHabits(): Flow<List<HabitThumb>>
     fun getUnSyncedHabits(): Flow<List<HabitEntity>>
-    suspend fun deleteFromRemote(habitId: String)
+    suspend fun deleteFromRemote(habitId: String, habitServerId: String?)
     suspend fun addOrUpdateHabitToRemote(habit: HabitEntity)
     suspend fun updateHabitToRemote(habit: HabitEntity)
     suspend fun updateHabitEntriesToRemote(habitId:String, entryList: Map<LocalDate, EntryEntity>?)

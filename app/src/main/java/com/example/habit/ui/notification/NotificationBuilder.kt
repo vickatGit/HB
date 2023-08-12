@@ -46,7 +46,7 @@ class NotificationBuilder @Inject constructor(
     private val HABIT_UPDATE_NOTI_CHAN_NAME: CharSequence = "habit_status_update_channel_name"
     private val HABIT_UPDATE_NOTI_CHAN_ID: String = "habit_status_update_channel_id"
 
-    fun sendNotification(app: Context, habitId: String) {
+    fun sendNotification(app: Context, habitId: String, habitServerId: String?) {
         Log.e("TAG", "sendNotification: ")
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -71,11 +71,13 @@ class NotificationBuilder @Inject constructor(
                 val completeIntent = Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
                     putExtra("isUpgrade", true)
                     putExtra("habitId", habit.id)
+                    putExtra("habitServerId", habit.serverId)
                     putExtra("todayDate", LocalDate.now().toString())
                 }
                 val incompleteIntent = Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
                     putExtra("isUpgrade", false)
                     putExtra("habitId", habit.id)
+                    putExtra("habitServerId", habit.serverId)
                     putExtra("todayDate", LocalDate.now().toString())
                 }
 

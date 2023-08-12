@@ -44,6 +44,7 @@ class UpdateHabitEntriesService : JobIntentService() {
         val isUpgrade = intent.getBooleanExtra("isUpgrade", false)
         Log.e("TAG", "onHandleWork: $isUpgrade")
         val habitId = intent.getStringExtra("habitId")
+        val habitServerId = intent.getStringExtra("habitServerId")
         val todayDate = intent.getStringExtra("todayDate")
         Log.e("TAG", "onHandleWork: ")
         CoroutineScope(Dispatchers.IO).launch {
@@ -54,7 +55,7 @@ class UpdateHabitEntriesService : JobIntentService() {
                 entries = it
             }
             selectDate(
-                habitId, LocalDate.parse(todayDate),
+                habitId,habitServerId, LocalDate.parse(todayDate),
                 isUpgrade,
                 entries.mapValues {
                     entryMapper.mapFromEntry(it.value)
@@ -67,6 +68,7 @@ class UpdateHabitEntriesService : JobIntentService() {
 
     private fun selectDate(
         habitId: String,
+        habitServerId: String?,
         date: LocalDate?,
         isUpgrade: Boolean,
         habitEntries: java.util.HashMap<LocalDate, EntryView>,
@@ -77,11 +79,11 @@ class UpdateHabitEntriesService : JobIntentService() {
             if (habitEntries.containsKey(it)) {
                 habitEntries[it]!!.completed = !habitEntries[it]!!.completed
                 Log.e("TAG", "updateEntry selectDate: present $date ")
-                updateEntries(habitId, it, isUpgrade, habitEntries, reminderOn, reminderTime)
+                updateEntries(habitId,habitServerId, it, isUpgrade, habitEntries, reminderOn, reminderTime)
             } else {
                 habitEntries[it] = EntryView(it!!, 0, true)
                 Log.e("TAG", "updateEntry selectDate: not present $date ")
-                updateEntries(habitId, it, isUpgrade, habitEntries, reminderOn, reminderTime)
+                updateEntries(habitId,habitServerId, it, isUpgrade, habitEntries, reminderOn, reminderTime)
             }
         }
 
@@ -90,6 +92,7 @@ class UpdateHabitEntriesService : JobIntentService() {
 
     private fun updateEntries(
         habitId: String,
+        habitServerId: String?,
         date: LocalDate,
         isUpgrade: Boolean,
         habitEntries: HashMap<LocalDate, EntryView>,
@@ -114,7 +117,7 @@ class UpdateHabitEntriesService : JobIntentService() {
         habitEntries.putAll(habitList.associateBy { it.timestamp!! })
 
         CoroutineScope(Dispatchers.IO).launch {
-            updateHabitEntriesUseCase(habitId, habitEntries.mapValues {
+            updateHabitEntriesUseCase(habitServerId,habitId, habitEntries.mapValues {
                 entryMapper.mapToEntry(it.value)
             }.toMutableMap() as HashMap<LocalDate, Entry>)
         }

@@ -4,12 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habit.domain.UseCases.DeleteHabitUseCase
-import com.example.habit.domain.UseCases.GetHabitEntriesUseCase
 import com.example.habit.domain.UseCases.GetHabitUseCase
 import com.example.habit.domain.UseCases.UpdateHabitEntriesUseCase
 import com.example.habit.domain.models.Entry
 import com.example.habit.ui.fragment.Habit.HabitUiState
-import com.example.habit.ui.fragment.Habits.HabitsUiState
 import com.example.habit.ui.mapper.EntryMapper
 import com.example.habit.ui.mapper.HabitMapper
 import com.example.habit.ui.model.EntryView
@@ -56,7 +54,11 @@ class HabitViewModel @Inject constructor(
         }
     }
 
-    fun updateHabitEntries(habitId: String,entries : HashMap<LocalDate,EntryView>){
+    fun updateHabitEntries(
+        habitServerId: String,
+        habitId: String,
+        entries: HashMap<LocalDate, EntryView>
+    ){
         viewModelScope.launch {
             _habitUiState.update { HabitUiState.Loading }
             try {
@@ -67,6 +69,7 @@ class HabitViewModel @Inject constructor(
                     }
                     Log.e("TAG", "updateHabitEntries: list ${Gson().toJson(entries)}", )
                     habitEntries = updateHabitEntriesUseCase(
+                        habitServerId = habitServerId,
                         habitId = habitId,
                         entries = h.toMutableMap() as HashMap<LocalDate, Entry>
                     )

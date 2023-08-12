@@ -13,10 +13,11 @@ class AlarmReceiver : BroadcastReceiver() {
     @Inject
     lateinit var notificationBuilder:NotificationBuilder
     override fun onReceive(context: Context?, intent: Intent?) {
-        val id=intent?.getStringExtra("habitId")
+        val habitId=intent?.getStringExtra("habitId")
+        val habitServerId=intent?.getStringExtra("habitServerId")
         Log.e("TAG", "onReceive: alarm triggered" )
-        id?.let {
-            notificationBuilder.sendNotification(context!!,id)
+        habitId?.let {
+            notificationBuilder.sendNotification(context!!,habitId,habitServerId)
         }
     }
 }

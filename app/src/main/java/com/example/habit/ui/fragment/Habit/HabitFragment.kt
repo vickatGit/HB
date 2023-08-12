@@ -43,7 +43,6 @@ import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.view.MonthDayBinder
-import com.kizitonwose.calendar.view.MonthScrollListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -358,7 +357,7 @@ class HabitFragment : Fragment() {
             }
         }
         habitEntries.putAll(habitList.associateBy { it.timestamp!! })
-        habitId?.let { viewModel.updateHabitEntries(it, habitEntries) }
+        habit.serverId?.let { viewModel.updateHabitEntries(it, habitId!!, habitEntries) }
     }
 
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {

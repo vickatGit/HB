@@ -46,6 +46,9 @@ class NetworkChangeJob : JobService() {
                         HabitRecordSyncType.UpdateHabit -> {
                             habitRepo.updateHabitToRemote(habit)
                         }
+                        HabitRecordSyncType.UpdateHabitEntries -> {
+                            habitRepo.updateHabitEntriesToRemote(habit.serverId,habit.entryList)
+                        }
                         HabitRecordSyncType.DeleteHabit -> {
                             habitRepo.deleteFromRemote(habit.id, habit.serverId)
                         }

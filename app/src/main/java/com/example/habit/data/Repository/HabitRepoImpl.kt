@@ -189,20 +189,24 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun updateHabitEntriesToRemote(habitId: String,entryList: Map<LocalDate, EntryEntity>?) {
-        habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),habitId).enqueue(object : Callback<Any> {
-            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                Log.e("TAG", "onResponse: updateHabitEntriesToRemote $response", )
-                if(response.code()==200){
-//                    getHabits(CoroutineScope(Dispatchers.IO))
+    override suspend fun updateHabitEntriesToRemote(habitServerId: String?,entryList: Map<LocalDate, EntryEntity>?) {
+        habitServerId?.let {
+            habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),
+                it
+            ).enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    Log.e("TAG", "onResponse: updateHabitEntriesToRemote $response", )
+                    if(response.code()==200){
+    //                    getHabits(CoroutineScope(Dispatchers.IO))
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<Any>, t: Throwable) {
-                Log.e("TAG", "onFailure: updateHabitEntriesToRemote", )
-            }
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.e("TAG", "onFailure: updateHabitEntriesToRemote", )
+                }
 
-        })
+            })
+        }
     }
 
     override suspend fun deleteFromLocal(habitId: String): Int {
@@ -220,7 +224,7 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun updateHabitEntries(habitId: String, entries: HashMap<LocalDate, Entry>): Int {
+    override suspend fun updateHabitEntries(habitServerId:String?, habitId: String, entries: HashMap<LocalDate, Entry>): Int {
         Log.e("TAG", "updateHabitEntries: from repo entry src ${Gson().toJson(entries)}", )
         val res = habitDao.updateHabitEntries(
             habitId,
@@ -229,13 +233,7 @@ class HabitRepoImpl(
             }.toMutableMap()
         )
         if(isInternetConnected()){
-//            workManager.cancelAllWork()
-            workManager.enqueueUniqueWork("dds",ExistingWorkPolicy.KEEP,
-                OneTimeWorkRequestBuilder<SyncManager>().apply {
-                      
-                    setInitialDelay(Duration.ofSeconds(0))
-
-                }.build())
+            updateHabitEntriesToRemote(habitServerId,entries.mapValues { entryMapper.mapFromEntry(it.value) })
         }
         return res
     }

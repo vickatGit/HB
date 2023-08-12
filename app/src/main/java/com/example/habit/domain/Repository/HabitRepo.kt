@@ -17,14 +17,14 @@ interface HabitRepo {
     fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>>
     suspend fun getHabit(habitId:String):Habit
     suspend fun getHabitEntries(habitId: String) : HashMap<LocalDate, Entry>?
-    suspend fun updateHabitEntries(habitId: String,entries:HashMap<LocalDate,Entry>) : Int
+    suspend fun updateHabitEntries(habitServerId:String?, habitId: String,entries:HashMap<LocalDate,Entry>) : Int
     suspend fun getHabitThumb(habitId: String): Habit
     fun getCompletedHabits(): Flow<List<HabitThumb>>
     fun getUnSyncedHabits(): Flow<List<HabitEntity>>
     suspend fun deleteFromRemote(habitId: String, habitServerId: String?)
     suspend fun addOrUpdateHabitToRemote(habit: HabitEntity)
     suspend fun updateHabitToRemote(habit: HabitEntity)
-    suspend fun updateHabitEntriesToRemote(habitId:String, entryList: Map<LocalDate, EntryEntity>?)
+    suspend fun updateHabitEntriesToRemote(habitServerId:String?, entryList: Map<LocalDate, EntryEntity>?)
     suspend fun deleteFromLocal(id: String): Int
 
 

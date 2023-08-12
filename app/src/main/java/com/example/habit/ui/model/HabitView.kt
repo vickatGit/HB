@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 @Parcelize
 data class HabitView(
     var id:String,
+    var serverId:String?=null,
     var title:String?,
     var description:String?,
     var reminderQuestion:String?,

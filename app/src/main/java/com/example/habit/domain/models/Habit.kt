@@ -11,6 +11,7 @@ import java.util.HashMap
 @Parcelize
 data class Habit(
     var id:String,
+    var serverId:String?=null,
     var title:String?,
     var description:String?,
     var reminderQuestion:String?,

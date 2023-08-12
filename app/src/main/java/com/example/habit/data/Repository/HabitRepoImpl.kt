@@ -4,9 +4,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
-import androidx.work.Constraints
+import android.widget.Toast
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -55,6 +54,7 @@ class HabitRepoImpl(
         val habitEntity=habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)
         habitEntity.habitSyncType=HabitRecordSyncType.UpdateHabit
         habitDao.updateHabit(habitEntity)
+        Log.e("TAG", "updateHabit: network ${isInternetConnected()}", )
         if(isInternetConnected()){
             updateHabitToRemote(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit))
         }
@@ -164,18 +164,26 @@ class HabitRepoImpl(
     }
 
     override suspend fun updateHabitToRemote(habit: HabitEntity) {
-        habitApi.updateHabit(habitMapper.mapHabitModelToFromHabitEntity(habit),habit.id).enqueue(object : Callback<Any> {
-            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                Log.e("TAG", "onResponse: updateHabitToRemote $response", )
-                if(response.code()==200){
+        if(habit.serverId!=null) {
+            habitApi.updateHabit(
+                habitMapper.mapHabitModelToFromHabitEntity(habit),
+                habit.serverId
+            ).enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    Log.e("TAG", "onResponse: updateHabitToRemote $response",)
+                    if (response.code() == 200) {
+
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<Any>, t: Throwable) {
-                Log.e("TAG", "onFailure: updateHabitToRemote ", )
-            }
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.e("TAG", "onFailure: updateHabitToRemote ${t.localizedMessage}",)
+                }
 
-        })
+            })
+        }else{
+            addOrUpdateHabitToRemote(habit)
+        }
     }
 
     override suspend fun updateHabitEntriesToRemote(habitId: String,entryList: Map<LocalDate, EntryEntity>?) {

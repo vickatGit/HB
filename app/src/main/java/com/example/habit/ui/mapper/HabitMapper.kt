@@ -13,6 +13,7 @@ class HabitMapper @Inject constructor(val entryMapper: EntryMapper) : HabitMappe
     override fun mapFromHabit(type: HabitView): Habit {
         return Habit(
             type.id,
+            type.serverId,
             type.title,
             type.description,
             type.reminderQuestion,
@@ -27,6 +28,7 @@ class HabitMapper @Inject constructor(val entryMapper: EntryMapper) : HabitMappe
     override fun mapToHabit(type: Habit): HabitView {
         return HabitView(
             type.id,
+            type.serverId,
             type.title,
             type.description,
             type.reminderQuestion,

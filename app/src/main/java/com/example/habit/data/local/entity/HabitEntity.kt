@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 data class HabitEntity(
     @PrimaryKey
     var id:String,
+    var serverId:String?=null,
     var title:String?,
     var description:String?,
     var reminderQuestion:String?,

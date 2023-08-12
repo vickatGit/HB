@@ -14,7 +14,8 @@ data class HabitModel(
 	val isReminderOn: Boolean? = null,
 	val description: String? = null,
 	@SerializedName("_id")
-	val id: String? = null,
+	val serverId: String? = null,
+	val localId:String? = null,
 	val reminderTime: String? = null,
 	val title: String? = null,
 	val startDate: String? = null

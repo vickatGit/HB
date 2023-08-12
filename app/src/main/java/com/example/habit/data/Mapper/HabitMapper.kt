@@ -34,6 +34,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
     override fun mapToHabitEntity(type: Habit, syncType: HabitRecordSyncType): HabitEntity {
         return HabitEntity(
             type.id,
+            type.serverId,
             type.title,
             type.description,
             type.reminderQuestion,
@@ -55,6 +56,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
     override fun mapToHabit(type: HabitEntity?): Habit {
         return Habit(
             type?.id!!,
+            type.serverId,
             type?.title,
             type?.description,
             type?.reminderQuestion,
@@ -73,7 +75,8 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
 
     override fun mapToHabitEntityFromHabitModel(type: HabitModel): HabitEntity {
         return HabitEntity(
-            type.id!!,
+            type.localId!!,
+            type.serverId!!,
             type.title,
             type.description,
             type.reminderQuestion,
@@ -85,7 +88,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                 it?.let {
                     entryMapper.mapFromEntryModel(it)
                 }
-            }?.associateBy { it?.timestamp!! } as? HashMap<LocalDate,EntryEntity>
+            }?.associateBy { it?.timestamp!! } as? HashMap<LocalDate,EntryEntity>,
 
 
         )
@@ -115,7 +118,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
     override fun mapHabitModelToFromHabitEntity(type: HabitEntity?): HabitModel {
         type!!
         return HabitModel(
-            id=type.id,
+            serverId = type.serverId,
             title = type.title,
             description = type.description,
             reminderQuestion = type.reminderQuestion,
@@ -125,7 +128,8 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             reminderTime = type.reminderTime.toString(),
             entries = type.entryList?.values?.map {
                 entryMapper.mapToEntryModel(it)
-            }
+            },
+            localId = type.id
         )
     }
 

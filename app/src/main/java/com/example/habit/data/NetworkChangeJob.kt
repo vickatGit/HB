@@ -63,12 +63,6 @@ class NetworkChangeJob : JobService() {
             }
         }
 
-//        WorkManager.getInstance(this).cancelAllWork()
-//        WorkManager.getInstance(this).enqueueUniqueWork("dds",ExistingWorkPolicy.KEEP,OneTimeWorkRequestBuilder<SyncManager>().apply {
-//            setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
-//            setInitialDelay(Duration.ofSeconds(0))
-//
-//        }.build())
         showNotification(this,"smaple","sample")
         return true
     }

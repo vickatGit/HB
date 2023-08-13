@@ -8,4 +8,6 @@
     <string name="habit_deletion_failed_msg">Failed to Delete Habit</string>
     <string name="habit_post_completion_greet">of your goal is achieved</string>
     <string name="habit_formed_text">Congrats! Habit Formed</string>
+    <string name="login">Login</string>
+    <string name="signup">Signup</string>
 </resources>

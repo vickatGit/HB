@@ -107,5 +107,8 @@ dependencies {
     //AutoStarter
     implementation 'com.github.judemanutd:autostarter:1.1.0'
 
+    //AppAuth
+    implementation 'net.openid:appauth:0.7.0'
+
 
 }

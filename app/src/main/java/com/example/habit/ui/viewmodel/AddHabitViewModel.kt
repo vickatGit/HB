@@ -24,75 +24,61 @@ class AddHabitViewModel @Inject constructor(
     private val updateHabitUseCase: UpdateHabitUseCase,
     private val scheduleAlarmUseCase: ScheduleAlarmUseCase,
     private val deleteAlarmUseCase: DeleteAlarmUseCase,
-    private val habitMapper : HabitMapper
-): ViewModel() {
+    private val habitMapper: HabitMapper
+) : ViewModel() {
 
-    private var _uiState= MutableStateFlow<AddHabitUiState>(AddHabitUiState.Error(""))
-    val uiState=_uiState.asStateFlow()
+    private var _uiState = MutableStateFlow<AddHabitUiState>(AddHabitUiState.Error(""))
+    val uiState = _uiState.asStateFlow()
 
-    fun addHabit(habit: HabitView, context:Context){
-        habit.reminderTime?.let {reminderTime ->
+    fun addHabit(habit: HabitView, context: Context) {
+        habit.reminderTime?.let { reminderTime ->
             viewModelScope.launch {
                 try {
                     _uiState.update { AddHabitUiState.Loading }
                     addHabitUseCase(habit = habitMapper.mapFromHabit(habit))
-//                    Log.e("TAG", "addHabit: $id", )
-//                    if (id > 0) {
-                        Log.e("TAG", "addHabit: Insertion Success",)
-//                        if(habit.isReminderOn!!) {
-//                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
-//                            scheduleAlarmUseCase(
-//                                id.toInt(),
-//                                reminderTime,
-//                                context = context
-//                            )
-//                        }else{
-//                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
-//                        }
-                        _uiState.update { AddHabitUiState.Success("Habit is Added") }
-//                    } else {
-//                        Log.e("TAG", "addHabit: Insertion failed",)
-//                        _uiState.update { AddHabitUiState.Error("Failed to Add Habit") }
-//                    }
+                    Log.e("TAG", "addHabit: Insertion Success")
+                    if (habit.isReminderOn!!) {
+                        deleteAlarmUseCase(habit.id, context, reminderTime)
+                        scheduleAlarmUseCase(
+                            habit.id,
+                            reminderTime,
+                            context = context
+                        )
+                    } else { deleteAlarmUseCase(habit.id, context, reminderTime) }
+                    _uiState.update { AddHabitUiState.Success("Habit is Added") }
                 } catch (e: Exception) {
-                    Log.e("TAG", "addHabit: Insertion failed some error occurred ${e.message}",)
-                    _uiState.update { AddHabitUiState.Error(e.message?:"") }
+                    Log.e("TAG", "addHabit: Insertion failed some error occurred ${e.message}")
+                    _uiState.update { AddHabitUiState.Error(e.message ?: "") }
                 }
 
 
             }
         }
     }
-    fun updateHabit(habit: HabitView, context:Context){
-        habit.reminderTime?.let {reminderTime ->
+
+    fun updateHabit(habit: HabitView, context: Context) {
+        habit.reminderTime?.let { reminderTime ->
             viewModelScope.launch {
                 try {
                     _uiState.update { AddHabitUiState.Loading }
                     updateHabitUseCase(habit = habitMapper.mapFromHabit(habit))
-//                    Log.e("TAG", "addHabit: $id", )
-//                    if (id > 0) {
-                    Log.e("TAG", "addHabit: Insertion Success",)
-//                        if(habit.isReminderOn!!) {
-//                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
-//                            scheduleAlarmUseCase(
-//                                id.toInt(),
-//                                reminderTime,
-//                                context = context
-//                            )
-//                        }else{
-//                            deleteAlarmUseCase(id.toInt(),context,reminderTime)
-//                        }
-                    _uiState.update { AddHabitUiState.Success("Habit is Added") }
-//                    } else {
-//                        Log.e("TAG", "addHabit: Insertion failed",)
-//                        _uiState.update { AddHabitUiState.Error("Failed to Add Habit") }
-//                    }
+                    Log.e("TAG", "addHabit: Insertion Success")
+                        if(habit.isReminderOn!!) {
+                            deleteAlarmUseCase(habit.id,context,reminderTime)
+                            scheduleAlarmUseCase(
+                                habit.id,
+                                reminderTime,
+                                context = context
+                            )
+                        }else{
+                            deleteAlarmUseCase(habit.id,context,reminderTime)
+                        }
+                    _uiState.update { AddHabitUiState.Success("Habit Updated") }
+
                 } catch (e: Exception) {
-                    Log.e("TAG", "addHabit: Insertion failed some error occurred ${e.message}",)
-                    _uiState.update { AddHabitUiState.Error(e.message?:"") }
+                    Log.e("TAG", "addHabit: Insertion failed some error occurred ${e.message}")
+                    _uiState.update { AddHabitUiState.Error(e.message ?: "") }
                 }
-
-
             }
         }
     }

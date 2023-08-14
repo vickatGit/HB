@@ -18,9 +18,15 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
+        manifestPlaceholders = [
+                appAuthRedirectScheme: 'com.ptruiz.authtest'
+        ]
 
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        //OAuth Client ID
+//        342216055024-a9b9440iub31kij7578q3cti8tj2vo38.apps.googleusercontent.com
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -37,6 +43,7 @@ android {
     }
     kapt { correctErrorTypes = true }
     viewBinding{ enabled true }
+    buildToolsVersion '33.0.0'
 }
 
 dependencies {
@@ -108,7 +115,6 @@ dependencies {
     implementation 'com.github.judemanutd:autostarter:1.1.0'
 
     //AppAuth
-    implementation 'net.openid:appauth:0.7.0'
-
+    implementation 'net.openid:appauth:0.11.1'
 
 }

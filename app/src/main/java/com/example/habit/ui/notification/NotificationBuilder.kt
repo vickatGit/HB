@@ -19,9 +19,9 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.habit.R
 import com.example.habit.recievers.UpdateHabitEntryBroadRecieve
-import com.example.habit.domain.UseCases.GetHabitThumbUseCase
-import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
-import com.example.habit.ui.mapper.HabitMapper
+import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
+import com.example.habit.ui.mapper.HabitMapper.HabitMapper
 import com.example.habit.ui.model.EntryView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry

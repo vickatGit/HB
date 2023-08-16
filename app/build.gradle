@@ -117,4 +117,7 @@ dependencies {
     //AppAuth
     implementation 'net.openid:appauth:0.11.1'
 
+    //JWT
+    implementation 'com.auth0.android:jwtdecode:2.0.0'
+
 }

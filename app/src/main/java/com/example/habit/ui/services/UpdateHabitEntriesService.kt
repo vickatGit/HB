@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.JobIntentService
-import com.example.habit.domain.UseCases.GetHabitThumbUseCase
-import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
-import com.example.habit.domain.UseCases.UpdateHabitEntriesUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitEntriesUseCase
 import com.example.habit.domain.models.Entry
-import com.example.habit.ui.mapper.EntryMapper
+import com.example.habit.ui.mapper.HabitMapper.EntryMapper
 import com.example.habit.ui.model.EntryView
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint

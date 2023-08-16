@@ -4,12 +4,12 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.habit.domain.UseCases.AddHabitUseCase
-import com.example.habit.domain.UseCases.DeleteAlarmUseCase
-import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
-import com.example.habit.domain.UseCases.UpdateHabitUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.AddHabitUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.DeleteAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitUseCase
 import com.example.habit.ui.fragment.AddHabit.AddHabitUiState
-import com.example.habit.ui.mapper.HabitMapper
+import com.example.habit.ui.mapper.HabitMapper.HabitMapper
 import com.example.habit.ui.model.HabitView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

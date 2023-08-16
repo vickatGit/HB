@@ -1,32 +1,26 @@
 package com.example.habit.di
 
 import android.app.Application
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.app.job.JobService
-import android.content.ComponentName
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.room.Room
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import com.example.habit.data.Mapper.EntryMapper
-import com.example.habit.data.Mapper.HabitMapper
-import com.example.habit.data.NetworkChangeJob
+import com.example.habit.data.Mapper.HabitMapper.EntryMapper
+import com.example.habit.data.Mapper.HabitMapper.HabitMapper
 import com.example.habit.data.Repository.HabitRepoImpl
 import com.example.habit.data.SyncManager
 import com.example.habit.data.local.HabitDatabase
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.data.network.HabitApi
 import com.example.habit.domain.Repository.HabitRepo
-import com.example.habit.domain.UseCases.DeleteAlarmUseCase
-import com.example.habit.domain.UseCases.ScheduleAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.DeleteAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,13 +72,13 @@ class HabitModule {
     }
 
     @Provides
-    fun uiHabitMapper(entryMapper : com.example.habit.ui.mapper.EntryMapper):com.example.habit.ui.mapper.HabitMapper{
-        return com.example.habit.ui.mapper.HabitMapper(entryMapper)
+    fun uiHabitMapper(entryMapper : com.example.habit.ui.mapper.HabitMapper.EntryMapper): com.example.habit.ui.mapper.HabitMapper.HabitMapper {
+        return com.example.habit.ui.mapper.HabitMapper.HabitMapper(entryMapper)
     }
 
     @Provides
-    fun uiEntryMapper():com.example.habit.ui.mapper.EntryMapper{
-        return com.example.habit.ui.mapper.EntryMapper()
+    fun uiEntryMapper(): com.example.habit.ui.mapper.HabitMapper.EntryMapper {
+        return com.example.habit.ui.mapper.HabitMapper.EntryMapper()
     }
 
     @Provides
@@ -99,17 +93,27 @@ class HabitModule {
 
     @Provides
     @Singleton
-    fun provideApiClient(retrofit: Retrofit): HabitApi {
+    fun provideHabitApiClient(retrofit: Retrofit): HabitApi {
         return retrofit.create(HabitApi::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideAuthPreference(app: Application): AuthPref {
+        return AuthPref(app)
     }
 
     @Provides
     @Singleton
-    fun provideHttpClient(app: Application): OkHttpClient {
+    fun provideHttpClient(app: Application,auth:AuthPref): OkHttpClient {
         return OkHttpClient.Builder().apply {
             connectTimeout(Duration.ofSeconds(5))
             addInterceptor { chain ->
                 val request = chain.request()
+                request.newBuilder().apply {
+                    header("Authorization","Bearer ${auth.getToken()}")
+                }.build()
                 Log.i(API, "intercept: ${request.url}")
                 chain.proceed(request)
             }

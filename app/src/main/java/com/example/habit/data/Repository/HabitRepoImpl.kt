@@ -4,12 +4,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
-import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.habit.data.Mapper.EntryMapper
-import com.example.habit.data.Mapper.HabitMapper
+import com.example.habit.data.Mapper.HabitMapper.EntryMapper
+import com.example.habit.data.Mapper.HabitMapper.HabitMapper
 import com.example.habit.data.SyncManager
 import com.example.habit.data.local.HabitDao
 import com.example.habit.data.local.entity.EntryEntity
@@ -71,7 +69,7 @@ class HabitRepoImpl(
     override fun getHabits(coroutineScope:CoroutineScope): Flow<List<HabitThumb>> {
         Log.e("TAG", "onResponse: getHabits local", )
         if(isInternetConnected()){
-            habitApi.getHabits().enqueue(object : Callback<HabitsListModel> {
+            habitApi.getHabits("token").enqueue(object : Callback<HabitsListModel> {
                 override fun onResponse(call: Call<HabitsListModel>, response: Response<HabitsListModel>) {
                     if(response.code()==200) {
                         Log.e("TAG", "onResponse: getHabits", )
@@ -126,7 +124,7 @@ class HabitRepoImpl(
 
     override suspend fun deleteFromRemote(habitId: String, habitServerId: String?) {
         if(habitServerId!=null) {
-            habitApi.deleteHabit(habitServerId).enqueue(object : Callback<Any> {
+            habitApi.deleteHabit("token",habitServerId).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     Log.e("TAG", "onResponse: deleteFromRemote $response",)
                     if (response.code() == 200) {
@@ -150,7 +148,7 @@ class HabitRepoImpl(
     }
 
     override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity) {
-        habitApi.addHabit(habitMapper.mapHabitModelToFromHabitEntity(habit)).enqueue(object :
+        habitApi.addHabit("token",habitMapper.mapHabitModelToFromHabitEntity(habit)).enqueue(object :
             Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 Log.e("TAG", "onResponse: addOrUpdateHabitToRemote $response", )
@@ -169,6 +167,7 @@ class HabitRepoImpl(
     override suspend fun updateHabitToRemote(habit: HabitEntity) {
         if(habit.serverId!=null) {
             habitApi.updateHabit(
+                "token",
                 habitMapper.mapHabitModelToFromHabitEntity(habit),
                 habit.serverId
             ).enqueue(object : Callback<Any> {
@@ -191,7 +190,7 @@ class HabitRepoImpl(
 
     override suspend fun updateHabitEntriesToRemote(habitServerId: String?,entryList: Map<LocalDate, EntryEntity>?) {
         habitServerId?.let {
-            habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),
+            habitApi.updateHabitEntries("token",EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),
                 it
             ).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {

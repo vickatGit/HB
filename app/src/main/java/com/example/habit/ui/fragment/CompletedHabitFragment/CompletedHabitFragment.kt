@@ -21,16 +21,12 @@ import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentCompletedHabitBinding
-import com.example.habit.databinding.FragmentHabitBinding
-import com.example.habit.domain.UseCases.GetHabitThumbUseCase
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.fragment.Date.DayHolder
-import com.example.habit.ui.fragment.Habit.HabitFragment
 import com.example.habit.ui.fragment.Habit.HabitUiState
-import com.example.habit.ui.mapper.HabitMapper
+import com.example.habit.ui.mapper.HabitMapper.HabitMapper
 import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.model.HabitView
-import com.example.habit.ui.notification.NotificationBuilder
 import com.example.habit.ui.viewmodel.HabitViewModel
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis

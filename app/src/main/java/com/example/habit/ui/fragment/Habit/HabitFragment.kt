@@ -22,10 +22,10 @@ import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentHabitBinding
-import com.example.habit.domain.UseCases.GetHabitThumbUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbUseCase
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.fragment.Date.DayHolder
-import com.example.habit.ui.mapper.HabitMapper
+import com.example.habit.ui.mapper.HabitMapper.HabitMapper
 import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.notification.NotificationBuilder
@@ -86,10 +86,10 @@ class HabitFragment : Fragment() {
     lateinit var notificationBuilder:NotificationBuilder
 
     @Inject
-    lateinit var habitMapper:HabitMapper
+    lateinit var habitMapper: HabitMapper
 
     @Inject
-    lateinit var getHabitThumbUseCase:GetHabitThumbUseCase
+    lateinit var getHabitThumbUseCase: GetHabitThumbUseCase
 
 
 

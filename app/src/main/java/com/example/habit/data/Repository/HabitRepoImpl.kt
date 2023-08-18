@@ -4,32 +4,35 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
+import com.example.habit.data.Mapper.GroupHabitMapper.GroupHabitMapper
 import com.example.habit.data.Mapper.HabitMapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper.HabitMapper
-import com.example.habit.data.SyncManager
 import com.example.habit.data.local.HabitDao
 import com.example.habit.data.local.entity.EntryEntity
+import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
+import com.example.habit.data.local.entity.HabitGroupWithHabits
 import com.example.habit.data.network.HabitApi
+import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
 import com.example.habit.data.network.model.UpdateHabitEntriesModel.EntriesModel
+import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.models.Entry
+import com.example.habit.domain.models.GroupHabit
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.time.Duration
 import java.time.LocalDate
 
 class HabitRepoImpl(
@@ -38,8 +41,7 @@ class HabitRepoImpl(
     private val entryMapper: EntryMapper,
     private val habitApi: HabitApi,
     private val connectivityManager: ConnectivityManager,
-    private val syncRequest: OneTimeWorkRequest,
-    private val workManager: WorkManager
+    private val groupHabitMapper: GroupHabitMapper
 ) : HabitRepo {
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)))
@@ -47,6 +49,17 @@ class HabitRepoImpl(
             addOrUpdateHabitToRemote(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit))
         }
     }
+
+    override suspend fun addGroupHabit(habit: GroupHabit) {
+        val groupHabit = groupHabitMapper.fromGroupHabit(habit,HabitGroupRecordSyncType.AddHabit)
+        Log.e("TAG", "addGroupHabit: data ${Gson().toJson(habit)}", )
+        habitDao.addGroupHabit(listOf(groupHabit))
+        if(isInternetConnected()){
+            addGroupHabitToRemote(groupHabitMapper.fromGroupHabit(habit,HabitGroupRecordSyncType.AddHabit))
+        }
+    }
+
+
     override suspend fun updateHabit(habit: Habit) {
         val habitEntity=habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)
         habitEntity.habitSyncType=HabitRecordSyncType.UpdateHabit
@@ -69,7 +82,7 @@ class HabitRepoImpl(
     override fun getHabits(coroutineScope:CoroutineScope): Flow<List<HabitThumb>> {
         Log.e("TAG", "onResponse: getHabits local", )
         if(isInternetConnected()){
-            habitApi.getHabits("token").enqueue(object : Callback<HabitsListModel> {
+            habitApi.getHabits().enqueue(object : Callback<HabitsListModel> {
                 override fun onResponse(call: Call<HabitsListModel>, response: Response<HabitsListModel>) {
                     if(response.code()==200) {
                         Log.e("TAG", "onResponse: getHabits", )
@@ -94,6 +107,40 @@ class HabitRepoImpl(
                 habitMapper.mapFromHabitEntity(it)
             }
         }
+    }
+
+
+
+    override suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<HabitGroupWithHabits>> {
+
+            if (isInternetConnected()) {
+                getHabits(coroutineScope)
+                habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
+                    override fun onResponse(
+                        call: Call<GroupHabitsModel>,
+                        response: Response<GroupHabitsModel>
+                    ) {
+                        Log.e("TAG", "onResponse: getGroupHabits $response" )
+                        val habits = response.body()?.let {
+                            it.data?.map { groupHabits ->
+                                groupHabits.let { groupHabit ->
+                                    groupHabitMapper.toGroupHabitModel(groupHabit!!)
+                                }
+                            }
+                        }
+                        coroutineScope.launch {
+                            habits?.let { habitDao.addGroupHabit(habits) }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<GroupHabitsModel>, t: Throwable) {
+                        Log.e("TAG", "onFailure: getGroupHabits ${t.stackTrace}", )
+                    }
+
+                })
+            }
+
+        return habitDao.getGroupHabits()
     }
 
     override suspend fun getHabit(habitId: String): Habit {
@@ -122,9 +169,15 @@ class HabitRepoImpl(
         return habitDao.getUnSyncedHabits()
     }
 
+    override fun getGroupUnSyncedHabits(): Flow<List<GroupHabitsEntity>> {
+        Log.e("TAG", "getGroupUnSyncedHabits: repo ", )
+        return habitDao.getGroupUnSyncedHabits()
+    }
+
+
     override suspend fun deleteFromRemote(habitId: String, habitServerId: String?) {
         if(habitServerId!=null) {
-            habitApi.deleteHabit("token",habitServerId).enqueue(object : Callback<Any> {
+            habitApi.deleteHabit(  habitServerId).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     Log.e("TAG", "onResponse: deleteFromRemote $response",)
                     if (response.code() == 200) {
@@ -148,7 +201,7 @@ class HabitRepoImpl(
     }
 
     override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity) {
-        habitApi.addHabit("token",habitMapper.mapHabitModelToFromHabitEntity(habit)).enqueue(object :
+        habitApi.addHabit(  habitMapper.mapHabitModelToFromHabitEntity(habit)).enqueue(object :
             Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 Log.e("TAG", "onResponse: addOrUpdateHabitToRemote $response", )
@@ -167,7 +220,7 @@ class HabitRepoImpl(
     override suspend fun updateHabitToRemote(habit: HabitEntity) {
         if(habit.serverId!=null) {
             habitApi.updateHabit(
-                "token",
+                  
                 habitMapper.mapHabitModelToFromHabitEntity(habit),
                 habit.serverId
             ).enqueue(object : Callback<Any> {
@@ -190,7 +243,7 @@ class HabitRepoImpl(
 
     override suspend fun updateHabitEntriesToRemote(habitServerId: String?,entryList: Map<LocalDate, EntryEntity>?) {
         habitServerId?.let {
-            habitApi.updateHabitEntries("token",EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),
+            habitApi.updateHabitEntries(  EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),
                 it
             ).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
@@ -210,6 +263,19 @@ class HabitRepoImpl(
 
     override suspend fun deleteFromLocal(habitId: String): Int {
         return habitDao.deleteHabit(habitId = habitId)
+    }
+
+    override suspend fun addGroupHabitToRemote(habitEntity: GroupHabitsEntity) {
+        habitApi.addGroupHabit(groupHabitMapper.toGroupHabitEntity(habitEntity)).enqueue(object : Callback<Any> {
+            override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                Log.e("TAG", "onResponse: $response", )
+            }
+
+            override fun onFailure(call: Call<Any>, t: Throwable) {
+                Log.e("TAG", "onResponse: ${t.stackTrace}", )
+            }
+
+        })
     }
 
     //Not Using this function

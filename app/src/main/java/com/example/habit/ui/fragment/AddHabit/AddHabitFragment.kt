@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
@@ -35,12 +36,15 @@ import java.util.UUID
 @AndroidEntryPoint
 class AddHabitFragment : Fragment() {
 
+    private var selectedHabitType: Int = 0
     private var _binding: FragmentAddHabitBinding? = null
     private val binding get() = _binding!!
     private val viewModel:AddHabitViewModel by viewModels()
     private var isStart=false
     private var habit= HabitView()
     private var isUpdate:Boolean=false
+    private val habitTypes = listOf<String>("Personal","Group")
+    private lateinit var habitTypeAdapter:ArrayAdapter<String>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,12 +60,19 @@ class AddHabitFragment : Fragment() {
         // Inflate the layout for this fragment
 
         _binding=FragmentAddHabitBinding.inflate(inflater,container,false)
+        viewModel.getGroupHabits()
         if(isUpdate){
             bindHabitData()
         }else{
            habit.id=UUID.randomUUID().toString()
         }
 
+        habitTypeAdapter=
+            ArrayAdapter(requireContext(),android.R.layout.simple_list_item_1,habitTypes)
+        binding.habitType.setAdapter(habitTypeAdapter)
+        binding.habitType.setOnItemClickListener { _, _, position, _ ->
+            selectedHabitType = position
+        }
        lifecycleScope.launch {
            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                viewModel.uiState.collectLatest {
@@ -82,6 +93,7 @@ class AddHabitFragment : Fragment() {
                }
            }
        }
+
         binding.startDate.setOnClickListener {
             isStart=true
             habit.startDate=null
@@ -127,8 +139,12 @@ class AddHabitFragment : Fragment() {
                     habit.reminderQuestion=reminderQuestion
                     if(isUpdate)
                         viewModel.updateHabit(habit, requireContext())
-                    else
-                        viewModel.addHabit(habit, requireContext())
+                    else {
+                        if(selectedHabitType==0)
+                            viewModel.addHabit(habit, requireContext())
+                        else
+                            viewModel.addGroupHabit(habit)
+                    }
                 }
             }
         }

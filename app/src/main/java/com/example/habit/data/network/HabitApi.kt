@@ -1,5 +1,7 @@
 package com.example.habit.data.network
 
+import com.example.habit.data.network.model.GroupHabitModel.GroupHabitModel
+import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitModel
 import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
 import com.example.habit.data.network.model.UpdateHabitEntriesModel.EntriesModel
@@ -16,17 +18,23 @@ import retrofit2.http.Path
 interface HabitApi {
 
     @GET("/habit/get_habits")
-    fun getHabits(@Header("Authorization") authToken:String):Call<HabitsListModel>
+    fun getHabits():Call<HabitsListModel>
+
+    @GET("/habit/group/get_habits")
+    fun getGroupHabits():Call<GroupHabitsModel>
 
     @POST("/habit/add_habit")
-    fun addHabit(@Header("Authorization") authToken:String,@Body habit:HabitModel):Call<Any>
+    fun addHabit( @Body habit:HabitModel):Call<Any>
+
+    @POST("/habit/group/add_habit")
+    fun addGroupHabit( @Body habit:GroupHabitModel):Call<Any>
 
     @PUT("/habit/update_habit/{id}")
-    fun updateHabit(@Header("Authorization") authToken:String,@Body habit:HabitModel, @Path("id") id: String?):Call<Any>
+    fun updateHabit( @Body habit:HabitModel, @Path("id") id: String?):Call<Any>
 
     @PATCH("/habit/update_habit_entries/{id}")
-    fun updateHabitEntries(@Header("Authorization") authToken:String,@Body habitEntries: EntriesModel, @Path("id") id:String):Call<Any>
+    fun updateHabitEntries( @Body habitEntries: EntriesModel, @Path("id") id:String):Call<Any>
 
     @DELETE("/habit/delete_habit/{id}")
-    fun deleteHabit(@Header("Authorization") authToken:String, @Path("id") id:String):Call<Any>
+    fun deleteHabit(  @Path("id") id:String):Call<Any>
 }

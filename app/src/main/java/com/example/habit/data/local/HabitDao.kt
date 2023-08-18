@@ -6,7 +6,10 @@ import androidx.room.MapInfo
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.habit.data.local.entity.EntryEntity
+import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
+import com.example.habit.data.local.entity.HabitGroupWithHabits
+import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -16,6 +19,10 @@ interface HabitDao {
     @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun addHabit(habits: List<HabitEntity>)
 
+
+    @Insert(onConflict=OnConflictStrategy.REPLACE)
+    suspend fun addGroupHabit(habits: List<GroupHabitsEntity>)
+
     @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun updateHabit(habits: HabitEntity)
 
@@ -23,6 +30,9 @@ interface HabitDao {
 
     @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType")
     fun getHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitEntity>>
+
+    @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType")
+    fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitGroupWithHabits>>
 
     @Query("SELECT * FROM HabitEntity WHERE id = :habitId")
     suspend fun getHabit(habitId:String): HabitEntity?
@@ -32,6 +42,9 @@ interface HabitDao {
 
     @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType ")
     fun getUnSyncedHabits(syncType:HabitRecordSyncType = HabitRecordSyncType.SyncedHabit):Flow<List<HabitEntity>>
+
+    @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType ")
+    fun getGroupUnSyncedHabits(syncType:HabitGroupRecordSyncType = HabitGroupRecordSyncType.SyncedHabit):Flow<List<GroupHabitsEntity>>
 
     @Query("UPDATE HabitEntity SET entryList = :entryList, habitSyncType=:syncType WHERE id = :habitId")
     suspend fun updateHabitEntries(habitId: String,entryList : Map<LocalDate, EntryEntity>?,syncType:HabitRecordSyncType = HabitRecordSyncType.UpdateHabitEntries):Int

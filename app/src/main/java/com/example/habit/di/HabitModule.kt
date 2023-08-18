@@ -9,8 +9,8 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.example.habit.data.Mapper.GroupHabitMapper.GroupHabitMapper
 import com.example.habit.data.Mapper.HabitMapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper.HabitMapper
 import com.example.habit.data.Repository.HabitRepoImpl
@@ -21,6 +21,7 @@ import com.example.habit.data.network.HabitApi
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.UseCases.HabitUseCase.DeleteAlarmUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
+import com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapperI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,8 +57,7 @@ class HabitModule {
             EntryMapper(),
             habitApi,
             connectivityManager,
-            syncRequest,
-            WorkManager.getInstance(app)
+            GroupHabitMapper()
         )
     }
 
@@ -74,6 +74,11 @@ class HabitModule {
     @Provides
     fun uiHabitMapper(entryMapper : com.example.habit.ui.mapper.HabitMapper.EntryMapper): com.example.habit.ui.mapper.HabitMapper.HabitMapper {
         return com.example.habit.ui.mapper.HabitMapper.HabitMapper(entryMapper)
+    }
+
+    @Provides
+    fun uiGroupHabitMapper(): com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper {
+        return com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper()
     }
 
     @Provides
@@ -111,10 +116,11 @@ class HabitModule {
             connectTimeout(Duration.ofSeconds(5))
             addInterceptor { chain ->
                 val request = chain.request()
-                request.newBuilder().apply {
-                    header("Authorization","Bearer ${auth.getToken()}")
-                }.build()
-                Log.i(API, "intercept: ${request.url}")
+                    .newBuilder()
+                    .addHeader("Authorization", "Bearer ${auth.getToken()}")
+                    .build()
+
+                Log.i(API, "intercept: ${request.url} ${auth.getToken()}")
                 chain.proceed(request)
             }
             addInterceptor(ChuckerInterceptor(app))

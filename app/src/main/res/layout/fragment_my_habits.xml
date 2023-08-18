@@ -151,6 +151,7 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/group_habits_cont"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="bottom|center_horizontal"
@@ -162,12 +163,13 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/due_today_icon"/>
+                    app:tint="@color/orange"
+                    android:src="@drawable/group_habit_icon"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Due For Today"
+                    android:text="Group Habits"
                     android:fontFamily="@font/regular"
                     android:textSize="14sp"
                     android:textColor="@color/text_color"

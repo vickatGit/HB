@@ -14,11 +14,14 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.OneTimeWorkRequest
+import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,6 +39,7 @@ class NetworkChangeJob : JobService() {
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.e("TAG", "onStartJob: invoked again NetworkChangeJob")
+        showNotification(this,"smaple","sample")
         CoroutineScope(Dispatchers.IO).launch {
             habitRepo.getUnSyncedHabits().collect{ habits ->
                 habits.forEach { habit->
@@ -62,8 +66,23 @@ class NetworkChangeJob : JobService() {
                 }
             }
         }
-
-        showNotification(this,"smaple","sample")
+        CoroutineScope(Dispatchers.IO).launch {
+            Log.e("TAG", "onStartJob: invoked again NetworkChangeJob 2")
+            habitRepo.getGroupUnSyncedHabits().collect{ habits ->
+                Log.e("TAG", "onStartJob: ${Gson().toJson(habits)}", )
+                habits.forEach {
+                    when(it.habitSyncType) {
+                        HabitGroupRecordSyncType.AddHabit -> {
+                            habitRepo.addGroupHabitToRemote(it)
+                        }
+                        HabitGroupRecordSyncType.SyncedHabit -> {}
+                        HabitGroupRecordSyncType.DeleteHabit -> {}
+                        HabitGroupRecordSyncType.DeletedHabit -> {}
+                        HabitGroupRecordSyncType.UpdateHabit -> {}
+                    }
+                }
+            }
+        }
         return true
     }
 

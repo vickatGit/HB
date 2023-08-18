@@ -33,17 +33,17 @@
                 <action android:name="com.example.habit.HANDLE_AUTHORIZATION_RESPONSE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.MainActivity"

@@ -4,22 +4,29 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.habit.data.Mapper.GroupHabitMapper.GroupHabitMapper
+import com.example.habit.data.local.entity.EntryEntity
+import com.example.habit.data.local.entity.HabitEntity
 import com.example.habit.domain.UseCases.HabitUseCase.AddGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.AddHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.DeleteAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitsUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitEntriesUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitUseCase
+import com.example.habit.domain.models.Entry
 import com.example.habit.ui.fragment.AddHabit.AddHabitUiState
+import com.example.habit.ui.mapper.HabitMapper.EntryMapper
 import com.example.habit.ui.mapper.HabitMapper.HabitMapper
 import com.example.habit.ui.model.HabitView
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,12 +37,24 @@ class AddHabitViewModel @Inject constructor(
     private val deleteAlarmUseCase: DeleteAlarmUseCase,
     private val getGroupHabitsUseCase: GetGroupHabitsUseCase,
     private val addGroupHabitUseCase: AddGroupHabitUseCase,
+    private val getGroupHabitUseCase: GetGroupHabitUseCase,
+    private val updateHabitEntriesUseCase: UpdateHabitEntriesUseCase,
     private val habitMapper: HabitMapper,
+    private val entityMapper: EntryMapper,
     private val groupHabitMapper: com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper
 ) : ViewModel() {
 
+    private var _currentViewingMonth: YearMonth?=null
+    fun getCurrentViewingMonth() = _currentViewingMonth
+    fun setCurrentViewingMonth(currentViewingMonth: YearMonth) {
+        this._currentViewingMonth=currentViewingMonth
+    }
+
     private var _uiState = MutableStateFlow<AddHabitUiState>(AddHabitUiState.Error(""))
     val uiState = _uiState.asStateFlow()
+
+    private var _grHabits = MutableStateFlow<List<HabitEntity>>(emptyList())
+    val grHabits = _grHabits.asStateFlow()
 
     fun addHabit(habit: HabitView, context: Context) {
         habit.reminderTime?.let { reminderTime ->
@@ -92,18 +111,7 @@ class AddHabitViewModel @Inject constructor(
         }
     }
 
-    fun getGroupHabits() {
-        viewModelScope.launch {
-            try {
-                getGroupHabitsUseCase(this).collect{
-                    Log.e("TAG", "getGroupHabits: res $it", )
-                }
-            } catch (e: Exception) {
-                Log.e("TAG", "getGroupHabits: error ${e.stackTrace}", )
-            }
 
-        }
-    }
 
     fun addGroupHabit(habit: HabitView) {
         viewModelScope.launch {
@@ -111,8 +119,70 @@ class AddHabitViewModel @Inject constructor(
             try {
                 addGroupHabitUseCase(groupHabitMapper.toGroupHabitFromHabit(habit))
                 _uiState.update { AddHabitUiState.Success("GroupC Created Successfully") }
-            }catch (e : Exception){
-                Log.e("TAG", "addGroupHabit: ${e.message}", )
+            } catch (e: Exception) {
+                Log.e("TAG", "addGroupHabit: ${e.message}")
+                _uiState.update { AddHabitUiState.Error(e.message ?: "") }
+            }
+
+        }
+    }
+    fun getGroupHabits() {
+        viewModelScope.launch {
+            try {
+                getGroupHabitsUseCase(this).collect {
+                    it.forEach { habits ->
+                        habits.habits.forEach {
+                            Log.e("TAG", "getGroupHabits: res $it")
+                        }
+                        _grHabits.update { it }
+                        _uiState.update { AddHabitUiState.Habits(habits.habits) }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("TAG", "getGroupHabits: error ${e.stackTrace}")
+            }
+
+        }
+    }
+    fun getGroupHabit(groupId:String){
+        try {
+            viewModelScope.launch {
+                val groupHabit = getGroupHabitUseCase(groupId)
+                _uiState.update { AddHabitUiState.GroupHabit(groupHabit) }
+
+            }
+        }catch (e:Exception){
+            Log.e("TAG", "getGroupHabit: ${e.printStackTrace()}", )
+        }
+
+    }
+
+    fun updateHabitEntries(
+        habitServerId: String,
+        habitId: String,
+        entries: HashMap<LocalDate, EntryEntity>
+    ){
+        viewModelScope.launch {
+            _uiState.update { AddHabitUiState.Loading }
+            try {
+                var habitEntries=0
+                try {
+                    val h = entries.mapValues {
+                        Entry(it.value.timestamp,it.value.score,it.value.completed)
+                    }
+                    Log.e("TAG", "updateHabitEntries: list ${Gson().toJson(entries)}", )
+                    habitEntries = updateHabitEntriesUseCase(
+                        habitServerId = habitServerId,
+                        habitId = habitId,
+                        entries = h.toMutableMap() as HashMap<LocalDate, Entry>
+                    )
+                }catch (e:Exception){
+                    Log.e("TAG", "updateHabitEntries: due to update entries ${e.printStackTrace()}", )
+                }
+//                if(habitEntries>0) getHabit(habitId.toString(),"") else _uiState.update { AddHabitUiState.Nothing }
+
+            }catch (e:Exception){
+                Log.e("TAG", "updateHabitEntries: due to get entries $e", )
                 _uiState.update { AddHabitUiState.Error(e.message?:"") }
             }
 

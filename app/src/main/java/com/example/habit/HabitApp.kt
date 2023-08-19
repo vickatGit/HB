@@ -22,19 +22,19 @@ class HabitApp : Application(),Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
-        val schedular=getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
-        val component= ComponentName(this,NetworkChangeJob::class.java)
-        val jobinfo = JobInfo.Builder(1,component)
-            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-            .setPersisted(true)
-            .build()
-        schedular.schedule(jobinfo)
-        if(AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this,true)) {
-            Log.e("TAG", "onCreate: its working on this device", )
-            AutoStartPermissionHelper.getInstance().getAutoStartPermission(this, true, true)
-        }else{
-            Log.e("TAG", "onCreate: its not working on this device", )
-        }
+//        val schedular=getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+//        val component= ComponentName(this,NetworkChangeJob::class.java)
+//        val jobinfo = JobInfo.Builder(1,component)
+//            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+//            .setPersisted(true)
+//            .build()
+//        schedular.schedule(jobinfo)
+//        if(AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this,true)) {
+//            Log.e("TAG", "onCreate: its working on this device", )
+//            AutoStartPermissionHelper.getInstance().getAutoStartPermission(this, true, true)
+//        }else{
+//            Log.e("TAG", "onCreate: its not working on this device", )
+//        }
 
     }
 

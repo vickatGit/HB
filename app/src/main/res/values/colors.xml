@@ -18,4 +18,5 @@
     <color name="consistency_graph_grid_color">#F5F1FF</color>
     <color name="streak_card_border">#FFCEC4</color>
     <color name="light_gray_text_color">#888888</color>
+    <color name="lavender">#C9B0FD</color>
 </resources>

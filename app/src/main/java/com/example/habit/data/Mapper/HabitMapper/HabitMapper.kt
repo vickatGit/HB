@@ -47,7 +47,9 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                     entryMapper.mapFromEntry(it.value)
                 }
             },
-            syncType
+            syncType,
+            type.habitGroupId,
+            type.userId
 
 
         )
@@ -68,7 +70,9 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                 it.mapValues {
                     entryMapper.mapToEntry(it.value)
                 } as HashMap<LocalDate, Entry>
-            }
+            },
+            type.habitGroupId,
+            type.userId
 
         )
     }
@@ -80,15 +84,17 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             type.title,
             type.description,
             type.reminderQuestion,
-            localDateConverter(type.startDate!!),
-            localDateConverter(type.endDate!!),
+            localDateConverter(type.startDate.toString()),
+            localDateConverter(type.endDate.toString()),
             type.isReminderOn,
-            localDateTimeConverter(type.reminderTime!!),
+            localDateTimeConverter(type.reminderTime.toString()),
             type.entries?.map {
                 it?.let {
                     entryMapper.mapFromEntryModel(it)
                 }
             }?.associateBy { it?.timestamp!! } as? HashMap<LocalDate,EntryEntity>,
+            habitGroupId = type.habitGroupId,
+            userId = type.userId
 
 
         )

@@ -19,7 +19,9 @@ data class Habit(
     var endDate: LocalDate?,
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
-    var entries:HashMap<LocalDate,Entry>? = null
+    var entries:HashMap<LocalDate,Entry>? = null,
+    var habitGroupId:String?=null,
+    var userId:String?=null
 ) : Parcelable{
     constructor():this("",null,null,null,null,null,null,null,null)
 }

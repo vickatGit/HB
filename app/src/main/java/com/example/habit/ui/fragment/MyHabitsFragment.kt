@@ -29,6 +29,11 @@ class MyHabitsFragment : Fragment() {
                 putBoolean(HabitsFragment.IS_COMPLETED_HABITS,false)
             })
         }
+        binding.groupHabitsCont.setOnClickListener {
+            findNavController().navigate(R.id.action_myHabitsFragment_to_groupsFragment,Bundle().apply {
+                putBoolean(HabitsFragment.IS_COMPLETED_HABITS,true)
+            })
+        }
         binding.completedHabits.setOnClickListener {
             findNavController().navigate(R.id.action_myHabitsFragment_to_habitsFragment,Bundle().apply {
                 putBoolean(HabitsFragment.IS_COMPLETED_HABITS,true)

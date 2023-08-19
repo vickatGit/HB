@@ -22,6 +22,7 @@ interface HabitRepo {
 
     suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<HabitGroupWithHabits>>
     suspend fun getHabit(habitId:String):Habit
+    suspend fun getGroupHabit(groupId:String):HabitGroupWithHabits
     suspend fun getHabitEntries(habitId: String) : HashMap<LocalDate, Entry>?
     suspend fun updateHabitEntries(habitServerId:String?, habitId: String,entries:HashMap<LocalDate,Entry>) : Int
     suspend fun getHabitThumb(habitId: String): Habit

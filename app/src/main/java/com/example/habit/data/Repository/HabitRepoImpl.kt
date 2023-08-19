@@ -121,15 +121,26 @@ class HabitRepoImpl(
                         response: Response<GroupHabitsModel>
                     ) {
                         Log.e("TAG", "onResponse: getGroupHabits $response" )
-                        val habits = response.body()?.let {
+                        var habitsList:List<HabitEntity>  = listOf()
+                        val groupHabits = response.body()?.let {
                             it.data?.map { groupHabits ->
                                 groupHabits.let { groupHabit ->
+                                    val habits = groupHabit!!.habits
+                                    habitsList = habits!!.map {
+                                        it?.startDate = it!!.startDate
+                                        it?.endDate = it!!.endDate
+                                        it?.description = groupHabit.description
+                                        it?.title = groupHabit.title
+                                        it?.habitGroupId= groupHabit.localId
+                                        habitMapper.mapToHabitEntityFromHabitModel(it!!)
+                                    }
                                     groupHabitMapper.toGroupHabitModel(groupHabit!!)
                                 }
                             }
                         }
                         coroutineScope.launch {
-                            habits?.let { habitDao.addGroupHabit(habits) }
+                            groupHabits?.let { habitDao.addGroupHabit(groupHabits) }
+                            habitDao.addHabit(habitsList)
                         }
                     }
 
@@ -149,6 +160,11 @@ class HabitRepoImpl(
             habitMapper.mapToHabit(habitDao.getHabit(habitId))
         }
     }
+
+    override suspend fun getGroupHabit(groupId: String): HabitGroupWithHabits {
+        return habitDao.getGroupHabit(groupId)
+    }
+
 
     override suspend fun getHabitThumb(habitId: String): Habit {
         return habitDao.getHabit(habitId).let {
@@ -269,6 +285,9 @@ class HabitRepoImpl(
         habitApi.addGroupHabit(groupHabitMapper.toGroupHabitEntity(habitEntity)).enqueue(object : Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 Log.e("TAG", "onResponse: $response", )
+                CoroutineScope(Dispatchers.IO).launch {
+                    getGroupHabits(this)
+                }
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {

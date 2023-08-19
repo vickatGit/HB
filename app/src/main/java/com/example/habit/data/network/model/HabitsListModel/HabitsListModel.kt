@@ -9,16 +9,18 @@ data class HabitsListModel(
 data class HabitModel(
 	val entries: List<EntryModel>? = null,
 	val reminderQuestion: String? = null,
-	val endDate: String? = null,
+	var endDate: String? = null,
 	val v: Int? = null,
 	val isReminderOn: Boolean? = null,
-	val description: String? = null,
+	var description: String? = null,
 	@SerializedName("_id")
 	val serverId: String? = null,
 	val localId:String? = null,
 	val reminderTime: String? = null,
-	val title: String? = null,
-	val startDate: String? = null
+	var title: String? = null,
+	var startDate: String? = null,
+	var habitGroupId:String?=null,
+	var userId:String?=null
 )
 
 data class EntryModel(

@@ -89,6 +89,9 @@ class AddHabitFragment : Fragment() {
                        is AddHabitUiState.Loading -> {
                            binding.progress.isVisible=true
                        }
+
+                       is AddHabitUiState.Habits -> {}
+                       else -> {}
                    }
                }
            }

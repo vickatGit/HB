@@ -83,6 +83,9 @@
         <action
             android:id="@+id/action_myHabitsFragment_to_addHabitFragment"
             app:destination="@id/addHabitFragment" />
+        <action
+            android:id="@+id/action_myHabitsFragment_to_groupsFragment"
+            app:destination="@id/groupsFragment" />
     </fragment>
     <dialog
         android:id="@+id/timerFragment"
@@ -107,4 +110,21 @@
         android:name="com.example.habit.ui.fragment.CompletedHabitFragment.CompletedHabitFragment"
         android:label="fragment_completed_habit"
         tools:layout="@layout/fragment_completed_habit" />
+    <fragment
+        android:id="@+id/groupsFragment"
+        android:name="com.example.habit.ui.fragment.GroupHabits.GroupsFragment"
+        android:label="GroupsFragment" >
+        <action
+            android:id="@+id/action_groupsFragment_to_groupFragment"
+            app:destination="@id/groupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/groupFragment"
+        android:name="com.example.habit.ui.fragment.GroupHabit.GroupFragment"
+        android:label="GroupFragment" >
+        <argument
+            android:name="group_habit_id"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

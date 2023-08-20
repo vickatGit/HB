@@ -1,16 +1,18 @@
 package com.example.habit.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habit.databinding.GroupHabitThumbBinding
+import com.example.habit.domain.models.GroupHabitWithHabits
 import com.example.habit.domain.models.Habit
 import com.example.habit.ui.callback.HabitClick
 import java.text.DecimalFormat
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
-class GroupHabitsAdapter(val habits: List<Habit>, val habitClick: HabitClick) : RecyclerView.Adapter<GroupHabitsAdapter.GroupHabitHolder>() {
+class GroupHabitsAdapter(val habits: List<GroupHabitWithHabits>, val habitClick: HabitClick) : RecyclerView.Adapter<GroupHabitsAdapter.GroupHabitHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupHabitHolder {
@@ -26,10 +28,13 @@ class GroupHabitsAdapter(val habits: List<Habit>, val habitClick: HabitClick) : 
     override fun onBindViewHolder(holder: GroupHabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding?.let {
-            initialiseProgress(habit,it)
-            it.habit.text = habit.title
+            try { initialiseProgress(habit.habits.get(0),it) }catch (e:Exception){ Log.e("tag", "onBindViewHolder: ${e.printStackTrace()}", )}
+
+            it.habit.text = habit.habitGroup.title
+            it.totalMembers.text =""+habit.habitGroup.members?.size
+
             it.habitContainer.setOnClickListener {
-                habitClick.habitClick(habitId = habit.id.toString())
+                habitClick.habitClick(habitId = habit.habitGroup.id.toString())
             }
         }
 

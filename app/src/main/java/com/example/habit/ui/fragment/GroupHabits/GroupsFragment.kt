@@ -52,6 +52,7 @@ class GroupsFragment : Fragment() {
                 viewModel.uiState.collectLatest {
                     when (it) {
                         is GroupHabitUiState.Habits -> {
+
                             groupHabitsAdapter = GroupHabitsAdapter(it.habits, object : HabitClick {
                                 override fun habitClick(habitId: String) {
                                     findNavController().navigate(

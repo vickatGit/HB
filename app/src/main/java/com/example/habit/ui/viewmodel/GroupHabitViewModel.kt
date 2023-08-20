@@ -49,13 +49,13 @@ class GroupHabitViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { GroupHabitUiState.Loading }
             try {
-                getGroupHabitsUseCase(this).collect {
-                    it.forEach { habits ->
+                getGroupHabitsUseCase(this).collect {grpHabits ->
+                    grpHabits.forEach { habits ->
                         habits.habits.forEach {
                             Log.e("TAG", "getGroupHabits: res $it")
                         }
-                        _uiState.update { GroupHabitUiState.Habits(habits.habits) }
                     }
+                    _uiState.update { GroupHabitUiState.Habits(grpHabits) }
                 }
             } catch (e: Exception) {
                 Log.e("TAG", "getGroupHabits: error ${e.stackTrace}")

@@ -8,6 +8,7 @@ import com.example.habit.data.Mapper.GroupHabitMapper.GroupHabitMapper
 import com.example.habit.data.Mapper.HabitMapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper.HabitMapper
 import com.example.habit.data.local.HabitDao
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
@@ -42,7 +43,8 @@ class HabitRepoImpl(
     private val entryMapper: EntryMapper,
     private val habitApi: HabitApi,
     private val connectivityManager: ConnectivityManager,
-    private val groupHabitMapper: GroupHabitMapper
+    private val groupHabitMapper: GroupHabitMapper,
+    private val authPref: AuthPref
 ) : HabitRepo {
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)))
@@ -151,7 +153,7 @@ class HabitRepoImpl(
 
                 })
             }
-        return habitDao.getGroupHabits().map {
+        return habitDao.getGroupHabitThumbs(authPref.getUserId()).map {
             it.map { groupHabitMapper.toGroupHabitWithHabits(it) }
         }
 

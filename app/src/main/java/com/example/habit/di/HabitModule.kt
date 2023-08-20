@@ -51,13 +51,15 @@ class HabitModule {
 
     @Provides
     @Singleton
-    fun provideHabitRepo(app: Application,habitDatabase: HabitDatabase,habitApi: HabitApi,connectivityManager: ConnectivityManager,syncRequest: OneTimeWorkRequest):HabitRepo{
+    fun provideHabitRepo(app: Application,habitDatabase: HabitDatabase,habitApi: HabitApi,connectivityManager: ConnectivityManager,auth: AuthPref):HabitRepo{
         return HabitRepoImpl(habitDatabase.habitDao,
             HabitMapper(EntryMapper()),
             EntryMapper(),
             habitApi,
             connectivityManager,
-            GroupHabitMapper(HabitMapper(EntryMapper()))
+            GroupHabitMapper(HabitMapper(EntryMapper())),
+            auth
+
         )
     }
 

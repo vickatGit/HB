@@ -8,7 +8,7 @@ import androidx.room.Query
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
-import com.example.habit.data.local.entity.HabitGroupWithHabits
+import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
 import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import kotlinx.coroutines.flow.Flow
@@ -32,17 +32,17 @@ interface HabitDao {
     fun getHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType")
-    fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitGroupWithHabits>>
+    fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitGroupWithHabitsEntity>>
 
     @Query("SELECT * FROM GroupHabitsEntity WHERE localId IN ( SELECT habitGroupId FROM HabitEntity WHERE userId=:userId ) ")
-    fun getGroupHabitThumbs(userId:String):Flow<List<HabitGroupWithHabits>>
+    fun getGroupHabitThumbs(userId:String):Flow<List<HabitGroupWithHabitsEntity>>
 
 
     @Query("SELECT * FROM HabitEntity WHERE id = :habitId")
     suspend fun getHabit(habitId:String): HabitEntity?
 
     @Query("SELECT * FROM GroupHabitsEntity WHERE localId IN (SELECT habitGroupId FROM HabitEntity WHERE habitGroupId=:groupId)")
-    suspend fun getGroupHabit(groupId:String):HabitGroupWithHabits
+    suspend fun getGroupHabit(groupId:String):HabitGroupWithHabitsEntity
 
     @Query("SELECT * FROM HabitEntity WHERE endDate < :date")
     fun getCompletedHabits(date: LocalDate):Flow<List<HabitEntity>>

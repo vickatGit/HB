@@ -17,9 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habit.R
-import com.example.habit.data.local.entity.EntryEntity
-import com.example.habit.data.local.entity.HabitEntity
-import com.example.habit.data.local.entity.HabitGroupWithHabits
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
@@ -27,10 +25,12 @@ import com.example.habit.databinding.FragmentGroupBinding
 import com.example.habit.ui.adapter.HabitGroupUsersAdapter
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.callback.HabitClick
-import com.example.habit.ui.fragment.AddHabit.AddHabitUiState
 import com.example.habit.ui.fragment.Date.DayHolder
+import com.example.habit.ui.model.EntryView
+import com.example.habit.ui.model.GroupHabitWithHabitsView
 import com.example.habit.ui.model.HabitView
-import com.example.habit.ui.viewmodel.AddHabitViewModel
+import com.example.habit.ui.model.UtilModels.UserGroupThumbProgressModel
+import com.example.habit.ui.viewmodel.GroupHabitViewModel
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -55,16 +55,22 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GroupFragment : Fragment() {
+    companion object {
+        val GROUP_HABIT_ID: String = "group_habit_id"
+    }
 
-    private val viewModel:AddHabitViewModel by viewModels()
+    @Inject
+    lateinit var authPref: AuthPref
+    private val viewModel: GroupHabitViewModel by viewModels()
 
-    private var maxScored: Int=0
-    private var habitEntries: HashMap<LocalDate, EntryEntity> = hashMapOf()
-    private var groupId: String? =null
-    private lateinit var groupHabit: HabitGroupWithHabits
+    private var maxScored: Int = 0
+    private var habitEntries: HashMap<LocalDate, EntryView> = hashMapOf()
+    private var groupId: String? = null
+    private lateinit var groupHabit: GroupHabitWithHabitsView
     var weekdays = arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     private var selectedDates = mutableMapOf<LocalDate, LocalDate>()
     private var habitStartDate: LocalDate? = null
@@ -75,11 +81,12 @@ class GroupFragment : Fragment() {
     private val binding get() = _binding!!
     private var _calendarBinding: CalendarLayoutBinding? = null
     private val calendarBinding get() = _calendarBinding!!
-
     private var _weekDaysBinding: CalendarDayLegendContainerBinding? = null
     private val weekDayBinding get() = _weekDaysBinding!!
 
-    private lateinit var usersAdapter:HabitGroupUsersAdapter
+
+    private lateinit var usersAdapter: HabitGroupUsersAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,20 +98,29 @@ class GroupFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentGroupBinding.inflate(inflater,container,false)
+        _binding = FragmentGroupBinding.inflate(inflater, container, false)
         _calendarBinding = CalendarLayoutBinding.bind(binding.calendar.root)
         _weekDaysBinding = CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
-        groupId = arguments?.getString("group_habit_id",null)
-        Log.e("TAG", "onCreateView: groupId $groupId" )
+        groupId = arguments?.getString(GROUP_HABIT_ID, null)
+        Log.e("TAG", "onCreateView: groupId $groupId")
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collectLatest {
-                    when(it){
-                        is AddHabitUiState.GroupHabit -> {
+                    when (it) {
+                        is GroupHabitUiState.GroupHabit -> {
                             groupHabit = it.groupHabit
                             bindData()
-                            bindUserHabitData(groupHabit.habits.get(0))
+                            bindUserHabitData(groupHabit.habits.get(viewModel.getHabitStatePos()))
+                            hideProgress()
                         }
+                        is GroupHabitUiState.Error -> {
+                            Toast.makeText(requireContext(),it.error,Toast.LENGTH_SHORT).show()
+                            hideProgress()
+                        }
+                        GroupHabitUiState.Loading -> {
+                            showProgress()
+                        }
+                        GroupHabitUiState.Nothing -> {hideProgress()}
                         else -> {}
                     }
                 }
@@ -116,77 +132,119 @@ class GroupFragment : Fragment() {
     }
 
     private fun bindData() {
-        binding.habitTitle.text=groupHabit.habitGroup.title
+        binding.habitTitle.text = groupHabit.habitGroup.title
         setupRecyclerView()
     }
-    private fun bindUserHabitData(habit: HabitEntity){
-        Toast.makeText(requireContext(),"user selected",Toast.LENGTH_SHORT).show()
-        habit.entryList?.let {
-            habitEntries = it.toMutableMap() as HashMap<LocalDate, EntryEntity>
+    private fun setupRecyclerView() {
+        var users: MutableList<UserGroupThumbProgressModel> = mutableListOf()
+        var members = groupHabit.habitGroup.members?: emptyList()
+
+        members.forEach {
+            users.add(
+                UserGroupThumbProgressModel(
+                    groupHabit.habits.find { habit ->
+                        habit.userId.equals(it.userId)
+                    }!!,
+                    it
+                )
+            )
+        }
+
+        binding.userHabitsPercentage.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        usersAdapter = HabitGroupUsersAdapter(users,
+            object : HabitClick {
+                override fun habitClick(habitId: String) {
+                    bindUserHabitData(groupHabit.habits.get(habitId.toInt()))
+                    viewModel.setHabitStatePos(habitId.toInt())
+                }
+
+            })
+        binding.userHabitsPercentage.adapter = usersAdapter
+
+    }
+
+    private fun bindUserHabitData(habit: HabitView) {
+        Log.e("TAG", "bindUserHabitData: userId ${authPref.getUserId()} habit userId ${habit.userId}", )
+        Toast.makeText(requireContext(), "user selected ${authPref.getUserId().equals(habit.userId)}", Toast.LENGTH_SHORT).show()
+        binding.streakEditSwitch.isVisible= authPref.getUserId().equals(habit.userId)
+        habit.entries?.let {
+            habitEntries = it
             habitEntries?.map {
                 selectedDates.put(it.key, it.value.timestamp!!)
             }
         }
         bindStreakInfo(habit)
-        initialiseCalendar(habit.startDate!!, habit.endDate!!,habit)
-        initialiseConsistencyGraph(habit.entryList)
+        initialiseCalendar(habit.startDate!!, habit.endDate!!, habit)
+        initialiseConsistencyGraph(habit.entries)
         binding.streakEditSwitch.setOnCheckedChangeListener { _, isChecked ->
             isCalendarEditable = isChecked
             bindDays(habit)
         }
     }
-    private fun initialiseConsistencyGraph(mapEntries: Map<LocalDate, EntryEntity>?) {
+
+    private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
         //values for single line chart on the graph
-        val entries:MutableList<Entry> = mutableListOf()
+        val entries: MutableList<Entry> = mutableListOf()
         mapEntries?.mapValues {
-            if(it.value.score!!>maxScored) maxScored=it.value.score!!
-            Log.e("TAG", "initialiseConsistencyGraph: ${
-                Gson().toJson(
-                    Entry(it.value.timestamp!!.atStartOfDay(
-                        ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat())
-                )}", )
-            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+            if (it.value.score!! > maxScored) maxScored = it.value.score!!
+            Log.e(
+                "TAG",
+                "initialiseConsistencyGraph: ${
+                    Gson().toJson(
+                        Entry(
+                            it.value.timestamp!!.atStartOfDay(
+                                ZoneOffset.UTC
+                            ).toInstant().toEpochMilli().toFloat(), it.value.score!!.toFloat()
+                        )
+                    )
+                }",
+            )
+            entries.add(
+                Entry(
+                    it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+                        .toFloat(), it.value.score!!.toFloat()
+                )
+            )
         }
-        if(entries.size>3) {
+        if (entries.size > 3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
-            val startColor =resources.getColor(R.color.orange_op_20)
+            val startColor = resources.getColor(R.color.orange_op_20)
             val midColor = resources.getColor(R.color.orange_op_20)
             val endColor = resources.getColor(R.color.transparent)
             val gradientDrawable = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(startColor,midColor, endColor)
+                intArrayOf(startColor, midColor, endColor)
             )
 
             dataset.setDrawFilled(true)
             dataset.fillDrawable = gradientDrawable
-            dataset.color=binding.root.resources.getColor(R.color.medium_orange)
-            dataset.lineWidth=3f
+            dataset.color = binding.root.resources.getColor(R.color.medium_orange)
+            dataset.lineWidth = 3f
             dataset.setDrawCircleHole(false)
             dataset.setDrawCircles(false)
             dataset.setDrawValues(false)
-            dataset.mode= LineDataSet.Mode.CUBIC_BEZIER
+            dataset.mode = LineDataSet.Mode.CUBIC_BEZIER
 
 
-
-            val xtAxis=binding.consistency.xAxis
-            val ylAxis=binding.consistency.axisLeft
-            val yrAxis=binding.consistency.axisRight
+            val xtAxis = binding.consistency.xAxis
+            val ylAxis = binding.consistency.axisLeft
+            val yrAxis = binding.consistency.axisRight
 
 //            ylAxis.setLabelCount(3,true)
-            xtAxis.setLabelCount(7,true)
-            xtAxis.position= XAxis.XAxisPosition.BOTTOM
-            xtAxis.labelRotationAngle=320f
-            yrAxis.isEnabled=false
+            xtAxis.setLabelCount(7, true)
+            xtAxis.position = XAxis.XAxisPosition.BOTTOM
+            xtAxis.labelRotationAngle = 320f
+            yrAxis.isEnabled = false
 
             ylAxis.setDrawAxisLine(false)
             xtAxis.setDrawGridLines(false)
-            ylAxis.gridColor=resources.getColor(R.color.consistency_graph_grid_color)
-            ylAxis.gridLineWidth=1.4f
+            ylAxis.gridColor = resources.getColor(R.color.consistency_graph_grid_color)
+            ylAxis.gridLineWidth = 1.4f
 
-            xtAxis.valueFormatter=XAxisFormatter()
+            xtAxis.valueFormatter = XAxisFormatter()
 //            ylAxis.valueFormatter=YAxisFormatter()
-
 
 
             //LineData object is Needed by Graph and to create LineData() object we Need to Pass list ILineDataSet objects
@@ -207,12 +265,13 @@ class GroupFragment : Fragment() {
 
             binding.consistency.data = chartLineData
             binding.consistency.invalidate()
-        }else{
-            binding.consistency.isVisible=false
-            binding.graphHeader.isVisible=false
+        } else {
+            binding.consistency.isVisible = false
+            binding.graphHeader.isVisible = false
         }
 
     }
+
     private fun bindWeekDays() {
         (0 until weekDayBinding.root.childCount).forEach { index ->
             val childView: View = weekDayBinding.root.getChildAt(index)
@@ -221,7 +280,8 @@ class GroupFragment : Fragment() {
             }
         }
     }
-    private fun initialiseCalendar(startDate: LocalDate, endDate: LocalDate,habit: HabitEntity) {
+
+    private fun initialiseCalendar(startDate: LocalDate, endDate: LocalDate, habit: HabitView) {
         habitStartDate = startDate
         habitEndDate = endDate
         bindWeekDays()
@@ -236,10 +296,11 @@ class GroupFragment : Fragment() {
         val endMonth = YearMonth.of(endDate.year, endDate.month)
 
         calendarBinding.calendarView.setup(startMonth, endMonth, firstDayOfWeekFromLocale())
-        calendarBinding.calendarView.scrollToMonth(viewModel.getCurrentViewingMonth()?:startMonth)
+        calendarBinding.calendarView.scrollToMonth(viewModel.getCurrentViewingMonth() ?: startMonth)
 
     }
-    private fun bindDays(habit: HabitEntity) {
+
+    private fun bindDays(habit: HabitView) {
         calendarBinding.calendarView.dayBinder = object : MonthDayBinder<DayHolder> {
             override fun bind(container: DayHolder, calendarDay: CalendarDay) {
                 container.day = calendarDay
@@ -279,7 +340,8 @@ class GroupFragment : Fragment() {
                     )
                         container.dayBinding.calendarDayText.setTextColor(resources.getColor(R.color.white))
                 }
-                val params = container.dayBinding.calendarDayText.layoutParams as ViewGroup.MarginLayoutParams
+                val params =
+                    container.dayBinding.calendarDayText.layoutParams as ViewGroup.MarginLayoutParams
                 params.leftMargin = 10
                 params.bottomMargin = 10
                 params.topMargin = 10
@@ -292,7 +354,7 @@ class GroupFragment : Fragment() {
                     override fun dateClick(date: LocalDate?) {
                         date?.let {
                             if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate)) {
-                                selectDate(date,habit)
+                                selectDate(date, habit)
                             }
                         }
                     }
@@ -300,46 +362,49 @@ class GroupFragment : Fragment() {
             }
         }
     }
-    private fun selectDate(date: LocalDate?,habit: HabitEntity) {
+
+    private fun selectDate(date: LocalDate?, habit: HabitView) {
         date?.let {
             if (habitEntries.containsKey(it)) {
                 habitEntries[it]!!.completed = !habitEntries[it]!!.completed
                 Log.e("TAG", "updateEntry selectDate: present $date ")
-                updateEntries(it, habitEntries[it]!!.completed,habit)
+                updateEntries(it, habitEntries[it]!!.completed, habit)
             } else {
-                habitEntries[it] = EntryEntity(it!!, 0,true)
+                habitEntries[it] = EntryView(it!!, 0, true)
                 Log.e("TAG", "updateEntry selectDate: not present $date ")
-                updateEntries(it, true,habit)
+                updateEntries(it, true, habit)
             }
             calendarBinding.calendarView.notifyDateChanged(it)
         }
     }
-    private fun updateEntries(date: LocalDate, isUpgrade: Boolean,habit: HabitEntity) {
+
+    private fun updateEntries(date: LocalDate, isUpgrade: Boolean, habit: HabitView) {
         val prevEntry = habitEntries[date.minusDays(1)]
 
         if (prevEntry == null) {
-            habitEntries[date] = EntryEntity(date, if (isUpgrade) 1 else 0, isUpgrade)
+            habitEntries[date] = EntryView(date, if (isUpgrade) 1 else 0, isUpgrade)
         }
-        val habitList= mutableListOf<EntryEntity>()
+        val habitList = mutableListOf<EntryView>()
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
 
-        habitList.forEachIndexed {index,it ->
-            if (index>0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
-                var score=habitList.get(if(index!=0) index-1 else index).score
-                habitList[index].score=if (isUpgrade) score!!+1 else it.score!!-1
+        habitList.forEachIndexed { index, it ->
+            if (index > 0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
+                var score = habitList.get(if (index != 0) index - 1 else index).score
+                habitList[index].score = if (isUpgrade) score!! + 1 else it.score!! - 1
             }
         }
         habitEntries.putAll(habitList.associateBy { it.timestamp!! })
         habit.serverId?.let { viewModel.updateHabitEntries(it, habit.id, habitEntries) }
     }
-    private fun bindStreakInfo(habit:HabitEntity) {
-        var daysMissed=0
-        var daysCompleted=0
-        var highestStreak=0
-        var currentStreak=0
 
-        val habitList= mutableListOf<EntryEntity>()
+    private fun bindStreakInfo(habit: HabitView) {
+        var daysMissed = 0
+        var daysCompleted = 0
+        var highestStreak = 0
+        var currentStreak = 0
+
+        val habitList = mutableListOf<EntryView>()
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
 
@@ -347,45 +412,36 @@ class GroupFragment : Fragment() {
 
         habitEntries.toSortedMap().mapValues {
 //            if(it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())){
-            Log.e("TAG", "bindStreakInfo: ${it.value.completed}", )
-            if(it.value.completed){
+            Log.e("TAG", "bindStreakInfo: ${it.value.completed}")
+            if (it.value.completed) {
                 ++daysCompleted
                 ++currentStreak
-                if( highestStreak < currentStreak ) highestStreak = currentStreak else {}
-            }else{
-                if( highestStreak < currentStreak ) highestStreak = currentStreak
-                currentStreak=0
+                if (highestStreak < currentStreak) highestStreak = currentStreak else {
+                }
+            } else {
+                if (highestStreak < currentStreak) highestStreak = currentStreak
+                currentStreak = 0
                 ++daysMissed
             }
 //            }
         }
-        binding.currentStreak.text=currentStreak.toString()
-        binding.daysMissed.text=daysMissed.toString()
-        binding.highestStreak.text=highestStreak.toString()
-        binding.daysCompleted.text="$daysCompleted/${ChronoUnit.DAYS.between(habit.startDate, habit.endDate!!.plusDays(1))}"
+        binding.currentStreak.text = currentStreak.toString()
+        binding.daysMissed.text = daysMissed.toString()
+        binding.highestStreak.text = highestStreak.toString()
+        binding.daysCompleted.text = "$daysCompleted/${
+            ChronoUnit.DAYS.between(
+                habit.startDate,
+                habit.endDate!!.plusDays(1)
+            )
+        }"
     }
-    private fun bindHabitPageData(habit: HabitView) {
-        binding.habitTitle.text=groupHabit.habitGroup.title
-        binding.progress.isVisible = false
 
 
-    }
-
-    private fun setupRecyclerView() {
-        binding.userHabitsPercentage.layoutManager=LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
-        usersAdapter = HabitGroupUsersAdapter(groupHabit.habits, object : HabitClick {
-            override fun habitClick(habitId: String) {
-                bindUserHabitData(groupHabit.habits.get(habitId.toInt()))
-            }
-
-        })
-        binding.userHabitsPercentage.adapter = usersAdapter
-
-    }
     private fun getMonthYearString(calendarMonth: CalendarMonth): String? {
         val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
         return calendarMonth.yearMonth.format(formatter)
     }
+
     inner class XAxisFormatter : IAxisValueFormatter {
         private val dateFormatter = SimpleDateFormat("d MMM", Locale.getDefault())
         override fun getFormattedValue(value: Float, axis: AxisBase?): String {
@@ -399,7 +455,8 @@ class GroupFragment : Fragment() {
 
     }
 
-
+    private fun showProgress(){ binding.progress.isVisible=true }
+    private fun hideProgress(){ binding.progress.isVisible=false }
 
 
 }

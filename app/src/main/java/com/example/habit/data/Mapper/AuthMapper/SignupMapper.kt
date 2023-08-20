@@ -9,7 +9,8 @@ class SignupMapper : SignupMapperI<Signup,SignupModel,SignupResponseModel,Signup
     override fun fromSignup(type: Signup): SignupModel {
         return SignupModel(
             email = type.email,
-            password = type.password
+            password = type.password,
+            username = type.username
         )
     }
 

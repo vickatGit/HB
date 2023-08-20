@@ -51,6 +51,8 @@ class SignupActivity : AppCompatActivity() {
         binding.signup.setOnClickListener {
             if(binding.email.text.toString().isBlank()){
                 Toast.makeText(this,"Email can't be blank",Toast.LENGTH_SHORT).show()
+            }else if(binding.username.text.toString().isBlank()){
+                Toast.makeText(this,"Username can't be blank",Toast.LENGTH_SHORT).show()
             }else if(!isEmailValid(binding.email.text.toString())){
                 Toast.makeText(this,"Enter Valid Email",Toast.LENGTH_SHORT).show()
             }else if(binding.password.text.toString().isBlank()){
@@ -60,7 +62,7 @@ class SignupActivity : AppCompatActivity() {
             }else if(!(binding.password.text.toString().equals(binding.confirmPassword.text.toString()))){
                 Toast.makeText(this,"Confirm Password and Password should be same",Toast.LENGTH_SHORT).show()
             }else{
-                viewModel.doSignup(SignupView(binding.email.text.toString(),binding.password.text.toString()))
+                viewModel.doSignup(SignupView(binding.email.text.toString(),binding.password.text.toString(),binding.username.text.toString()))
             }
         }
         binding.navLogin.setOnClickListener {

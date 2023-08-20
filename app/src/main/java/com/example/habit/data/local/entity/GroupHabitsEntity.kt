@@ -22,5 +22,6 @@ data class GroupHabitsEntity (
     var endDate: LocalDate?,
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
+    var members : String,
     var habitSyncType: HabitGroupRecordSyncType = HabitGroupRecordSyncType.SyncedHabit
 ) : Parcelable

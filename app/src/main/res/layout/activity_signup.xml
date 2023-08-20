@@ -120,6 +120,36 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="25dp"
+            android:textColorHint="@color/light_gray_text_color"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:boxStrokeColor="@color/light_gray_text_color"
+            app:boxStrokeWidth="1dp"
+            app:hintEnabled="false"
+            app:hintTextColor="@color/light_gray_text_color"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start"
+            app:layout_constraintTop_toBottomOf="@+id/username_cont"
+            app:startIconDrawable="@drawable/at_sign_icon"
+            app:startIconTint="@color/black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/regular"
+                android:hint="Email Id"
+                android:padding="10dp"
+                android:textSize="14sp" />
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/username_cont"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginTop="30dp"
             android:textColorHint="@color/light_gray_text_color"
             app:boxBackgroundColor="@android:color/transparent"
@@ -134,11 +164,11 @@
             app:startIconTint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email"
+                android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/regular"
-                android:hint="Email ID / User name"
+                android:hint="Username"
                 android:padding="10dp"
                 android:textSize="14sp" />
 

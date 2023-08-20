@@ -29,6 +29,7 @@ class AuthRepoImpl(
             if(response.isSuccessful){
                 response.body()?.let {
                     authPref.setToken(it.token)
+                    authPref.setUserId(it.userId)
                     emit(loginMapper.toLoginResponse(response.body()!!))
                 }
 

@@ -57,7 +57,7 @@ class HabitModule {
             EntryMapper(),
             habitApi,
             connectivityManager,
-            GroupHabitMapper()
+            GroupHabitMapper(HabitMapper(EntryMapper()))
         )
     }
 
@@ -77,8 +77,8 @@ class HabitModule {
     }
 
     @Provides
-    fun uiGroupHabitMapper(): com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper {
-        return com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper()
+    fun uiGroupHabitMapper(habitMapper: com.example.habit.ui.mapper.HabitMapper.HabitMapper): com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper {
+        return com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper(habitMapper)
     }
 
     @Provides

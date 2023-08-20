@@ -60,7 +60,6 @@ class AddHabitFragment : Fragment() {
         // Inflate the layout for this fragment
 
         _binding=FragmentAddHabitBinding.inflate(inflater,container,false)
-        viewModel.getGroupHabits()
         if(isUpdate){
             bindHabitData()
         }else{

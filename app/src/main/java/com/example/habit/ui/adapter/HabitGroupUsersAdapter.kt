@@ -3,15 +3,15 @@ package com.example.habit.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.habit.data.local.entity.HabitEntity
-import com.example.habit.databinding.GroupHabitThumbBinding
 import com.example.habit.databinding.UserProgressItemBinding
 import com.example.habit.ui.callback.HabitClick
+import com.example.habit.ui.model.HabitView
+import com.example.habit.ui.model.UtilModels.UserGroupThumbProgressModel
 import java.text.DecimalFormat
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
-class HabitGroupUsersAdapter(val habits: List<HabitEntity>, val habitClick: HabitClick) : RecyclerView.Adapter<HabitGroupUsersAdapter.UserProgressHolder>() {
+class HabitGroupUsersAdapter(val habits: MutableList<UserGroupThumbProgressModel>, val habitClick: HabitClick) : RecyclerView.Adapter<HabitGroupUsersAdapter.UserProgressHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserProgressHolder {
@@ -27,18 +27,18 @@ class HabitGroupUsersAdapter(val habits: List<HabitEntity>, val habitClick: Habi
     override fun onBindViewHolder(holder: UserProgressHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding?.let {
-            initialiseProgress(habit,it)
-            it.userName.text = habit.title
+            initialiseProgress(habit.habit,it)
+            it.userName.text = habit.member.username
             it.userName.setOnClickListener {
                 habitClick.habitClick(habitId = position.toString())
             }
         }
 
     }
-    private fun initialiseProgress(habit: HabitEntity, binding: UserProgressItemBinding?) {
+    private fun initialiseProgress(habit: HabitView, binding: UserProgressItemBinding?) {
         val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
         var daysCompleted = 0
-        habit.entryList?.mapValues {
+        habit.entries?.mapValues {
 //            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
             if (it.value.completed) ++daysCompleted
 //            }

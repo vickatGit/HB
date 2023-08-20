@@ -4,9 +4,10 @@ package com.example.habit.domain.Repository
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
-import com.example.habit.data.local.entity.HabitGroupWithHabits
+import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.GroupHabit
+import com.example.habit.domain.models.GroupHabitWithHabits
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
 import kotlinx.coroutines.CoroutineScope
@@ -20,9 +21,9 @@ interface HabitRepo {
     suspend fun removeHabit(habitServerId :String? , habitId: String?):Int
     fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>>
 
-    suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<HabitGroupWithHabits>>
+    suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<GroupHabitWithHabits>>
     suspend fun getHabit(habitId:String):Habit
-    suspend fun getGroupHabit(groupId:String):HabitGroupWithHabits
+    suspend fun getGroupHabit(groupId:String): GroupHabitWithHabits
     suspend fun getHabitEntries(habitId: String) : HashMap<LocalDate, Entry>?
     suspend fun updateHabitEntries(habitServerId:String?, habitId: String,entries:HashMap<LocalDate,Entry>) : Int
     suspend fun getHabitThumb(habitId: String): Habit

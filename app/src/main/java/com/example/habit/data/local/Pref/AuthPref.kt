@@ -7,6 +7,7 @@ class AuthPref(context:Context) {
 
 
     private val AUTH_KEY: String?="access_token"
+    private val USER_ID: String?="user_id"
     private lateinit var authPref: SharedPreferences
 
     init {
@@ -19,5 +20,12 @@ class AuthPref(context:Context) {
     }
     fun  getToken():String{
         return authPref!!.getString(AUTH_KEY,null)?:""
+    }
+
+    fun setUserId(userId:String){
+        authPref.edit().putString(USER_ID,userId).commit()
+    }
+    fun getUserId(): String {
+        return authPref!!.getString(USER_ID,null)?:""
     }
 }

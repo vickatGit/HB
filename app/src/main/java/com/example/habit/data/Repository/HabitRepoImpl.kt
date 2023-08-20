@@ -11,7 +11,7 @@ import com.example.habit.data.local.HabitDao
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
-import com.example.habit.data.local.entity.HabitGroupWithHabits
+import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
 import com.example.habit.data.network.HabitApi
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
@@ -21,6 +21,7 @@ import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.GroupHabit
+import com.example.habit.domain.models.GroupHabitWithHabits
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
 import com.google.gson.Gson
@@ -111,7 +112,7 @@ class HabitRepoImpl(
 
 
 
-    override suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<HabitGroupWithHabits>> {
+    override suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<GroupHabitWithHabits>> {
 
             if (isInternetConnected()) {
                 getHabits(coroutineScope)
@@ -127,8 +128,8 @@ class HabitRepoImpl(
                                 groupHabits.let { groupHabit ->
                                     val habits = groupHabit!!.habits
                                     habitsList = habits!!.map {
-                                        it?.startDate = it!!.startDate
-                                        it?.endDate = it!!.endDate
+                                        it?.startDate = groupHabit.startDate
+                                        it?.endDate = groupHabit.endDate
                                         it?.description = groupHabit.description
                                         it?.title = groupHabit.title
                                         it?.habitGroupId= groupHabit.localId
@@ -150,8 +151,10 @@ class HabitRepoImpl(
 
                 })
             }
+        return habitDao.getGroupHabits().map {
+            it.map { groupHabitMapper.toGroupHabitWithHabits(it) }
+        }
 
-        return habitDao.getGroupHabits()
     }
 
     override suspend fun getHabit(habitId: String): Habit {
@@ -161,8 +164,8 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun getGroupHabit(groupId: String): HabitGroupWithHabits {
-        return habitDao.getGroupHabit(groupId)
+    override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits {
+        return groupHabitMapper.toGroupHabitWithHabits(habitDao.getGroupHabit(groupId))
     }
 
 

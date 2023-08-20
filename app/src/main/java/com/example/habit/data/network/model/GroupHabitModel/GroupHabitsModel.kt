@@ -21,17 +21,14 @@ data class GroupHabitModel(
 	val reminderTime: String? ,
 	val habits: List<HabitModel?>? = null,
 	val admin: String? = null,
-	val members: List<String?>? = null,
+	val members: List<MemberModel?>? = null,
 	val v: Int? = null
 
 )
-data class GroupHabit(
+data class MemberModel(
 	@SerializedName("_id")
-	val serverId: String? = null,
-	val localId:String? = null,
-	val reminderTime: String? = null,
-	val entries: List<EntryModel>? = null,
-	val reminderQuestion: String? = null,
-	val isReminderOn: Boolean? = null,
+	val userId: String? = null,
+	val username: String? = null,
+
 )
 

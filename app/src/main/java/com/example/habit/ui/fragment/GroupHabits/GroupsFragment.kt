@@ -1,11 +1,12 @@
 package com.example.habit.ui.fragment.GroupHabits
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,9 +17,9 @@ import com.example.habit.R
 import com.example.habit.databinding.FragmentGroupsBinding
 import com.example.habit.ui.adapter.GroupHabitsAdapter
 import com.example.habit.ui.callback.HabitClick
-import com.example.habit.ui.fragment.AddHabit.AddHabitUiState
-import com.example.habit.ui.fragment.CompletedHabitFragment.CompletedHabitFragment
-import com.example.habit.ui.viewmodel.AddHabitViewModel
+import com.example.habit.ui.fragment.GroupHabit.GroupFragment
+import com.example.habit.ui.fragment.GroupHabit.GroupHabitUiState
+import com.example.habit.ui.viewmodel.GroupHabitViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -27,8 +28,8 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class GroupsFragment : Fragment() {
 
-    val viewModel:AddHabitViewModel by viewModels()
-    lateinit var groAd:GroupHabitsAdapter
+    val viewModel: GroupHabitViewModel by viewModels()
+    lateinit var groupHabitsAdapter: GroupHabitsAdapter
 
     private var _binding: FragmentGroupsBinding? = null
     private val binding get() = _binding!!
@@ -42,26 +43,33 @@ class GroupsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentGroupsBinding.inflate(inflater,container,false)
-        binding.ongoingHabits.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+        _binding = FragmentGroupsBinding.inflate(inflater, container, false)
+        binding.ongoingHabits.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collectLatest {
-                    when(it){
-                        is AddHabitUiState.Habits -> {
-                            groAd= GroupHabitsAdapter(it.habits, object : HabitClick {
+                    when (it) {
+                        is GroupHabitUiState.Habits -> {
+                            groupHabitsAdapter = GroupHabitsAdapter(it.habits, object : HabitClick {
                                 override fun habitClick(habitId: String) {
                                     findNavController().navigate(
                                         R.id.action_groupsFragment_to_groupFragment,
-                                        Bundle().apply { putString("group_habit_id", habitId) }
+                                        Bundle().apply { putString(GroupFragment.GROUP_HABIT_ID, habitId) }
                                     )
-                                } })
-                            binding.ongoingHabits.adapter=groAd
+                                }
+                            })
+                            binding.ongoingHabits.adapter = groupHabitsAdapter
+                            hideProgress()
                         }
-                        else -> {
-
+                        is GroupHabitUiState.Error -> {
+                            Toast.makeText(requireContext(), it.error, Toast.LENGTH_SHORT).show()
+                            hideProgress()
                         }
+                        GroupHabitUiState.Loading -> {showProgress()}
+                        GroupHabitUiState.Nothing -> {hideProgress()}
+                        else -> {}
                     }
 
                 }
@@ -72,5 +80,7 @@ class GroupsFragment : Fragment() {
         return binding.root
     }
 
+    private fun showProgress(){ binding.progress.isVisible=true }
+    private fun hideProgress(){ binding.progress.isVisible=false }
 
 }

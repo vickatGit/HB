@@ -3,14 +3,14 @@ package com.example.habit.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.habit.data.local.entity.HabitEntity
 import com.example.habit.databinding.GroupHabitThumbBinding
+import com.example.habit.domain.models.Habit
 import com.example.habit.ui.callback.HabitClick
 import java.text.DecimalFormat
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
 
-class GroupHabitsAdapter(val habits: List<HabitEntity>, val habitClick: HabitClick) : RecyclerView.Adapter<GroupHabitsAdapter.GroupHabitHolder>() {
+class GroupHabitsAdapter(val habits: List<Habit>, val habitClick: HabitClick) : RecyclerView.Adapter<GroupHabitsAdapter.GroupHabitHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupHabitHolder {
@@ -34,10 +34,10 @@ class GroupHabitsAdapter(val habits: List<HabitEntity>, val habitClick: HabitCli
         }
 
     }
-    private fun initialiseProgress(habit: HabitEntity, binding: GroupHabitThumbBinding?) {
+    private fun initialiseProgress(habit: Habit, binding: GroupHabitThumbBinding?) {
         val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
         var daysCompleted = 0
-        habit.entryList?.mapValues {
+        habit.entries?.mapValues {
 //            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
             if (it.value.completed) ++daysCompleted
 //            }

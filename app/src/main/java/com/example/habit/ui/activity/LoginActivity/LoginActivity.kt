@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.auth0.android.jwt.JWT
 import com.example.habit.R
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.ActivityLoginBinding
 import com.example.habit.domain.models.Login.LoginView
 import com.example.habit.ui.activity.HomeActivity
@@ -45,6 +46,9 @@ class LoginActivity : AppCompatActivity() {
 
      private val viewModel:AuthViewModel  by viewModels()
 
+    @Inject
+    lateinit var authPref: AuthPref
+
     private lateinit var authState: AuthState
     private lateinit var googleAuthService: AuthorizationService
     private lateinit var googleAuthRequest: AuthorizationRequest
@@ -57,6 +61,10 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if(authPref.getToken()!=null && !authPref.getToken().isBlank()){
+            startActivity(Intent(this@LoginActivity,HomeActivity::class.java))
+            finish()
+        }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.login.collectLatest { 

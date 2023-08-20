@@ -1,15 +1,26 @@
 package com.example.habit.data.Mapper.GroupHabitMapper
 
+import com.example.habit.data.Mapper.HabitMapper.HabitMapper
 import com.example.habit.data.local.entity.GroupHabitsEntity
+import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitModel
+import com.example.habit.data.network.model.GroupHabitModel.MemberModel
 import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.models.GroupHabit
+import com.example.habit.domain.models.GroupHabitWithHabits
+import com.example.habit.domain.models.Member
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class GroupHabitMapper : GroupHabitMapperI<GroupHabitModel,GroupHabitsEntity,GroupHabit> {
+
+class GroupHabitMapper @Inject constructor(
+    private val habitMapper: HabitMapper
+) : GroupHabitMapperI<GroupHabitModel,GroupHabitsEntity,GroupHabit,GroupHabitWithHabits,HabitGroupWithHabitsEntity> {
     override fun toGroupHabitEntity(type: GroupHabitsEntity): GroupHabitModel {
         return GroupHabitModel(
             type.serverId,
@@ -34,7 +45,8 @@ class GroupHabitMapper : GroupHabitMapperI<GroupHabitModel,GroupHabitsEntity,Gro
             localDateConverter(type.startDate.toString()),
             localDateConverter(type.endDate.toString()),
             type.isReminderOn,
-            localDateTimeConverter(type.reminderTime.toString())
+            localDateTimeConverter(type.reminderTime.toString()),
+            Gson().toJson(type.members)
         )
     }
     private fun localDateConverter(date:String): LocalDate? {
@@ -69,7 +81,35 @@ class GroupHabitMapper : GroupHabitMapperI<GroupHabitModel,GroupHabitsEntity,Gro
             type.endDate,
             type.isReminderOn,
             type.reminderTime,
+            Gson().toJson(type.members)?:"",
             syncType
+        )
+    }
+
+    override fun toGroupHabitWithHabits(type: HabitGroupWithHabitsEntity): GroupHabitWithHabits {
+        return GroupHabitWithHabits(
+            toGroupHabit(type.habitGroup),
+            type.habits.map {
+                habitMapper.mapToHabit(it)
+            }
+        )
+    }
+
+    override fun toGroupHabit(type: GroupHabitsEntity): GroupHabit {
+        val memberListType = object : TypeToken<List<Member>>() {}.type
+        val members : List<Member> = Gson().fromJson(type.members,memberListType)
+        return GroupHabit(
+            type.localId,
+            type.serverId,
+            type.title,
+            type.description,
+            type.reminderQuestion,
+            type.startDate,
+            type.endDate,
+            type.isReminderOn,
+            type.reminderTime,
+            members
+
         )
     }
 }

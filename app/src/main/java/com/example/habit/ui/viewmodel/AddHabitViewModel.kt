@@ -11,6 +11,7 @@ import com.example.habit.domain.UseCases.HabitUseCase.DeleteAlarmUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitsUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.UpdateGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitEntriesUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitUseCase
 import com.example.habit.domain.models.Entry
@@ -18,6 +19,7 @@ import com.example.habit.ui.fragment.AddHabit.AddHabitUiState
 import com.example.habit.ui.mapper.HabitMapper.EntryMapper
 import com.example.habit.ui.mapper.HabitMapper.HabitMapper
 import com.example.habit.ui.model.EntryView
+import com.example.habit.ui.model.GroupHabitView
 import com.example.habit.ui.model.HabitView
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +39,8 @@ class AddHabitViewModel @Inject constructor(
     private val deleteAlarmUseCase: DeleteAlarmUseCase,
     private val addGroupHabitUseCase: AddGroupHabitUseCase,
     private val habitMapper: HabitMapper,
-    private val groupHabitMapper: com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper
+    private val groupHabitMapper: com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper,
+    private val updateGroupHabitUseCase: UpdateGroupHabitUseCase
 ) : ViewModel() {
 
 
@@ -115,6 +118,19 @@ class AddHabitViewModel @Inject constructor(
                 _uiState.update { AddHabitUiState.Error(e.message ?: "") }
             }
 
+        }
+    }
+
+    fun updateGroupHabit(groupHabitView: GroupHabitView) {
+        viewModelScope.launch {
+            try {
+                updateGroupHabitUseCase(groupHabitMapper.toGroupHabit(groupHabitView))
+                _uiState.update { AddHabitUiState.Success("Habit Group Updated") }
+
+            } catch (e: Exception) {
+                Log.e("TAG", "updateGroupHabit: ${e.printStackTrace()}",)
+                _uiState.update { AddHabitUiState.Error(e.message + "") }
+            }
         }
     }
 

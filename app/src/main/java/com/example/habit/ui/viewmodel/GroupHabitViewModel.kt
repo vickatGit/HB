@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitsUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.UpdateGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitEntriesUseCase
 import com.example.habit.domain.models.Entry
 import com.example.habit.ui.fragment.GroupHabit.GroupHabitUiState

@@ -25,6 +25,15 @@
             app:argType="com.example.habit.ui.model.HabitView"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="isFromGroupHabitUpdate"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="groupHabit"
+            app:argType="com.example.habit.ui.model.GroupHabitView"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <dialog
         android:id="@+id/dateFragment"
@@ -126,5 +135,8 @@
             android:name="group_habit_id"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_groupFragment_to_addHabitFragment"
+            app:destination="@id/addHabitFragment" />
     </fragment>
 </navigation>

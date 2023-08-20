@@ -1,9 +1,12 @@
 package com.example.habit.ui.model
 
+import android.os.Parcelable
 import com.example.habit.domain.models.Member
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@Parcelize
 data class GroupHabitView(
     var id:String,
     var serverId:String?=null,
@@ -15,4 +18,6 @@ data class GroupHabitView(
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
     var members : List<MemberView>? = null
-)
+) : Parcelable{
+    constructor():this("",null,null,null,null,null,null,null,null)
+}

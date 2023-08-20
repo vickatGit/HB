@@ -13,6 +13,7 @@ import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Dao
 interface HabitDao {
@@ -72,5 +73,27 @@ interface HabitDao {
 
     @Query("DELETE FROM HabitEntity WHERE id=:habitId")
     suspend fun deleteHabit(habitId: String):Int
+
+    @Query("UPDATE HabitEntity SET " +
+            "title=:title," +
+            "description=:description,"+
+            "startDate=:startDate,"+
+            "endDate=:endDate,"+
+            "isReminderOn=:isReminderOn,"+
+            "reminderQuestion=:reminderQuestion,"+
+            "habitSyncType=:syncType,"+
+            "reminderTime=:reminderTime WHERE id=:groupId"
+    )
+    suspend fun updateGroupHabit(
+        groupId:String,
+        title:String,
+        description:String,
+        startDate:LocalDate,
+        endDate:LocalDate,
+        isReminderOn:Boolean,
+        reminderQuestion:String,
+        reminderTime:LocalDateTime,
+        syncType:HabitRecordSyncType = HabitRecordSyncType.UpdateHabit
+    ):Int
 
 }

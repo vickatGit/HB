@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habit.R
 import com.example.habit.data.local.Pref.AuthPref
@@ -127,6 +128,17 @@ class GroupFragment : Fragment() {
             }
         }
         groupId?.let { viewModel.getGroupHabit(it) }
+
+        binding.edit.setOnClickListener {
+            val args = Bundle().apply {
+                putBoolean("isFromGroupHabitUpdate", true)
+                putParcelable("groupHabit", groupHabit.habitGroup)
+            }
+            findNavController().navigate(
+                R.id.action_groupFragment_to_addHabitFragment,
+                args
+            )
+        }
 
         return binding.root
     }

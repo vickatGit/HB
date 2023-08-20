@@ -18,6 +18,8 @@ import com.example.habit.R
 import com.example.habit.databinding.FragmentAddHabitBinding
 import com.example.habit.ui.fragment.Date.DateFragment
 import com.example.habit.ui.fragment.time.TimerFragment
+import com.example.habit.ui.model.GroupHabitView
+import com.example.habit.ui.model.GroupHabitWithHabitsView
 import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.viewmodel.AddHabitViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,12 +38,14 @@ import java.util.UUID
 @AndroidEntryPoint
 class AddHabitFragment : Fragment() {
 
+    private var isGroupUpdate: Boolean=false
     private var selectedHabitType: Int = 0
     private var _binding: FragmentAddHabitBinding? = null
     private val binding get() = _binding!!
     private val viewModel:AddHabitViewModel by viewModels()
     private var isStart=false
     private var habit= HabitView()
+    private var groupHabit= GroupHabitView()
     private var isUpdate:Boolean=false
     private val habitTypes = listOf<String>("Personal","Group")
     private lateinit var habitTypeAdapter:ArrayAdapter<String>
@@ -50,7 +54,9 @@ class AddHabitFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isUpdate = arguments?.getBoolean("isUpdate")?:false
+        isGroupUpdate = arguments?.getBoolean("isFromGroupHabitUpdate",false)?:false
         if(isUpdate) habit=arguments?.getParcelable("habit")!!
+        if(isGroupUpdate) groupHabit=arguments?.getParcelable("groupHabit")!!
     }
 
     override fun onCreateView(
@@ -63,7 +69,12 @@ class AddHabitFragment : Fragment() {
         if(isUpdate){
             bindHabitData()
         }else{
-           habit.id=UUID.randomUUID().toString()
+            if(isGroupUpdate){
+                bindGroupHabitHabitData()
+                binding.habitTypeCont.isVisible=false
+            }else {
+                habit.id = UUID.randomUUID().toString()
+            }
         }
 
         habitTypeAdapter=
@@ -139,8 +150,24 @@ class AddHabitFragment : Fragment() {
                     habit.title = title
                     habit.description = description
                     habit.reminderQuestion=reminderQuestion
-                    if(isUpdate)
-                        viewModel.updateHabit(habit, requireContext())
+                    if(isUpdate || isGroupUpdate)
+                        if(isUpdate) {
+                            viewModel.updateHabit(habit, requireContext())
+                        }else{
+                            viewModel.updateGroupHabit(
+                                GroupHabitView(
+                                    groupHabit.id,
+                                    groupHabit.serverId,
+                                    habit.title,
+                                    habit.description,
+                                    habit.reminderQuestion,
+                                    habit.startDate,
+                                    habit.endDate,
+                                    habit.isReminderOn,
+                                    habit.reminderTime
+                                )
+                            )
+                        }
                     else {
                         if(selectedHabitType==0)
                             viewModel.addHabit(habit, requireContext())
@@ -208,6 +235,16 @@ class AddHabitFragment : Fragment() {
         binding.reminderQuestion.setText(habit.reminderQuestion)
         binding.description.setText(habit.description)
         binding.reminderSwitch.isChecked=habit.isReminderOn!!
+    }
+
+    private fun bindGroupHabitHabitData() {
+        binding.title.setText(groupHabit.title)
+        binding.reminder.text = "Daily at ${timeFormatter(groupHabit.reminderTime!!)}"
+        binding.startDate.setText(dateFormatter(groupHabit.startDate!!))
+        binding.endDate.setText(dateFormatter(groupHabit.endDate!!))
+        binding.reminderQuestion.setText(groupHabit.reminderQuestion)
+        binding.description.setText(groupHabit.description)
+        binding.reminderSwitch.isChecked=groupHabit.isReminderOn!!
     }
 
     private fun showToast(message: String) {

@@ -18,6 +18,7 @@ interface HabitRepo {
     suspend fun addHabit(habit: Habit)
     suspend fun addGroupHabit(habit: GroupHabit)
     suspend fun updateHabit(habit: Habit)
+    suspend fun updateGroupHabit(habit: GroupHabit)
     suspend fun removeHabit(habitServerId :String? , habitId: String?):Int
     fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>>
 
@@ -36,6 +37,7 @@ interface HabitRepo {
     suspend fun updateHabitEntriesToRemote(habitServerId:String?, entryList: Map<LocalDate, EntryEntity>?)
     suspend fun deleteFromLocal(id: String): Int
     suspend fun addGroupHabitToRemote(fromGroupHabit: GroupHabitsEntity)
+    suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity)
 
 
 }

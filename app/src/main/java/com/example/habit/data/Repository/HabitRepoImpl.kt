@@ -73,6 +73,24 @@ class HabitRepoImpl(
         }
     }
 
+    override suspend fun updateGroupHabit(habit: GroupHabit) {
+        val groupHabit = groupHabitMapper.fromGroupHabit(habit,HabitGroupRecordSyncType.UpdateHabit)
+        habitDao.updateGroupHabit(
+            groupHabit.localId,
+            groupHabit.title!!,
+            groupHabit.description!!,
+            groupHabit.startDate!!,
+            groupHabit.endDate!!,
+            groupHabit.isReminderOn!!,
+            groupHabit.reminderQuestion!!,
+            groupHabit.reminderTime!!
+        )
+        if(isInternetConnected()){
+            updateGroupHabitToRemote(groupHabit)
+        }
+    }
+
+
     override suspend fun removeHabit(habitServerId:String? , habitId: String?): Int {
         val res = habitDao.updateDeleteStatus(habitId!!)
         if(isInternetConnected()){
@@ -262,6 +280,8 @@ class HabitRepoImpl(
         }
     }
 
+
+
     override suspend fun updateHabitEntriesToRemote(habitServerId: String?,entryList: Map<LocalDate, EntryEntity>?) {
         habitServerId?.let {
             habitApi.updateHabitEntries(  EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),
@@ -300,6 +320,24 @@ class HabitRepoImpl(
             }
 
         })
+    }
+
+    override suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity) {
+        habitApi.updateGroupHabit(groupHabitMapper.toGroupHabitEntity(groupHabit),groupHabit.serverId!!).enqueue(
+            object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    Log.e("TAG", "updateGroupHabitToRemote onResponse: $response", )
+                    if(response.isSuccessful){
+                        CoroutineScope(Dispatchers.IO).launch {
+                            getGroupHabits(this)
+                        }
+                    }
+                }
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.e("TAG", "updateGroupHabitToRemote onFailure: ${t.printStackTrace()}", )
+                }
+
+            })
     }
 
     //Not Using this function

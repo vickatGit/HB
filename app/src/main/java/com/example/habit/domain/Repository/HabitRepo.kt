@@ -4,7 +4,6 @@ package com.example.habit.domain.Repository
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
-import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.GroupHabit
 import com.example.habit.domain.models.GroupHabitWithHabits
@@ -24,7 +23,7 @@ interface HabitRepo {
 
     suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<GroupHabitWithHabits>>
     suspend fun getHabit(habitId:String):Habit
-    suspend fun getGroupHabit(groupId:String): GroupHabitWithHabits
+    suspend fun getGroupHabit(groupId:String): GroupHabitWithHabits?
     suspend fun getHabitEntries(habitId: String) : HashMap<LocalDate, Entry>?
     suspend fun updateHabitEntries(habitServerId:String?, habitId: String,entries:HashMap<LocalDate,Entry>) : Int
     suspend fun getHabitThumb(habitId: String): Habit
@@ -40,4 +39,14 @@ interface HabitRepo {
     suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity)
 
 
+    suspend fun removeGroupHabit(habitServerId: String?, habitId: String?): Int
+    suspend fun deleteGroupHabitFromRemote(habitGroupId: String, habitGroupServerId: String?)
+    suspend fun deleteGroupHabitFromLocal(habitGroupId: String): Int
+
+    suspend fun removeMembersFromGroupHabit(
+        habitGroupId: String,
+        groupHabitServerId: String?,
+        userIds: List<String>
+    ) : Int
+    suspend fun removedMembersFromGroupHabitFromRemote(habitGroupId: String?, userIds: List<String>)
 }

@@ -12,11 +12,11 @@ import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
-import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
 import com.example.habit.data.network.HabitApi
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
 import com.example.habit.data.network.model.UpdateHabitEntriesModel.EntriesModel
+import com.example.habit.data.network.model.UserIdsModel.UserIdsModel
 import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
@@ -29,7 +29,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -97,7 +96,14 @@ class HabitRepoImpl(
             deleteFromRemote(habitId,habitServerId)
         }
         return res
-//        return habitDao.deleteHabit(habitId)
+    }
+
+    override suspend fun removeGroupHabit(groupHabitServerId:String? , groupHabitId: String?): Int {
+        val res = habitDao.updateGroupHabitDeleteStatus(groupHabitId!!)
+        if(isInternetConnected()){
+            deleteGroupHabitFromRemote(groupHabitId,groupHabitServerId)
+        }
+        return res
     }
 
     override fun getHabits(coroutineScope:CoroutineScope): Flow<List<HabitThumb>> {
@@ -160,6 +166,7 @@ class HabitRepoImpl(
                             }
                         }
                         coroutineScope.launch {
+                            habitDao.deleteAllGroupHabits()
                             groupHabits?.let { habitDao.addGroupHabit(groupHabits) }
                             habitDao.addHabit(habitsList)
                         }
@@ -171,7 +178,7 @@ class HabitRepoImpl(
 
                 })
             }
-        return habitDao.getGroupHabitThumbs(authPref.getUserId()).map {
+        return habitDao.getGroupHabits().map {
             it.map { groupHabitMapper.toGroupHabitWithHabits(it) }
         }
 
@@ -184,8 +191,10 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits {
-        return groupHabitMapper.toGroupHabitWithHabits(habitDao.getGroupHabit(groupId))
+    override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits? {
+        val res =habitDao.getGroupHabit(groupId)
+        Log.e("TAG", "getGroupHabit: $res", )
+        return res?.let { groupHabitMapper.toGroupHabitWithHabits(res)}
     }
 
 
@@ -236,6 +245,30 @@ class HabitRepoImpl(
             })
         }else{
             deleteFromLocal(habitId)
+        }
+    }
+    override suspend fun deleteGroupHabitFromRemote(habitGroupId: String, habitGroupServerId: String?) {
+        if(habitGroupServerId!=null) {
+            habitApi.deleteGroupHabit(  habitGroupServerId).enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    Log.e("TAG", "onResponse: deleteHabitGroupFromRemote $response",)
+                    if (response.code() == 200) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            habitDao.updateGroupHabitDeleteStatus(
+                                habitId = habitGroupId,
+                                shouldDelete = HabitGroupRecordSyncType.DeletedHabit
+                            )
+                            deleteGroupHabitFromLocal(habitGroupId)
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.e("TAG", "onFailure: deleteFromRemote",)
+                }
+            })
+        }else{
+            deleteGroupHabitFromLocal(habitGroupId)
         }
     }
 
@@ -304,6 +337,42 @@ class HabitRepoImpl(
 
     override suspend fun deleteFromLocal(habitId: String): Int {
         return habitDao.deleteHabit(habitId = habitId)
+    }
+
+    override suspend fun deleteGroupHabitFromLocal(habitGroupId: String): Int {
+        return habitDao.deleteGroupHabit(habitGroupId = habitGroupId)
+    }
+
+    override suspend fun removeMembersFromGroupHabit(
+        habitGroupId: String,
+        groupHabitServerId: String?,
+        userIds: List<String>
+    ): Int {
+        if(isInternetConnected()){
+            removedMembersFromGroupHabitFromRemote(groupHabitServerId,userIds)
+        }
+        return habitDao.removeMembersFromGroupHabit(habitGroupId = habitGroupId, userIds = userIds)
+    }
+
+    override suspend fun removedMembersFromGroupHabitFromRemote(
+        groupHabitServerId: String?,
+        userIds: List<String>
+    ) {
+        groupHabitServerId?.let {groupHabitId ->
+            habitApi.removeMemberFromGroup(groupHabitId, UserIdsModel(userIds)).enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    if(response.isSuccessful){
+                        Log.e("TAG", "onResponse: ${response.body()}", )
+                    }
+                }
+
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.e("TAG", "onFailure: removedMembersFromGroupHabitFromRemote ${t.printStackTrace()}", )
+                }
+
+            })
+        }
+
     }
 
     override suspend fun addGroupHabitToRemote(habitEntity: GroupHabitsEntity) {

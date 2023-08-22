@@ -64,6 +64,8 @@ class GroupFragment : Fragment() {
         val GROUP_HABIT_ID: String = "group_habit_id"
     }
 
+    private lateinit var users: MutableList<UserGroupThumbProgressModel>
+
     @Inject
     lateinit var authPref: AuthPref
     private val viewModel: GroupHabitViewModel by viewModels()
@@ -110,13 +112,18 @@ class GroupFragment : Fragment() {
                     when (it) {
                         is GroupHabitUiState.GroupHabit -> {
                             groupHabit = it.groupHabit
+                            Log.e("TAG", "onCreateView: $groupHabit", )
                             bindData()
-                            bindUserHabitData(groupHabit.habits.get(viewModel.getHabitStatePos()))
                             hideProgress()
                         }
                         is GroupHabitUiState.Error -> {
                             Toast.makeText(requireContext(),it.error,Toast.LENGTH_SHORT).show()
                             hideProgress()
+                        }
+                        is GroupHabitUiState.Success -> {
+                            Toast.makeText(requireContext(),it.msg,Toast.LENGTH_SHORT).show()
+                            hideProgress()
+                            requireActivity().onBackPressed()
                         }
                         GroupHabitUiState.Loading -> {
                             showProgress()
@@ -140,6 +147,15 @@ class GroupFragment : Fragment() {
             )
         }
 
+        binding.delete.setOnClickListener {
+            viewModel.deleteGroupHabit(groupHabit.habitGroup.id,groupHabit.habitGroup.serverId)
+        }
+        binding.leaveHabitGroupCard.setOnClickListener {
+            viewModel.removeMembersFromGroupHabit(groupHabit.habitGroup.serverId,groupHabit.habitGroup.id,
+                listOf(users.get(viewModel.getHabitStatePos()).member.userId!!)
+            )
+        }
+
         return binding.root
     }
 
@@ -148,18 +164,32 @@ class GroupFragment : Fragment() {
         setupRecyclerView()
     }
     private fun setupRecyclerView() {
-        var users: MutableList<UserGroupThumbProgressModel> = mutableListOf()
+        users = mutableListOf()
         var members = groupHabit.habitGroup.members?: emptyList()
+        Log.e("TAG", "setupRecyclerView: members $members", )
 
-        members.forEach {
-            users.add(
-                UserGroupThumbProgressModel(
-                    groupHabit.habits.find { habit ->
-                        habit.userId.equals(it.userId)
-                    }!!,
-                    it
+
+        //don't know the reason of error that's why added Try-Catch
+        try {
+            members.forEach {
+                users.add(
+                    UserGroupThumbProgressModel(
+                        groupHabit?.habits?.find { habit ->
+                            habit.userId.equals(it.userId)
+                        }!!,
+                        it
+                    )
                 )
-            )
+            }
+            val userIndex = users.indexOfFirst { it.member.userId==authPref.getUserId() }
+            val user = users.get(userIndex)
+            user.member.username="Me"
+            users.removeAt(userIndex)
+            users.add(0,user)
+
+
+        }catch (e:Exception){
+            Log.e("TAG", "setupRecyclerView: ${e}", )
         }
 
         binding.userHabitsPercentage.layoutManager =
@@ -167,25 +197,33 @@ class GroupFragment : Fragment() {
         usersAdapter = HabitGroupUsersAdapter(users,
             object : HabitClick {
                 override fun habitClick(habitId: String) {
-                    bindUserHabitData(groupHabit.habits.get(habitId.toInt()))
+                    bindUserHabitData(users.get(habitId.toInt()).habit)
                     viewModel.setHabitStatePos(habitId.toInt())
                 }
 
             })
         binding.userHabitsPercentage.adapter = usersAdapter
+        bindUserHabitData(users.get(viewModel.getHabitStatePos()).habit)
 
     }
 
     private fun bindUserHabitData(habit: HabitView) {
-        Log.e("TAG", "bindUserHabitData: userId ${authPref.getUserId()} habit userId ${habit.userId}", )
-        Toast.makeText(requireContext(), "user selected ${authPref.getUserId().equals(habit.userId)}", Toast.LENGTH_SHORT).show()
-        binding.streakEditSwitch.isVisible= authPref.getUserId().equals(habit.userId)
+//        Log.e("TAG", "bindUserHabitData: userId ${authPref.getUserId()} habit userId ${habit.userId}", )
+//        Toast.makeText(requireContext(), "user selected ${authPref.getUserId().equals(habit.userId)}", Toast.LENGTH_SHORT).show()
+        val isAdmin = authPref.getUserId().equals(groupHabit.habitGroup.admin)
+        binding.streakEditSwitch.isVisible= authPref.getUserId() == habit.userId
+        binding.leaveHabitGroupCard.isVisible= authPref.getUserId() == habit.userId
+        binding.edit.isVisible = isAdmin
+        binding.delete.isVisible = isAdmin
+
+
         habit.entries?.let {
             habitEntries = it
             habitEntries?.map {
                 selectedDates.put(it.key, it.value.timestamp!!)
             }
         }
+
         bindStreakInfo(habit)
         initialiseCalendar(habit.startDate!!, habit.endDate!!, habit)
         initialiseConsistencyGraph(habit.entries)

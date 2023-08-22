@@ -5,6 +5,7 @@ import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitModel
 import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
 import com.example.habit.data.network.model.UpdateHabitEntriesModel.EntriesModel
+import com.example.habit.data.network.model.UserIdsModel.UserIdsModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -38,6 +39,12 @@ interface HabitApi {
     @PATCH("/habit/group/update_habit/{groupId}")
     fun updateGroupHabit(@Body groupHabitModel:GroupHabitModel,@Path("groupId") id:String):Call<Any>
 
+    @DELETE("/habit/group/delete_habit/{groupId}")
+    fun deleteGroupHabit(@Path("groupId") id:String):Call<Any>
+
     @DELETE("/habit/delete_habit/{id}")
     fun deleteHabit(  @Path("id") id:String):Call<Any>
+
+    @PATCH("habit/group/remove_member/{habitGroupId}")
+    fun removeMemberFromGroup(@Path("habitGroupId") habitGroupId:String, @Body userIds: UserIdsModel):Call<Any>
 }

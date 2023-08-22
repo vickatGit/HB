@@ -1,7 +1,9 @@
 package com.example.habit.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habit.databinding.UserProgressItemBinding
 import com.example.habit.ui.callback.HabitClick
@@ -13,6 +15,13 @@ import kotlin.math.roundToInt
 
 class HabitGroupUsersAdapter(val habits: MutableList<UserGroupThumbProgressModel>, val habitClick: HabitClick) : RecyclerView.Adapter<HabitGroupUsersAdapter.UserProgressHolder>() {
 
+    private var selectedPosition = 0
+    private lateinit var recycler :RecyclerView
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        recycler=recyclerView
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserProgressHolder {
         return UserProgressHolder(
@@ -28,9 +37,17 @@ class HabitGroupUsersAdapter(val habits: MutableList<UserGroupThumbProgressModel
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding?.let {
             initialiseProgress(habit.habit,it)
+            it.userName.isChecked = selectedPosition==holder.absoluteAdapterPosition
             it.userName.text = habit.member.username
             it.userName.setOnClickListener {
-                habitClick.habitClick(habitId = position.toString())
+                recycler.post {
+                    val previousItem: Int = selectedPosition
+                    selectedPosition= holder.absoluteAdapterPosition
+
+                    habitClick.habitClick(habitId = position.toString())
+                    notifyItemChanged(previousItem)
+                    notifyItemChanged(selectedPosition)
+                }
             }
         }
 

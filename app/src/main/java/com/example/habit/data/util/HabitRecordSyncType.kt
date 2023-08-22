@@ -6,6 +6,7 @@ enum class HabitRecordSyncType {
     DeleteHabit,
     DeletedHabit,
     UpdateHabit,
-    UpdateHabitEntries
+    UpdateHabitEntries,
+    REMOVED_USER_FROM_GROUP_HABIT
 
 }

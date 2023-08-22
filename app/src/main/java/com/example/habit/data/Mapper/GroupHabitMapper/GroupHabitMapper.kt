@@ -31,7 +31,7 @@ class GroupHabitMapper @Inject constructor(
             type.endDate.toString(),
             type.isReminderOn,
             type.reminderQuestion!!,
-            type.reminderTime.toString()
+            type.reminderTime.toString(),
         )
     }
 
@@ -46,7 +46,8 @@ class GroupHabitMapper @Inject constructor(
             localDateConverter(type.endDate.toString()),
             type.isReminderOn,
             localDateTimeConverter(type.reminderTime.toString()),
-            Gson().toJson(type.members)
+            Gson().toJson(type.members),
+            admin = type.admin
         )
     }
     private fun localDateConverter(date:String): LocalDate? {
@@ -82,7 +83,8 @@ class GroupHabitMapper @Inject constructor(
             type.isReminderOn,
             type.reminderTime,
             Gson().toJson(type.members)?:"",
-            syncType
+            syncType,
+            type.admin
         )
     }
 
@@ -108,8 +110,8 @@ class GroupHabitMapper @Inject constructor(
             type.endDate,
             type.isReminderOn,
             type.reminderTime,
-            members
-
+            members,
+            type.admin
         )
     }
 }

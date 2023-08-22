@@ -23,5 +23,6 @@ data class GroupHabitsEntity (
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
     var members : String,
-    var habitSyncType: HabitGroupRecordSyncType = HabitGroupRecordSyncType.SyncedHabit
+    var habitSyncType: HabitGroupRecordSyncType = HabitGroupRecordSyncType.SyncedHabit,
+    val admin: String? = null
 ) : Parcelable

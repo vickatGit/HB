@@ -4,15 +4,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.GroupHabitThumbBinding
 import com.example.habit.domain.models.GroupHabitWithHabits
 import com.example.habit.domain.models.Habit
 import com.example.habit.ui.callback.HabitClick
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.DecimalFormat
 import java.time.temporal.ChronoUnit
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
-class GroupHabitsAdapter(val habits: List<GroupHabitWithHabits>, val habitClick: HabitClick) : RecyclerView.Adapter<GroupHabitsAdapter.GroupHabitHolder>() {
+
+class GroupHabitsAdapter(val userId:String, val habits: List<GroupHabitWithHabits>, val habitClick: HabitClick) : RecyclerView.Adapter<GroupHabitsAdapter.GroupHabitHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupHabitHolder {
@@ -27,13 +31,15 @@ class GroupHabitsAdapter(val habits: List<GroupHabitWithHabits>, val habitClick:
 
     override fun onBindViewHolder(holder: GroupHabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
-        holder.binding?.let {
-            try { initialiseProgress(habit.habits.get(0),it) }catch (e:Exception){ Log.e("tag", "onBindViewHolder: ${e.printStackTrace()}", )}
+        holder.binding?.let { binding ->
+            val userHabit =  habit.habits.find { it.userId.equals(userId) }
+            userHabit?.let {  habit ->  initialiseProgress(habit,binding) }
 
-            it.habit.text = habit.habitGroup.title
-            it.totalMembers.text =""+habit.habitGroup.members?.size
 
-            it.habitContainer.setOnClickListener {
+            binding.habit.text = habit.habitGroup.title
+            binding.totalMembers.text =""+habit.habitGroup.members?.size
+
+            binding.habitContainer.setOnClickListener {
                 habitClick.habitClick(habitId = habit.habitGroup.id.toString())
             }
         }

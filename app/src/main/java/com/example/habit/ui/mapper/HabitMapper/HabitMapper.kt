@@ -1,5 +1,6 @@
 package com.example.habit.ui.mapper.HabitMapper
 
+import android.util.Log
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
 import com.example.habit.ui.model.EntryView
@@ -26,6 +27,7 @@ class HabitMapper @Inject constructor(val entryMapper: EntryMapper) :
     }
 
     override fun mapToHabit(type: Habit): HabitView {
+        Log.e("TAG", "mapToHabit: $type", )
         return HabitView(
             type.id,
             type.serverId,
@@ -40,7 +42,9 @@ class HabitMapper @Inject constructor(val entryMapper: EntryMapper) :
                 it.mapValues {
                     entryMapper.mapFromEntry(it.value)
                 }.toMutableMap() as HashMap<LocalDate, EntryView>
-            }
+            },
+            type.habitGroupId?:null,
+            type.userId?:null
 
 
         )

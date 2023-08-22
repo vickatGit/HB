@@ -17,7 +17,8 @@ data class GroupHabitView(
     var endDate: LocalDate?,
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
-    var members : List<MemberView>? = null
+    var members : List<MemberView>? = null,
+    val admin: String? = null,
 ) : Parcelable{
     constructor():this("",null,null,null,null,null,null,null,null)
 }

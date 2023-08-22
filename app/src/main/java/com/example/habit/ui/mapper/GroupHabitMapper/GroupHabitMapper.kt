@@ -28,7 +28,8 @@ class GroupHabitMapper @Inject constructor(
             type.startDate,
             type.endDate,
             type.isReminderOn,
-            type.reminderTime
+            type.reminderTime,
+            admin = type.admin
 
         )
     }
@@ -47,7 +48,8 @@ class GroupHabitMapper @Inject constructor(
             type.reminderTime,
             type.members?.map {
                 fromMember(it)
-            }
+            },
+            type.admin
 
 
         )
@@ -63,7 +65,7 @@ class GroupHabitMapper @Inject constructor(
             type.startDate,
             type.endDate,
             type.isReminderOn,
-            type.reminderTime
+            type.reminderTime,
         )
     }
 

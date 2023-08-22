@@ -3,9 +3,10 @@ package com.example.habit.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.habit.domain.UseCases.HabitUseCase.DeleteGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitsUseCase
-import com.example.habit.domain.UseCases.HabitUseCase.UpdateGroupHabitUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.RemoveMembersFromHabitGroupUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.UpdateHabitEntriesUseCase
 import com.example.habit.domain.models.Entry
 import com.example.habit.ui.fragment.GroupHabit.GroupHabitUiState
@@ -26,6 +27,8 @@ class GroupHabitViewModel @Inject constructor(
     private val getGroupHabitsUseCase: GetGroupHabitsUseCase,
     private val getGroupHabitUseCase: GetGroupHabitUseCase,
     private val updateHabitEntriesUseCase: UpdateHabitEntriesUseCase,
+    private val deleteGroupHabitUseCase: DeleteGroupHabitUseCase,
+    private val removeMembersFromHabitGroupUseCase: RemoveMembersFromHabitGroupUseCase,
     private val entryMapper: EntryMapper,
     private val groupHabitMapper: com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper
 ) : ViewModel() {
@@ -70,7 +73,11 @@ class GroupHabitViewModel @Inject constructor(
         try {
             viewModelScope.launch {
                 val groupHabit = getGroupHabitUseCase(groupId)
-                _uiState.update { GroupHabitUiState.GroupHabit(groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)) }
+                groupHabit?.let {
+                    Log.e("TAG", "getGroupHabit: ${groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)}", )
+                    _uiState.update { GroupHabitUiState.GroupHabit(groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)) }
+                }
+
 
             }
         }catch (e:Exception){
@@ -108,6 +115,32 @@ class GroupHabitViewModel @Inject constructor(
                 _uiState.update { GroupHabitUiState.Error(e.message?:"") }
             }
 
+        }
+    }
+
+    fun deleteGroupHabit(groupHabitId:String, groupHabitServerId: String?){
+       viewModelScope.launch {
+           _uiState.update { GroupHabitUiState.Loading }
+           try {
+               deleteGroupHabitUseCase(groupHabitServerId, groupHabitId)
+               _uiState.update { GroupHabitUiState.Success("Habit Group Deleted Suc") }
+           }catch (e:Exception){
+               Log.e("TAG", "deleteGroupHabit: ${e.printStackTrace()}", )
+               _uiState.update { GroupHabitUiState.Error(e.message+"") }
+           }
+       }
+    }
+
+    fun removeMembersFromGroupHabit(groupHabitServerId: String?, groupHabitId: String, userIds: List<String>){
+        viewModelScope.launch {
+            _uiState.update { GroupHabitUiState.Loading }
+            try {
+                removeMembersFromHabitGroupUseCase.invoke(groupHabitId, userIds, groupHabitServerId)
+                _uiState.update { GroupHabitUiState.Success("Exited From Group Successfully") }
+            }catch (e:Exception){
+                Log.e("TAG", "removeMembersFromGroupHabit: ${e.printStackTrace()}", )
+                _uiState.update { GroupHabitUiState.Error(e.message+"") }
+            }
         }
     }
 

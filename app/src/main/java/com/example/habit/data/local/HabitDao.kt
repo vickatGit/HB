@@ -27,9 +27,7 @@ interface HabitDao {
     @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun updateHabit(habits: HabitEntity)
 
-
-
-    @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType")
+    @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType AND habitGroupId==NULL")
     fun getHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType")
@@ -68,11 +66,29 @@ interface HabitDao {
     @Query("DELETE FROM habitentity")
     suspend fun deleteAllHabits():Int
 
+    @Query("DELETE FROM grouphabitsentity")
+    suspend fun deleteAllGroupHabits():Int
+
     @Query("UPDATE HabitEntity SET habitSyncType=:shouldDelete WHERE id = :habitId")
     suspend fun updateDeleteStatus(habitId: String,shouldDelete:HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Int
 
+    @Query("UPDATE GroupHabitsEntity SET habitSyncType=:shouldDelete WHERE localId = :habitId")
+    suspend fun updateGroupHabitDeleteStatus(habitId: String,shouldDelete:HabitGroupRecordSyncType=HabitGroupRecordSyncType.DeleteHabit):Int
+
+
+
     @Query("DELETE FROM HabitEntity WHERE id=:habitId")
     suspend fun deleteHabit(habitId: String):Int
+
+    @Query("DELETE FROM GroupHabitsEntity WHERE localId=:habitGroupId")
+    suspend fun deleteGroupHabit(habitGroupId: String):Int
+
+    @Query("UPDATE HabitEntity SET habitSyncType=:syncType WHERE habitGroupId=:habitGroupId AND userId IN (:userIds)")
+    suspend fun removeMembersFromGroupHabit(
+        syncType: HabitRecordSyncType = HabitRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT,
+        habitGroupId: String,
+        userIds: List<String>
+        ):Int
 
     @Query("UPDATE HabitEntity SET " +
             "title=:title," +

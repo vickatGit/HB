@@ -6,5 +6,5 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class MemberView(
     val userId: String? = null,
-    val username: String? = null,
+    var username: String? = null,
 ) : Parcelable

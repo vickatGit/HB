@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.habit.R
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.FragmentGroupsBinding
 import com.example.habit.ui.adapter.GroupHabitsAdapter
 import com.example.habit.ui.callback.HabitClick
@@ -23,10 +24,14 @@ import com.example.habit.ui.viewmodel.GroupHabitViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class GroupsFragment : Fragment() {
+
+    @Inject
+    lateinit var authPref: AuthPref
 
     val viewModel: GroupHabitViewModel by viewModels()
     lateinit var groupHabitsAdapter: GroupHabitsAdapter
@@ -53,7 +58,7 @@ class GroupsFragment : Fragment() {
                     when (it) {
                         is GroupHabitUiState.Habits -> {
 
-                            groupHabitsAdapter = GroupHabitsAdapter(it.habits, object : HabitClick {
+                            groupHabitsAdapter = GroupHabitsAdapter(authPref.getToken(),it.habits, object : HabitClick {
                                 override fun habitClick(habitId: String) {
                                     findNavController().navigate(
                                         R.id.action_groupsFragment_to_groupFragment,

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetGroupHabitUseCase@Inject constructor(
     private val habitRepo: HabitRepo
 ) {
-    suspend operator fun invoke(groupId:String): GroupHabitWithHabits {
+    suspend operator fun invoke(groupId:String): GroupHabitWithHabits? {
         return habitRepo.getGroupHabit(groupId)
     }
 }

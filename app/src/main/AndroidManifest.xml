@@ -23,29 +23,35 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.UserActivity.UserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.FollowFollowingActivity.FollowFollowingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.ProfileActivity.ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.SignupActivity.SignupActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ui.activity.LoginActivity.LoginActivity"
-            android:launchMode="singleTask"
-            android:exported="true" >
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="com.example.habit.HANDLE_AUTHORIZATION_RESPONSE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.example.habit.HANDLE_AUTHORIZATION_RESPONSE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true" />
@@ -59,8 +65,7 @@
             android:name=".data.NetworkChangeJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver android:name=".recievers.UpdateHabitEntryBroadRecieve" />
-        <!-- Removing default initializer to provide our custom one of WorkManger -->
+        <receiver android:name=".recievers.UpdateHabitEntryBroadRecieve" /> <!-- Removing default initializer to provide our custom one of WorkManger -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -70,26 +75,29 @@
                 android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
                 tools:node="remove" />
-        </provider>
-
-<!--        Oauth-->
-        <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
+        </provider> <!-- Oauth -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <data android:scheme="com.example.habit"
-                    android:path="/oauth2redirect"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:path="/oauth2redirect"
+                    android:scheme="com.example.habit" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <data android:scheme="com.example.habit"
-                    android:path="/logout"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:path="/logout"
+                    android:scheme="com.example.habit" />
             </intent-filter>
         </activity>
     </application>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView android:id="@+id/search_card"
+    android:layout_width="match_parent"
+    app:layout_constraintTop_toBottomOf="@id/back"
+    app:layout_constraintStart_toStartOf="@id/start"
+    app:layout_constraintEnd_toEndOf="@id/end"
+    android:layout_marginTop="20dp"
+    app:strokeWidth="0dp"
+    app:cardElevation="7dp"
+    android:layout_marginHorizontal="15dp"
+    android:outlineProvider="bounds"
+    app:cardCornerRadius="10dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardPreventCornerOverlap="true"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
+        android:gravity="center"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/dummy_user_image"/>
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:text="Arryn Solace"
+            android:textColor="@color/text_color"
+            android:layout_marginStart="15dp"
+            android:textSize="14sp"
+            android:fontFamily="@font/regular" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -59,6 +59,11 @@ class NetworkChangeJob : JobService() {
                         HabitRecordSyncType.DeletedHabit -> {
                             habitRepo.deleteFromLocal(habit.id)
                         }
+                        HabitRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT -> {
+                            habitRepo.removedMembersFromGroupHabitFromRemote(habit.habitGroupId,
+                                listOf(habit.serverId!!)
+                            )
+                        }
                         else -> {
 
                         }
@@ -68,9 +73,9 @@ class NetworkChangeJob : JobService() {
         }
         CoroutineScope(Dispatchers.IO).launch {
             Log.e("TAG", "onStartJob: invoked again NetworkChangeJob 2")
-            habitRepo.getGroupUnSyncedHabits().collect{ habits ->
-                Log.e("TAG", "onStartJob: ${Gson().toJson(habits)}", )
-                habits.forEach {
+            habitRepo.getGroupUnSyncedHabits().forEach{ it ->
+//                Log.e("TAG", "onStartJob: ${Gson().toJson(habits)}", )
+//                habits.forEach {
                     when(it.habitSyncType) {
                         HabitGroupRecordSyncType.AddHabit -> {
                             habitRepo.addGroupHabitToRemote(it)
@@ -78,12 +83,14 @@ class NetworkChangeJob : JobService() {
                         HabitGroupRecordSyncType.SyncedHabit -> {}
                         HabitGroupRecordSyncType.DeleteHabit -> {}
                         HabitGroupRecordSyncType.DeletedHabit -> {}
-                        HabitGroupRecordSyncType.UpdateHabit -> {}
+                        HabitGroupRecordSyncType.UpdateHabit -> {
+                            habitRepo.updateGroupHabitToRemote(it)
+                        }
                     }
-                }
+//                }
             }
         }
-        return true
+        return false
     }
 
     fun showNotification(context: Context, title: String?, content: String?) {

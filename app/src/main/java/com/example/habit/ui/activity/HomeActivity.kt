@@ -1,11 +1,13 @@
 package com.example.habit.ui.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.habit.R
 import com.example.habit.databinding.ActivityHomeBinding
+import com.example.habit.ui.activity.UserSearchActivity.UserSearchActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +33,8 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.mentees -> {
-                    navController.navigate(R.id.menteesFragment)
+                    startActivity(Intent(this@HomeActivity,UserSearchActivity::class.java))
+//                    navController.navigate(R.id.menteesFragment)
                     true
                 }
                 R.id.community -> {

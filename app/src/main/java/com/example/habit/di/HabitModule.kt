@@ -58,7 +58,8 @@ class HabitModule {
             habitApi,
             connectivityManager,
             GroupHabitMapper(HabitMapper(EntryMapper())),
-            auth
+            auth,
+            app
 
         )
     }

@@ -1,5 +1,6 @@
 package com.example.habit.data.Mapper.GroupHabitMapper
 
+import android.util.Log
 import com.example.habit.data.Mapper.HabitMapper.HabitMapper
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
@@ -36,6 +37,7 @@ class GroupHabitMapper @Inject constructor(
     }
 
     override fun toGroupHabitModel(type: GroupHabitModel): GroupHabitsEntity {
+        Log.e("TAG", "toGroupHabitModel: ${type.members}", )
         return GroupHabitsEntity(
             type.localId!!,
             type.id,
@@ -99,6 +101,7 @@ class GroupHabitMapper @Inject constructor(
 
     override fun toGroupHabit(type: GroupHabitsEntity): GroupHabit {
         val memberListType = object : TypeToken<List<Member>>() {}.type
+        Log.e("TAG", "toGroupHabit: ${type.members}", )
         val members : List<Member> = Gson().fromJson(type.members,memberListType)
         return GroupHabit(
             type.localId,

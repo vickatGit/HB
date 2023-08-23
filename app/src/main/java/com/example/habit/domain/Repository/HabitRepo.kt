@@ -29,7 +29,7 @@ interface HabitRepo {
     suspend fun getHabitThumb(habitId: String): Habit
     fun getCompletedHabits(): Flow<List<HabitThumb>>
     fun getUnSyncedHabits(): Flow<List<HabitEntity>>
-    fun getGroupUnSyncedHabits(): Flow<List<GroupHabitsEntity>>
+    fun getGroupUnSyncedHabits(): List<GroupHabitsEntity>
     suspend fun deleteFromRemote(habitId: String, habitServerId: String?)
     suspend fun addOrUpdateHabitToRemote(habit: HabitEntity)
     suspend fun updateHabitToRemote(habit: HabitEntity)

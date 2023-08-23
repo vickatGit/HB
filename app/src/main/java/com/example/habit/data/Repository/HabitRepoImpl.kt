@@ -1,5 +1,6 @@
 package com.example.habit.data.Repository
 
+import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
@@ -43,7 +44,8 @@ class HabitRepoImpl(
     private val habitApi: HabitApi,
     private val connectivityManager: ConnectivityManager,
     private val groupHabitMapper: GroupHabitMapper,
-    private val authPref: AuthPref
+    private val authPref: AuthPref,
+    private val context: Context
 ) : HabitRepo {
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit,HabitRecordSyncType.AddHabit)))
@@ -140,6 +142,7 @@ class HabitRepoImpl(
 
     override suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<GroupHabitWithHabits>> {
 
+
             if (isInternetConnected()) {
                 getHabits(coroutineScope)
                 habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
@@ -165,7 +168,9 @@ class HabitRepoImpl(
                                 }
                             }
                         }
-                        coroutineScope.launch {
+                        Log.e("TAG", "onResponse vghcv cxgh: $groupHabits", )
+                        CoroutineScope(Dispatchers.IO).launch {
+                        Log.e("TAG", "onResponse vghcv cxgh 2: $groupHabits", )
                             habitDao.deleteAllGroupHabits()
                             groupHabits?.let { habitDao.addGroupHabit(groupHabits) }
                             habitDao.addHabit(habitsList)
@@ -217,7 +222,7 @@ class HabitRepoImpl(
         return habitDao.getUnSyncedHabits()
     }
 
-    override fun getGroupUnSyncedHabits(): Flow<List<GroupHabitsEntity>> {
+    override fun getGroupUnSyncedHabits(): List<GroupHabitsEntity> {
         Log.e("TAG", "getGroupUnSyncedHabits: repo ", )
         return habitDao.getGroupUnSyncedHabits()
     }
@@ -376,6 +381,10 @@ class HabitRepoImpl(
     }
 
     override suspend fun addGroupHabitToRemote(habitEntity: GroupHabitsEntity) {
+        Log.e("TAG", "addGroupHabitToRemote: ------------------------------------------------------------------------------", )
+        Thread.currentThread().stackTrace.forEach { element ->
+            Log.e("TAG", "addGroupHabitToRemote: stack  ${element.className}.${element.methodName}}")
+        }
         habitApi.addGroupHabit(groupHabitMapper.toGroupHabitEntity(habitEntity)).enqueue(object : Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 Log.e("TAG", "onResponse: $response", )
@@ -435,14 +444,10 @@ class HabitRepoImpl(
     }
 
     private fun isInternetConnected(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val networkCapabilities = connectivityManager.activeNetwork ?: return false
-            val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
-            return actNw?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-                    && actNw?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true
-        } else {
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            return activeNetworkInfo?.isConnectedOrConnecting == true
-        }
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+
     }
 }

@@ -50,7 +50,7 @@ interface HabitDao {
     fun getUnSyncedHabits(syncType:HabitRecordSyncType = HabitRecordSyncType.SyncedHabit):Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType ")
-    fun getGroupUnSyncedHabits(syncType:HabitGroupRecordSyncType = HabitGroupRecordSyncType.SyncedHabit):Flow<List<GroupHabitsEntity>>
+    fun getGroupUnSyncedHabits(syncType:HabitGroupRecordSyncType = HabitGroupRecordSyncType.SyncedHabit):List<GroupHabitsEntity>
 
     @Query("UPDATE HabitEntity SET entryList = :entryList, habitSyncType=:syncType WHERE id = :habitId")
     suspend fun updateHabitEntries(habitId: String,entryList : Map<LocalDate, EntryEntity>?,syncType:HabitRecordSyncType = HabitRecordSyncType.UpdateHabitEntries):Int

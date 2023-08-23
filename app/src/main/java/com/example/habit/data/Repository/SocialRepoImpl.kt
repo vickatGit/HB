@@ -1,5 +1,6 @@
 package com.example.habit.data.Repository
 
+import android.net.Uri
 import android.util.Log
 import com.example.habit.data.network.SocialApi
 import com.example.habit.data.network.model.UsersModel.User
@@ -15,8 +16,9 @@ class SocialRepoImpl(
     private val socialApi: SocialApi
 ) : SocialRepo {
     override fun getUsersByUsername(username: String): Flow<List<User>> {
+        val query = Uri.encode(username)
         return flow {
-            val response = socialApi.getUsersByUsername(username)
+            val response = socialApi.getUsersByUsername(query)
             if(response.isSuccessful){
                 response.body()?.let {
                     emit(it.data)

@@ -10,5 +10,5 @@ import retrofit2.http.Path
 interface SocialApi {
 
     @GET("/social/get_users_by_username/{query}")
-    fun getUsersByUsername(@Path("query") query:String):Response<UsersModel>
+    suspend fun getUsersByUsername(@Path("query") query:String):Response<UsersModel>
 }

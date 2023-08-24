@@ -80,9 +80,10 @@
             app:layout_constraintTop_toBottomOf="@+id/header" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/camera_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:visibility="gone"
             android:layout_marginBottom="17dp"
             android:src="@drawable/camera_icon"
             app:layout_constraintBottom_toBottomOf="@+id/user_profile_image"
@@ -101,11 +102,15 @@
             app:layout_constraintTop_toBottomOf="@+id/user_profile_image"
             tools:text="Diya Aurora" />
 
-        <TextView
+        <EditText
             android:id="@+id/user_bio"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:layout_marginHorizontal="50dp"
+            android:background="@null"
+            android:textSize="13sp"
             android:textColor="@color/text_color"
             android:fontFamily="@font/regular"
             android:text="I’m a travel enthusiast and a fitness freak"
@@ -207,6 +212,32 @@
         </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/update_profile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:backgroundTint="@color/orange"
+            android:text="Create"
+            android:visibility="gone"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/end"
+            app:layout_constraintStart_toStartOf="@id/start" />
+
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:indeterminateTint="@color/orange"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

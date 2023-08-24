@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:textSize="13sp"
         android:text="Coffee"
-        android:checked="false"
+        android:checked="true"
         app:chipStrokeWidth="0dp"
         android:textColor="@color/user_progress_chip_text_color"
         android:textAlignment="center"

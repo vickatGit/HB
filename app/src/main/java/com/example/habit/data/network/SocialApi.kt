@@ -1,11 +1,14 @@
 package com.example.habit.data.network
 
 import com.example.habit.data.network.model.IsUserFollowingModel.IsUserFollowingResponseModel
+import com.example.habit.data.network.model.UsersModel.ProfileModel
+import com.example.habit.data.network.model.UsersModel.UserModel
 import com.example.habit.data.network.model.UsersModel.UsersModel
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 
 interface SocialApi {
@@ -15,4 +18,18 @@ interface SocialApi {
 
     @GET("/social/is_user_following/{friendId}")
     suspend fun isUserFollowing(@Path("friendId") friendId:String):Response<IsUserFollowingResponseModel>
+
+    @GET("/social/follow/{friendId}")
+    suspend fun followUser(@Path("friendId") friendId:String):Response<Any>
+
+    @DELETE("/social/unfollow/{friendId}")
+    suspend fun unfollowUser(@Path("friendId") friendId:String):Response<Any>
+
+    @GET("/social/get_profile/{userId}")
+    suspend fun getProfile(@Path("userId") userId: String):Response<ProfileModel>
+
+    @PATCH("/social/update_profile")
+    suspend fun updateProfile(@Body user:UserModel):Response<Any>
+
+
 }

@@ -101,24 +101,34 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/follow_status"
-            style="@style/Widget.Material3.Chip.Suggestion"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="0dp"
             android:layout_height="55dp"
-            android:checked="false"
             android:layout_marginTop="30dp"
-            android:shadowColor="@android:color/transparent"
-            android:text="Following"
+            android:text="Follow"
             android:textAlignment="center"
-            android:textColor="@color/user_progress_chip_text_color"
             android:textSize="15sp"
             app:chipCornerRadius="20dp"
-            app:chipBackgroundColor="@color/user_progress_chip_bg"
             app:chipStrokeWidth="1dp"
+            android:textColor="@color/white"
+            app:chipBackgroundColor="@color/orange"
             app:chipStrokeColor="@color/orange"
             app:layout_constraintEnd_toEndOf="@+id/user_bio"
             app:layout_constraintStart_toStartOf="@+id/user_bio"
             app:layout_constraintTop_toBottomOf="@+id/user_bio"
             app:rippleColor="@android:color/transparent" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:indeterminateTint="@color/orange"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

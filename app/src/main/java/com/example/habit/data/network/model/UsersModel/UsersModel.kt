@@ -11,6 +11,14 @@ data class UserModel(
 	val id: String? = null,
 	val email: String? = null,
 	val username: String? = null,
-	val v: Int? = null
+	val userBio:String? = null,
+	val followers:String? = null,
+	val followings:String? = null,
+	val v: Int? = null,
+
+)
+
+data class ProfileModel(
+	val data: UserModel? = null
 )
 

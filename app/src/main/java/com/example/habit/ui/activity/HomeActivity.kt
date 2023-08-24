@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.habit.R
 import com.example.habit.databinding.ActivityHomeBinding
+import com.example.habit.ui.activity.ProfileActivity.ProfileActivity
 import com.example.habit.ui.activity.UserSearchActivity.UserSearchActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +39,8 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.community -> {
-                    navController.navigate(R.id.communityFragment)
+                    startActivity(Intent(this@HomeActivity,ProfileActivity::class.java))
+//                    navController.navigate(R.id.communityFragment)
                     true
                 }
                 else -> {false}

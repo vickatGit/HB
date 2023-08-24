@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habit.domain.UseCases.SocialUseCase.GetUsersByUserNameUseCase
 import com.example.habit.ui.activity.UserSearchActivity.UserSearchUiState
+import com.example.habit.ui.mapper.SocialMapper.UserMapper.toUserView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,7 +25,9 @@ class UserSearchViewModel  @Inject constructor(
             viewModelScope.launch {
                 _uiState.update { UserSearchUiState.Loading }
                 getUsersByUserNameUseCase(query).collect{users ->
-                    _uiState.update { UserSearchUiState.Success(users) }
+                    _uiState.update { UserSearchUiState.Success(users.map {
+                        it.toUserView()
+                    }) }
                 }
             }
         }catch (e:Exception){

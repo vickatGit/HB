@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.example.habit.data.network.model.UsersModel.User
 import com.example.habit.databinding.UserThumbItemLayoutBinding
+import com.example.habit.ui.callback.OnUserClick
+import com.example.habit.ui.model.User.UserView
 
-class UserListAdapter(private val users: List<User>) : RecyclerView.Adapter<UserListAdapter.UserHolder>() {
+class UserListAdapter(private val users: MutableList<UserView>, private val onUserClick: OnUserClick) : RecyclerView.Adapter<UserListAdapter.UserHolder>() {
 
 
     inner class UserHolder(val binding: UserThumbItemLayoutBinding): ViewHolder(binding.root)
@@ -24,6 +25,10 @@ class UserListAdapter(private val users: List<User>) : RecyclerView.Adapter<User
 
     override fun onBindViewHolder(holder: UserHolder, position: Int) {
         val binding = holder.binding
-        binding.userName.text = users[holder.absoluteAdapterPosition].username
+        val user = users[holder.absoluteAdapterPosition]
+        binding.userName.text = user.username
+        binding.root.setOnClickListener {
+            onUserClick.onUserClick(user.id!!)
+        }
     }
 }

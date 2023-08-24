@@ -2,15 +2,14 @@ package com.example.habit.data.Repository
 
 import android.net.Uri
 import android.util.Log
+import com.example.habit.data.Mapper.SocialMapper.UserMapper
+import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUser
 import com.example.habit.data.network.SocialApi
-import com.example.habit.data.network.model.UsersModel.User
-import com.example.habit.data.network.model.UsersModel.UsersModel
+import com.example.habit.data.network.model.UsersModel.UserModel
 import com.example.habit.domain.Repository.SocialRepo
-import dagger.Provides
+import com.example.habit.domain.models.User.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
-import javax.inject.Singleton
 
 class SocialRepoImpl(
     private val socialApi: SocialApi
@@ -21,10 +20,22 @@ class SocialRepoImpl(
             val response = socialApi.getUsersByUsername(query)
             if(response.isSuccessful){
                 response.body()?.let {
-                    emit(it.data)
+                    emit(it.data.map { it.toUser() })
                 }
             }else{
                 Log.e("TAG", "getUsersByUsername: ${response.errorBody()?.string()}", )
+            }
+        }
+    }
+
+    override fun isUserFollowing(friendId: String): Flow<Boolean> {
+        return flow {
+            val response = socialApi.isUserFollowing(friendId)
+            if(response.isSuccessful){
+                emit(response.body()?.isFollowing?:false)
+            }else{
+                Log.e("TAG", "isUserFollowing: ${response.errorBody()?.string()}", )
+                emit(false)
             }
         }
     }

@@ -2,10 +2,12 @@ package com.example.habit.data.Repository
 
 import android.net.Uri
 import android.util.Log
+import com.example.habit.data.Mapper.SocialMapper.FollowMapper.toFollow
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUser
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUserModel
 import com.example.habit.data.network.SocialApi
 import com.example.habit.domain.Repository.SocialRepo
+import com.example.habit.domain.models.Follow.Follow
 import com.example.habit.domain.models.User.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,6 +33,42 @@ class SocialRepoImpl(
             return res.isSuccessful
 
     }
+
+    override suspend fun getFollowers(): Flow<Follow?> {
+        return flow {
+            val response = socialApi.getFollowers()
+            Log.e("TAG", "getFollowers: repo ${response.body()}", )
+            if(response.isSuccessful){
+                emit(response.body()?.toFollow())
+            }else{
+                emit(null)
+            }
+        }
+    }
+
+    override suspend fun getFollowings(): Flow<Follow?> {
+        return flow {
+            val response = socialApi.getFollowings()
+            if(response.isSuccessful){
+                emit(response.body()?.toFollow())
+            }else{
+                emit(null)
+            }
+        }
+    }
+
+    override suspend fun getMembers(): Flow<Follow?> {
+        return flow {
+            val response = socialApi.getMembers()
+            if(response.isSuccessful){
+                emit(response.body()?.toFollow())
+            }else{
+                emit(null)
+            }
+        }
+    }
+
+
     override fun getUsersByUsername(username: String): Flow<List<User>> {
         val query = Uri.encode(username)
         return flow {

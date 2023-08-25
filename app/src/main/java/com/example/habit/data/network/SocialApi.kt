@@ -1,5 +1,7 @@
 package com.example.habit.data.network
 
+import com.example.habit.data.network.model.FollowModel.FollowerModel
+import com.example.habit.data.network.model.FollowModel.FollowingModel
 import com.example.habit.data.network.model.IsUserFollowingModel.IsUserFollowingResponseModel
 import com.example.habit.data.network.model.UsersModel.ProfileModel
 import com.example.habit.data.network.model.UsersModel.UserModel
@@ -30,6 +32,15 @@ interface SocialApi {
 
     @PATCH("/social/update_profile")
     suspend fun updateProfile(@Body user:UserModel):Response<Any>
+
+    @GET("/social/followers")
+    suspend fun getFollowers():Response<FollowerModel>
+
+    @GET("/social/followings")
+    suspend fun getFollowings():Response<FollowingModel>
+
+    @GET("/social/get_members")
+    suspend fun getMembers():Response<FollowingModel>
 
 
 }

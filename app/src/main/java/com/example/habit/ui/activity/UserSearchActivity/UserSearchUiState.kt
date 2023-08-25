@@ -7,4 +7,5 @@ sealed class UserSearchUiState {
     object Nothing : UserSearchUiState()
     data class Success(val users: List<UserView>):UserSearchUiState()
     data class Error(val error:String):UserSearchUiState()
+
 }

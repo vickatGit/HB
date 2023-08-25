@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserActivity : AppCompatActivity() {
+    private var shouldCallFollowApi: Boolean = false
     private var friendId: String? = null
     private var _binding: ActivityUserBinding? = null
     private val binding get() = _binding!!
@@ -53,7 +54,9 @@ class UserActivity : AppCompatActivity() {
                         }
                         is UserActivityUiState.UserFollowStatus -> {
                             binding.followStatus.text = if(it.isFollows) "Following" else "Follow"
+                            shouldCallFollowApi = false
                             binding.followStatus.isChecked = it.isFollows
+                            shouldCallFollowApi = true
                             hideProgress()
                         }
                         UserActivityUiState.Nothing -> {}
@@ -74,25 +77,26 @@ class UserActivity : AppCompatActivity() {
         }
         friendId?.let { viewModel.getProfile(it) }
 
+        binding.followStatus.setOnCheckedChangeListener { btnView, isChecked ->
+            binding.followStatus.text = if(isChecked) "Following" else "Follow"
+            if(isChecked) {
+                if(shouldCallFollowApi) viewModel.followUser(friendId!!)
+                binding.followStatus.setChipBackgroundColorResource(R.color.white)
+                binding.followStatus.setTextColor(resources.getColor(R.color.text_color))
+            }
+            else {
+                if(shouldCallFollowApi) binding.followStatus.setChipBackgroundColorResource(R.color.orange)
+                binding.followStatus.setTextColor(resources.getColor(R.color.white))
+                viewModel.unfollowUser(friendId!!)
+            }
+        }
+
     }
 
     private fun bindProfileData() {
         viewModel.user?.let {
             binding.userBio.text=it.userBio
             binding.userName.text=it.username
-            binding.followStatus.setOnCheckedChangeListener { btnView, isChecked ->
-                binding.followStatus.text = if(isChecked) "Following" else "Follow"
-                if(isChecked) {
-                    viewModel.followUser(friendId!!)
-                    binding.followStatus.setChipBackgroundColorResource(R.color.white)
-                    binding.followStatus.setTextColor(resources.getColor(R.color.text_color))
-                }
-                else {
-                    binding.followStatus.setChipBackgroundColorResource(R.color.orange)
-                    binding.followStatus.setTextColor(resources.getColor(R.color.white))
-                    viewModel.unfollowUser(friendId!!)
-                }
-            }
         }
     }
 

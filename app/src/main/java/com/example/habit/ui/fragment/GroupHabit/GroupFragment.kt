@@ -1,5 +1,6 @@
 package com.example.habit.ui.fragment.GroupHabit
 
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,7 @@ import com.example.habit.databinding.CalendarDayLegendContainerBinding
 import com.example.habit.databinding.CalendarLayoutBinding
 import com.example.habit.databinding.DayBinding
 import com.example.habit.databinding.FragmentGroupBinding
+import com.example.habit.ui.activity.AddMembersActivity.AddMembersActivity
 import com.example.habit.ui.adapter.HabitGroupUsersAdapter
 import com.example.habit.ui.callback.DateClick
 import com.example.habit.ui.callback.HabitClick
@@ -155,12 +157,21 @@ class GroupFragment : Fragment() {
                 listOf(users.get(viewModel.getHabitStatePos()).member.userId!!)
             )
         }
+        binding.addMembers.setOnClickListener {
+            val intent = Intent(requireContext(),AddMembersActivity::class.java)
+            intent.putExtra(AddMembersActivity.HABIT_GROUP_ID,groupHabit.habitGroup.id)
+            startActivity(intent)
+        }
 
         return binding.root
     }
 
     private fun bindData() {
         binding.habitTitle.text = groupHabit.habitGroup.title
+        val isAdmin = authPref.getUserId().equals(groupHabit.habitGroup.admin)
+        binding.edit.isVisible = isAdmin
+        binding.delete.isVisible = isAdmin
+        binding.addMembers.isVisible = isAdmin
         setupRecyclerView()
     }
     private fun setupRecyclerView() {
@@ -210,11 +221,9 @@ class GroupFragment : Fragment() {
     private fun bindUserHabitData(habit: HabitView) {
 //        Log.e("TAG", "bindUserHabitData: userId ${authPref.getUserId()} habit userId ${habit.userId}", )
 //        Toast.makeText(requireContext(), "user selected ${authPref.getUserId().equals(habit.userId)}", Toast.LENGTH_SHORT).show()
-        val isAdmin = authPref.getUserId().equals(groupHabit.habitGroup.admin)
         binding.streakEditSwitch.isVisible= authPref.getUserId() == habit.userId
         binding.leaveHabitGroupCard.isVisible= authPref.getUserId() == habit.userId
-        binding.edit.isVisible = isAdmin
-        binding.delete.isVisible = isAdmin
+
 
 
         habit.entries?.let {

@@ -60,6 +60,15 @@
             app:layout_constraintEnd_toEndOf="@id/end"
             app:layout_constraintTop_toTopOf="@id/habit_title"
             app:layout_constraintBottom_toBottomOf="@id/habit_title"/>
+        <ImageView
+            android:id="@+id/add_members"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/add_member_icon"
+            app:layout_constraintEnd_toStartOf="@id/edit"
+            app:layout_constraintTop_toTopOf="@id/habit_title"
+            app:layout_constraintBottom_toBottomOf="@id/habit_title"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/user_habits_percentage"

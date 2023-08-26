@@ -58,7 +58,7 @@ class GroupsFragment : Fragment() {
                     when (it) {
                         is GroupHabitUiState.Habits -> {
 
-                            groupHabitsAdapter = GroupHabitsAdapter(authPref.getToken(),it.habits, object : HabitClick {
+                            groupHabitsAdapter = GroupHabitsAdapter(authPref.getUserId(),it.habits, object : HabitClick {
                                 override fun habitClick(habitId: String) {
                                     findNavController().navigate(
                                         R.id.action_groupsFragment_to_groupFragment,

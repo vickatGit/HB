@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habit.R
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.UserProgressItemBinding
+import com.example.habit.domain.Repository.AuthRepo
 import com.example.habit.ui.callback.HabitClick
 import com.example.habit.ui.model.HabitView
 import com.example.habit.ui.model.UtilModels.UserGroupThumbProgressModel
@@ -38,6 +40,7 @@ class HabitGroupUsersAdapter(val habits: MutableList<UserGroupThumbProgressModel
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding?.let {
             initialiseProgress(habit.habit,it)
+
             if(selectedPosition==holder.absoluteAdapterPosition){
                 it.userName.setChipBackgroundColorResource(R.color.orange)
                 it.userName.setTextColor(it.userName.resources.getColor(R.color.white))
@@ -60,13 +63,16 @@ class HabitGroupUsersAdapter(val habits: MutableList<UserGroupThumbProgressModel
 
     }
     private fun initialiseProgress(habit: HabitView, binding: UserProgressItemBinding?) {
-        val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
+        val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)+1
         var daysCompleted = 0
         habit.entries?.mapValues {
             if (it.value.completed) ++daysCompleted
         }
-        val progress = (totalHabitDuration!! / 100f) * daysCompleted!!
-        binding?.progress?.progress = progress.roundToInt()
+        Log.e("TAG", "initialiseProgress: duration ${totalHabitDuration}", )
+        Log.e("TAG", "initialiseProgress: days completed $daysCompleted", )
+        Log.e("TAG", "initialiseProgress: ${(daysCompleted / totalHabitDuration) * 100f}-------------", )
+        val progress = (daysCompleted.toFloat() / totalHabitDuration.toFloat()) * 100f
+        binding?.progress?.progress = progress.toInt()
         binding?.progressPercentage?.text = "${DecimalFormat("#.#").format(progress)}%"
     }
 

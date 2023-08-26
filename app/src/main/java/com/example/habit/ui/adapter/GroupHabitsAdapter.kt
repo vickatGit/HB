@@ -31,10 +31,10 @@ class GroupHabitsAdapter(val userId:String, val habits: List<GroupHabitWithHabit
 
     override fun onBindViewHolder(holder: GroupHabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
+        Log.e("TAG", "onBindViewHolder: grouHabit $habit", )
         holder.binding?.let { binding ->
             val userHabit =  habit.habits.find { it.userId.equals(userId) }
             userHabit?.let {  habit ->  initialiseProgress(habit,binding) }
-
 
             binding.habit.text = habit.habitGroup.title
             binding.totalMembers.text =""+habit.habitGroup.members?.size
@@ -46,15 +46,15 @@ class GroupHabitsAdapter(val userId:String, val habits: List<GroupHabitWithHabit
 
     }
     private fun initialiseProgress(habit: Habit, binding: GroupHabitThumbBinding?) {
-        val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
+        val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)+1
         var daysCompleted = 0
         habit.entries?.mapValues {
 //            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
             if (it.value.completed) ++daysCompleted
 //            }
         }
-        val progress = (totalHabitDuration!! / 100f) * daysCompleted!!
-        binding?.progress?.progress = progress.roundToInt()
+        val progress = (daysCompleted.toFloat() / totalHabitDuration.toFloat()) * 100f
+        binding?.progress?.progress = progress.toInt()
         binding?.progressPercentage?.text = "${DecimalFormat("#.#").format(progress)}%"
     }
 

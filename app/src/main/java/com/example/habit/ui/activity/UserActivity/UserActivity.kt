@@ -90,6 +90,9 @@ class UserActivity : AppCompatActivity() {
                 viewModel.unfollowUser(friendId!!)
             }
         }
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
 
     }
 

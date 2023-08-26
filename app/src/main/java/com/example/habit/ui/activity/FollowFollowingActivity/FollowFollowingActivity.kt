@@ -78,6 +78,9 @@ class FollowFollowingActivity : AppCompatActivity() {
             }
         }
         if(shouldShowFollowers) viewModel.getFollowers() else viewModel.getFollowings()
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
 
 
     }

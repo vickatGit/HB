@@ -81,6 +81,9 @@ class AddMembersActivity : AppCompatActivity() {
         binding.addMembers.setOnClickListener {
             viewModel.addMembersToGroupHabit()
         }
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
         viewModel.getMembers()
     }
 

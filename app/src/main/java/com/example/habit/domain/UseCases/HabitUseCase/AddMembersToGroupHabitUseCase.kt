@@ -8,9 +8,9 @@ class AddMembersToGroupHabitUseCase @Inject constructor(
     private val habitRepo: HabitRepo
 ) {
     suspend operator fun invoke(
-        habitGroupId: GroupHabit,
+        habitGroup: GroupHabit,
         userIds: List<String>,
     ) {
-        habitRepo.addMembersToGroupHabit(habitGroupId,userIds)
+        habitRepo.addMembersToGroupHabit(habitGroup,userIds)
     }
 }

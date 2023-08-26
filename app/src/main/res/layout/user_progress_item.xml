@@ -13,25 +13,26 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
+
+<!--for some reason chip is not working -->
     <com.google.android.material.chip.Chip
         android:id="@+id/user_name"
         style="@style/Widget.Material3.Chip.Suggestion"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:shadowColor="@android:color/transparent"
         app:rippleColor="@android:color/transparent"
         android:layout_height="wrap_content"
         android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:minWidth="100dp"
         android:text="Coffee"
+        android:clickable="true"
         android:checked="true"
-        app:chipStrokeWidth="0dp"
-        android:textColor="@color/user_progress_chip_text_color"
+        app:chipBackgroundColor="@color/some_bg"
         android:textAlignment="center"
-
-        app:chipBackgroundColor="@color/user_progress_chip_bg"
+        app:chipStrokeWidth="0dp"
 
         app:chipSurfaceColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@id/progress"
-        app:layout_constraintStart_toStartOf="@id/progress"
         app:layout_constraintTop_toTopOf="parent"/>
 
 
@@ -39,14 +40,15 @@
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         android:backgroundTint="@color/black"
         android:indeterminateTint="@color/black"
         android:progress="0"
-        android:layout_marginTop="40dp"
         app:indicatorColor="@color/medium_orange"
         app:indicatorDirectionCircular="clockwise"
         app:indicatorSize="85dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/user_name"
+        app:layout_constraintEnd_toEndOf="@id/user_name"
         app:layout_constraintTop_toBottomOf="@id/user_name"
         app:trackColor="@color/orange_op_20"
         app:trackCornerRadius="10dp"

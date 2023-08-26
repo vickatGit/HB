@@ -35,7 +35,7 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.mentees -> {
-                    startActivity(Intent(this@HomeActivity,AddMembersActivity::class.java))
+                    startActivity(Intent(this@HomeActivity,UserSearchActivity::class.java))
 //                    navController.navigate(R.id.menteesFragment)
                     true
                 }

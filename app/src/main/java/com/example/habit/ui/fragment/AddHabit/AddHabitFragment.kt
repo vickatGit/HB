@@ -66,6 +66,7 @@ class AddHabitFragment : Fragment() {
         // Inflate the layout for this fragment
 
         _binding=FragmentAddHabitBinding.inflate(inflater,container,false)
+        if(isUpdate || isGroupUpdate) binding.addHabit.text="Update Habit"
         if(isUpdate){
             bindHabitData()
         }else{

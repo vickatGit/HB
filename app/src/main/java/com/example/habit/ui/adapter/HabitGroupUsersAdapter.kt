@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.habit.R
 import com.example.habit.databinding.UserProgressItemBinding
 import com.example.habit.ui.callback.HabitClick
 import com.example.habit.ui.model.HabitView
@@ -37,7 +38,13 @@ class HabitGroupUsersAdapter(val habits: MutableList<UserGroupThumbProgressModel
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding?.let {
             initialiseProgress(habit.habit,it)
-            it.userName.isChecked = selectedPosition==holder.absoluteAdapterPosition
+            if(selectedPosition==holder.absoluteAdapterPosition){
+                it.userName.setChipBackgroundColorResource(R.color.orange)
+                it.userName.setTextColor(it.userName.resources.getColor(R.color.white))
+            }else{
+                it.userName.setChipBackgroundColorResource(R.color.white)
+                it.userName.setTextColor(it.userName.resources.getColor(R.color.text_color))
+            }
             it.userName.text = habit.member.username
             it.userName.setOnClickListener {
                 recycler.post {
@@ -56,9 +63,7 @@ class HabitGroupUsersAdapter(val habits: MutableList<UserGroupThumbProgressModel
         val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
         var daysCompleted = 0
         habit.entries?.mapValues {
-//            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
             if (it.value.completed) ++daysCompleted
-//            }
         }
         val progress = (totalHabitDuration!! / 100f) * daysCompleted!!
         binding?.progress?.progress = progress.roundToInt()

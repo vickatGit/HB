@@ -99,6 +99,9 @@ class UserSearchActivity : AppCompatActivity() {
 
         })
 
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
 
     }
 }

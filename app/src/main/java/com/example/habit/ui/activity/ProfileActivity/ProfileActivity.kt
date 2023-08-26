@@ -127,6 +127,9 @@ class ProfileActivity : AppCompatActivity() {
             intent.putExtra(FollowFollowingActivity.IS_FOLLOWERS,false)
             startActivity(intent)
         }
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
         viewModel.getProfile(authPref.getUserId())
     }
     private fun bindProfileData() {

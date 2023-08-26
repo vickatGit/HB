@@ -162,6 +162,9 @@ class GroupFragment : Fragment() {
             intent.putExtra(AddMembersActivity.HABIT_GROUP,groupHabit.habitGroup)
             startActivity(intent)
         }
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
 
         return binding.root
     }
@@ -172,7 +175,8 @@ class GroupFragment : Fragment() {
         binding.edit.isVisible = isAdmin
         binding.delete.isVisible = isAdmin
         binding.addMembers.isVisible = isAdmin
-        setupRecyclerView()
+        binding.leaveHabitGroupCard.isVisible= !isAdmin
+            setupRecyclerView()
     }
     private fun setupRecyclerView() {
         users = mutableListOf()
@@ -222,7 +226,7 @@ class GroupFragment : Fragment() {
 //        Log.e("TAG", "bindUserHabitData: userId ${authPref.getUserId()} habit userId ${habit.userId}", )
 //        Toast.makeText(requireContext(), "user selected ${authPref.getUserId().equals(habit.userId)}", Toast.LENGTH_SHORT).show()
         binding.streakEditSwitch.isVisible= authPref.getUserId() == habit.userId
-        binding.leaveHabitGroupCard.isVisible= authPref.getUserId() == habit.userId
+
 
 
 

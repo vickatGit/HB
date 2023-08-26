@@ -16,4 +16,5 @@ interface SocialRepo {
     suspend fun getFollowers(): Flow<Follow?>
     suspend fun getFollowings(): Flow<Follow?>
     suspend fun getMembers(): Flow<Follow?>
+
 }

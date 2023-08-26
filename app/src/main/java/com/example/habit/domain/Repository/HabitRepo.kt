@@ -28,7 +28,7 @@ interface HabitRepo {
     suspend fun updateHabitEntries(habitServerId:String?, habitId: String,entries:HashMap<LocalDate,Entry>) : Int
     suspend fun getHabitThumb(habitId: String): Habit
     fun getCompletedHabits(): Flow<List<HabitThumb>>
-    fun getUnSyncedHabits(): Flow<List<HabitEntity>>
+    fun getUnSyncedHabits(): List<HabitEntity>
     fun getGroupUnSyncedHabits(): List<GroupHabitsEntity>
     suspend fun deleteFromRemote(habitId: String, habitServerId: String?)
     suspend fun addOrUpdateHabitToRemote(habit: HabitEntity)
@@ -49,4 +49,6 @@ interface HabitRepo {
         userIds: List<String>
     ) : Int
     suspend fun removedMembersFromGroupHabitFromRemote(habitGroupId: String?, userIds: List<String>)
+    suspend fun addMembersToGroupHabitFromRemote(groupHabit: String?, userIds: List<String>)
+    suspend fun addMembersToGroupHabit(groupHabit: GroupHabit?, userIds: List<String>)
 }

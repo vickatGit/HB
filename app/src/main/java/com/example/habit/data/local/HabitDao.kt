@@ -47,7 +47,7 @@ interface HabitDao {
     fun getCompletedHabits(date: LocalDate):Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType ")
-    fun getUnSyncedHabits(syncType:HabitRecordSyncType = HabitRecordSyncType.SyncedHabit):Flow<List<HabitEntity>>
+    fun getUnSyncedHabits(syncType:HabitRecordSyncType = HabitRecordSyncType.SyncedHabit):List<HabitEntity>
 
     @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType ")
     fun getGroupUnSyncedHabits(syncType:HabitGroupRecordSyncType = HabitGroupRecordSyncType.SyncedHabit):List<GroupHabitsEntity>
@@ -89,6 +89,7 @@ interface HabitDao {
         habitGroupId: String,
         userIds: List<String>
         ):Int
+
 
     @Query("UPDATE HabitEntity SET " +
             "title=:title," +

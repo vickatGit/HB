@@ -159,7 +159,7 @@ class GroupFragment : Fragment() {
         }
         binding.addMembers.setOnClickListener {
             val intent = Intent(requireContext(),AddMembersActivity::class.java)
-            intent.putExtra(AddMembersActivity.HABIT_GROUP_ID,groupHabit.habitGroup.id)
+            intent.putExtra(AddMembersActivity.HABIT_GROUP,groupHabit.habitGroup)
             startActivity(intent)
         }
 

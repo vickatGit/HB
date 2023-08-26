@@ -17,11 +17,9 @@ import androidx.work.OneTimeWorkRequest
 import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,8 +39,9 @@ class NetworkChangeJob : JobService() {
         Log.e("TAG", "onStartJob: invoked again NetworkChangeJob")
         showNotification(this,"smaple","sample")
         CoroutineScope(Dispatchers.IO).launch {
-            habitRepo.getUnSyncedHabits().collect{ habits ->
-                habits.forEach { habit->
+            val removableMembersFromGroupHabitIds = mutableListOf<String>()
+            habitRepo.getUnSyncedHabits().forEach{ habit ->
+
                     when(habit.habitSyncType){
                         HabitRecordSyncType.AddHabit -> {
                             habitRepo.addOrUpdateHabitToRemote(habit)
@@ -61,15 +60,21 @@ class NetworkChangeJob : JobService() {
                         }
                         HabitRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT -> {
                             habitRepo.removedMembersFromGroupHabitFromRemote(habit.habitGroupId,
-                                listOf(habit.serverId!!)
+                                listOf(habit.userId!!)
                             )
                         }
-                        else -> {
-
+                        HabitRecordSyncType.ADD_MEMBER_HABIT -> {
+                            removableMembersFromGroupHabitIds.add(habit.userId!!)
+                            habitRepo.addMembersToGroupHabitFromRemote(groupHabit = habit.habitGroupId,
+                                listOf(habit.userId!!)
+                            )
                         }
+
+                        HabitRecordSyncType.SyncedHabit -> {}
                     }
-                }
+
             }
+
         }
         CoroutineScope(Dispatchers.IO).launch {
             Log.e("TAG", "onStartJob: invoked again NetworkChangeJob 2")

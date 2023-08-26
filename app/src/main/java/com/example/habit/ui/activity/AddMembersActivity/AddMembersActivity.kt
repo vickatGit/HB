@@ -18,6 +18,7 @@ import com.example.habit.ui.adapter.MembersAdapter
 import com.example.habit.ui.adapter.UserListAdapter
 import com.example.habit.ui.callback.MemberCheckChange
 import com.example.habit.ui.callback.OnUserClick
+import com.example.habit.ui.model.GroupHabitView
 import com.example.habit.ui.model.User.UserView
 import com.example.habit.ui.viewmodel.AddMembersViewModel
 import com.example.habit.ui.viewmodel.UserSearchViewModel
@@ -31,7 +32,6 @@ class AddMembersActivity : AppCompatActivity() {
     private val binding get() = _binding!!
 
     private var users = mutableListOf<UserView>()
-    private var selectedMembers = mutableMapOf<String,String>()
     private val viewModel: AddMembersViewModel by viewModels()
     private lateinit var usersAdapter: MembersAdapter
 
@@ -40,11 +40,18 @@ class AddMembersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityAddMembersBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        viewModel.groupHabit=intent.getParcelableExtra(HABIT_GROUP)
         binding.usersRecycler.layoutManager = LinearLayoutManager(this@AddMembersActivity)
         usersAdapter = MembersAdapter(users, object : MemberCheckChange {
             override fun onCheckChanged(userId: String, isAdded: Boolean)  {
-                if(isAdded) selectedMembers[userId] = userId else selectedMembers.remove(userId)
+                if(isAdded) viewModel.selectedMembers[userId] = userId else viewModel.selectedMembers.remove(userId)
+                if(viewModel.selectedMembers.isEmpty()){
+                    binding.addMembers.setBackgroundColor(resources.getColor(R.color.light_orange))
+                    binding.addMembers.isClickable=false
+                }else{
+                    binding.addMembers.setBackgroundColor(resources.getColor(R.color.orange))
+                    binding.addMembers.isClickable=true
+                }
             }
 
         })
@@ -66,16 +73,18 @@ class AddMembersActivity : AppCompatActivity() {
                         AddMemberUiState.Loading -> {
                             binding.progress.isVisible=true
                         }
-
                         AddMemberUiState.Nothing -> { binding.progress.isVisible=false }
-                    }
+                                            }
                 }
             }
+        }
+        binding.addMembers.setOnClickListener {
+            viewModel.addMembersToGroupHabit()
         }
         viewModel.getMembers()
     }
 
     companion object {
-        val HABIT_GROUP_ID: String? = "group_habit_id"
+        val HABIT_GROUP: String? = "group_habit"
     }
 }

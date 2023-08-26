@@ -47,4 +47,7 @@ interface HabitApi {
 
     @PATCH("habit/group/remove_member/{habitGroupId}")
     fun removeMemberFromGroup(@Path("habitGroupId") habitGroupId:String, @Body userIds: UserIdsModel):Call<Any>
+
+    @PATCH("habit/group/add_member/{habitGroupId}")
+    fun addMembersToGroup(@Path("habitGroupId") habitGroupId:String, @Body userIds: UserIdsModel):Call<Any>
 }

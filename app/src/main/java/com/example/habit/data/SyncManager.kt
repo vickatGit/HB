@@ -30,11 +30,11 @@ class SyncManager @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         Log.e("TAG", "doWork: Sync Manager invoked")
-        withContext(Dispatchers.IO) {
-            var habits = mutableListOf<HabitEntity>()
-            habitRepo.getUnSyncedHabits().collect { allHabits ->
-                Log.e("TAG", "--doWork: ${Gson().toJson(allHabits)}")
-                habits.addAll(allHabits)
+//        withContext(Dispatchers.IO) {
+//            var habits = mutableListOf<HabitEntity>()
+//            habitRepo.getUnSyncedHabits().forEach { allHabits ->
+//                Log.e("TAG", "--doWork: ${Gson().toJson(allHabits)}")
+//                habits.addAll(allHabits.)
 //                habits?.forEach { habit ->
 //                    when (habit.habitSyncType) {
 //                        HabitRecordSyncType.AddHabit -> {
@@ -63,10 +63,10 @@ class SyncManager @AssistedInject constructor(
 ////                        }
 //                    }
 //                }
-            }
-
-
-        }
+//            }
+//
+//
+//        }
         return Result.success()
 
     }

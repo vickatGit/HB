@@ -109,7 +109,8 @@ class GroupFragment : Fragment() {
         groupId = arguments?.getString(GROUP_HABIT_ID, null)
         Log.e("TAG", "onCreateView: groupId $groupId")
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                Toast.makeText(requireContext(),"onCreatView",Toast.LENGTH_SHORT).show()
                 viewModel.uiState.collectLatest {
                     when (it) {
                         is GroupHabitUiState.GroupHabit -> {
@@ -179,6 +180,7 @@ class GroupFragment : Fragment() {
             setupRecyclerView()
     }
     private fun setupRecyclerView() {
+        Toast.makeText(requireContext(),"recycle",Toast.LENGTH_SHORT).show()
         users = mutableListOf()
         var members = groupHabit.habitGroup.members?: emptyList()
         Log.e("TAG", "setupRecyclerView: members $members", )
@@ -247,7 +249,6 @@ class GroupFragment : Fragment() {
     }
 
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
-        Toast.makeText(requireContext(),"consistency ${mapEntries?.size}",Toast.LENGTH_SHORT).show()
         //values for single line chart on the graph
         val entries: MutableList<Entry> = mutableListOf()
         mapEntries?.mapValues {

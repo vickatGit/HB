@@ -12,6 +12,7 @@ import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
 import com.example.habit.data.network.HabitApi
+import com.example.habit.data.network.model.AddHabitResponseModel.AddHabitResponseModel
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
 import com.example.habit.data.network.model.UpdateHabitEntriesModel.EntriesModel
@@ -24,10 +25,13 @@ import com.example.habit.domain.models.GroupHabit
 import com.example.habit.domain.models.GroupHabitWithHabits
 import com.example.habit.domain.models.Habit
 import com.example.habit.domain.models.HabitThumb
+import com.example.habit.domain.models.Member
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -60,9 +64,32 @@ class HabitRepoImpl(
 
     override suspend fun addGroupHabit(habit: GroupHabit) {
         val groupHabit = groupHabitMapper.fromGroupHabit(habit, HabitGroupRecordSyncType.AddHabit)
+        groupHabit.admin = authPref.getUserId()
+        val members = listOf(Member(userId = authPref.getUserId(), username = ""))
+        groupHabit.members = Gson().toJson(members)
         Log.e("TAG", "addGroupHabit: data ${Gson().toJson(habit)}")
         habitDao.addGroupHabit(listOf(groupHabit))
+        habitDao.addHabit(
+            listOf(
+                HabitEntity(
+                    UUID.randomUUID().toString(),
+                    null,
+                    groupHabit.title,
+                    groupHabit.description,
+                    groupHabit.reminderQuestion,
+                    groupHabit.startDate,
+                    groupHabit.endDate,
+                    groupHabit.isReminderOn,
+                    groupHabit.reminderTime,
+                    null,
+                    HabitRecordSyncType.ADD_ADMIN_MEMBER_HABIT,
+                    habit.id,
+                    authPref.getUserId()
+                )
+            )
+        )
         if (isInternetConnected()) {
+            habit.admin=authPref.getUserId()
             addGroupHabitToRemote(
                 groupHabitMapper.fromGroupHabit(
                     habit,
@@ -86,7 +113,8 @@ class HabitRepoImpl(
     override suspend fun updateGroupHabit(habit: GroupHabit) {
         val groupHabit =
             groupHabitMapper.fromGroupHabit(habit, HabitGroupRecordSyncType.UpdateHabit)
-        habitDao.updateGroupHabit(
+        Log.e("TAG", "updateGroupHabit: $groupHabit")
+        val s = habitDao.updateGroupHabit(
             groupHabit.localId,
             groupHabit.title!!,
             groupHabit.description!!,
@@ -96,6 +124,7 @@ class HabitRepoImpl(
             groupHabit.reminderQuestion!!,
             groupHabit.reminderTime!!
         )
+        Log.e("TAG", "updateGroupHabit: ${getGroupHabit(groupHabit.localId)}")
         if (isInternetConnected()) {
             updateGroupHabitToRemote(groupHabit)
         }
@@ -197,11 +226,11 @@ class HabitRepoImpl(
 
             })
         }
-        return habitDao.getGroupHabitThumbs(authPref.getUserId()).map { groupHabits ->
-            groupHabits.map {groupHabit ->
-                val userHabit= groupHabit.habits.find { it.userId==authPref.getUserId() }
+        return habitDao.getGroupHabits().map { groupHabits ->
+            groupHabits.map { groupHabit ->
+                val userHabit = groupHabit.habits.find { it.userId == authPref.getUserId() }
                 userHabit?.let {
-                    groupHabit.habits= listOf(userHabit)
+                    groupHabit.habits = listOf(userHabit)
                 }
 
                 groupHabitMapper.toGroupHabitWithHabits(groupHabit)
@@ -302,21 +331,60 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity) {
-        habitApi.addHabit(habitMapper.mapHabitModelToFromHabitEntity(habit)).enqueue(object :
-            Callback<Any> {
-            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                Log.e("TAG", "onResponse: addOrUpdateHabitToRemote $response")
-                if (response.code() == 200) {
-//                    getHabits(CoroutineScope(Dispatchers.IO))
+    override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity): Flow<AddHabitResponseModel?> {
+        Log.e("grp", "addOrUpdateHabitToRemote: $habit ", )
+        return flow {
+            val response = habitApi.addHabit(habitMapper.mapHabitModelToFromHabitEntity(habit))
+            Log.e("grp", "addOrUpdateHabitToRemote: $response", )
+            if (response.isSuccessful) {
+                emit(response.body())
+                Log.e("grp", "addOrUpdateHabitToRemote: response ${response.body()}", )
+            }
+            else {
+                emit(response.body())
+            }
+        }
+    }
+    override suspend fun addGroupHabitToRemote(habitEntity: GroupHabitsEntity) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val groupHabit = getGroupAdminHabit(habitEntity.admin, habitEntity.localId)
+            Log.e("grp", "addGroupHabitsToRemote: $groupHabit habitId ${habitEntity.localId} admin ${habitEntity.admin}", )
+            addOrUpdateHabitToRemote(groupHabit).collect {
+                it?.let {
+                Log.e("grp", "addGroupHabitToRemote: $it ", )
+                    habitApi.addGroupHabit(
+                        habit = groupHabitMapper.toGroupHabitEntity(habitEntity),
+                        it.habitId
+                    ).enqueue(object : Callback<Any> {
+                        override fun onResponse(call: Call<Any>, response: Response<Any>) {
+
+                        }
+
+                        override fun onFailure(call: Call<Any>, t: Throwable) {
+
+                        }
+
+                    })
+
+                    getGroupHabits(this)
                 }
             }
-
-            override fun onFailure(call: Call<Any>, t: Throwable) {
-                Log.e("TAG", "onFailure: addOrUpdateHabitToRemote")
-            }
-
-        })
+        }
+//        habitApi.addGroupHabit(groupHabitMapper.toGroupHabitEntity(habitEntity), it.habitId)
+//            .enqueue(object : Callback<Any> {
+//                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+//                    Log.e("TAG", "onResponse: $response")
+//                    CoroutineScope(Dispatchers.IO).launch {
+//                        getGroupHabits(this)
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<Any>, t: Throwable) {
+//                    Log.e("TAG", "onResponse: ${t.stackTrace}")
+//                }
+//
+//            })
     }
 
     override suspend fun updateHabitToRemote(habit: HabitEntity) {
@@ -414,9 +482,13 @@ class HabitRepoImpl(
         }
         habitDao.addHabit(habits)
         if (isInternetConnected()) {
-            addMembersToGroupHabitFromRemote(groupHabit?.serverId,userIds)
+            addMembersToGroupHabitFromRemote(groupHabit?.serverId, userIds)
         }
 
+    }
+
+    override suspend fun getGroupAdminHabit(admin: String?, localId: String): HabitEntity {
+        return habitDao.getGroupAdminHabit(admin, localId)
     }
 
     override suspend fun removedMembersFromGroupHabitFromRemote(
@@ -444,6 +516,8 @@ class HabitRepoImpl(
 
     }
 
+
+
     override suspend fun addMembersToGroupHabitFromRemote(
         groupHabitServerId: String?,
         userIds: List<String>
@@ -452,10 +526,10 @@ class HabitRepoImpl(
             habitApi.addMembersToGroup(
                 groupHabitServerId,
                 UserIdsModel(userIds)
-            ).enqueue(object : Callback<Any>{
+            ).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    Log.e("TAG", "onResponse: addMembersFromGroupHabitFromRemote $response", )
-                    if(response.isSuccessful){
+                    Log.e("TAG", "onResponse: addMembersFromGroupHabitFromRemote $response")
+                    if (response.isSuccessful) {
                         CoroutineScope(Dispatchers.IO).launch {
                             getGroupHabits(this)
                         }
@@ -463,7 +537,7 @@ class HabitRepoImpl(
                 }
 
                 override fun onFailure(call: Call<Any>, t: Throwable) {
-                    Log.e("TAG", "onFailure: addMembersFromGroupHabitFromRemote ${t.message}", )
+                    Log.e("TAG", "onFailure: addMembersFromGroupHabitFromRemote ${t.message}")
                 }
 
             })
@@ -471,32 +545,7 @@ class HabitRepoImpl(
     }
 
 
-    override suspend fun addGroupHabitToRemote(habitEntity: GroupHabitsEntity) {
-        Log.e(
-            "TAG",
-            "addGroupHabitToRemote: ------------------------------------------------------------------------------",
-        )
-        Thread.currentThread().stackTrace.forEach { element ->
-            Log.e(
-                "TAG",
-                "addGroupHabitToRemote: stack  ${element.className}.${element.methodName}}"
-            )
-        }
-        habitApi.addGroupHabit(groupHabitMapper.toGroupHabitEntity(habitEntity))
-            .enqueue(object : Callback<Any> {
-                override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    Log.e("TAG", "onResponse: $response")
-                    CoroutineScope(Dispatchers.IO).launch {
-                        getGroupHabits(this)
-                    }
-                }
 
-                override fun onFailure(call: Call<Any>, t: Throwable) {
-                    Log.e("TAG", "onResponse: ${t.stackTrace}")
-                }
-
-            })
-    }
 
     override suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity) {
         habitApi.updateGroupHabit(

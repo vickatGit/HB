@@ -5,9 +5,7 @@ import com.example.habit.data.Mapper.HabitMapper.HabitMapper
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitGroupWithHabitsEntity
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitModel
-import com.example.habit.data.network.model.GroupHabitModel.MemberModel
 import com.example.habit.data.util.HabitGroupRecordSyncType
-import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.models.GroupHabit
 import com.example.habit.domain.models.GroupHabitWithHabits
 import com.example.habit.domain.models.Member
@@ -74,6 +72,7 @@ class GroupHabitMapper @Inject constructor(
     }
 
     override fun fromGroupHabit(type: GroupHabit,syncType: HabitGroupRecordSyncType): GroupHabitsEntity {
+
         return GroupHabitsEntity(
             type.id,
             type.serverId,
@@ -84,7 +83,7 @@ class GroupHabitMapper @Inject constructor(
             type.endDate,
             type.isReminderOn,
             type.reminderTime,
-            Gson().toJson(type.members)?:"",
+            if(type.members!=null)Gson().toJson(type.members) else null,
             syncType,
             type.admin
         )
@@ -100,9 +99,12 @@ class GroupHabitMapper @Inject constructor(
     }
 
     override fun toGroupHabit(type: GroupHabitsEntity): GroupHabit {
-        val memberListType = object : TypeToken<List<Member>>() {}.type
-        Log.e("TAG", "toGroupHabit: ${type.members}", )
-        val members : List<Member> = Gson().fromJson(type.members,memberListType)
+        var members: List<Member> = mutableListOf()
+        if(type.members!=null) {
+            val memberListType = object : TypeToken<List<Member>>() {}.type
+            Log.e("TAG", "toGroupHabit: ${type.members}",)
+            members= Gson().fromJson(type.members, memberListType)
+        }
         return GroupHabit(
             type.localId,
             type.serverId,

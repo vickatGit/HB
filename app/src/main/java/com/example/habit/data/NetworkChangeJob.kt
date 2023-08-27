@@ -69,6 +69,9 @@ class NetworkChangeJob : JobService() {
                                 listOf(habit.userId!!)
                             )
                         }
+                        HabitRecordSyncType.ADD_ADMIN_MEMBER_HABIT -> {
+                            habitRepo.addOrUpdateHabitToRemote(habit)
+                        }
 
                         HabitRecordSyncType.SyncedHabit -> {}
                     }
@@ -95,7 +98,7 @@ class NetworkChangeJob : JobService() {
 //                }
             }
         }
-        return false
+        return true
     }
 
     fun showNotification(context: Context, title: String?, content: String?) {

@@ -1,5 +1,6 @@
 package com.example.habit.data.network
 
+import com.example.habit.data.network.model.AddHabitResponseModel.AddHabitResponseModel
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitModel
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitModel
@@ -7,10 +8,10 @@ import com.example.habit.data.network.model.HabitsListModel.HabitsListModel
 import com.example.habit.data.network.model.UpdateHabitEntriesModel.EntriesModel
 import com.example.habit.data.network.model.UserIdsModel.UserIdsModel
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -25,10 +26,10 @@ interface HabitApi {
     fun getGroupHabits():Call<GroupHabitsModel>
 
     @POST("/habit/add_habit")
-    fun addHabit( @Body habit:HabitModel):Call<Any>
+    suspend fun addHabit( @Body habit:HabitModel):Response<AddHabitResponseModel>
 
-    @POST("/habit/group/add_habit")
-    fun addGroupHabit( @Body habit:GroupHabitModel):Call<Any>
+    @POST("/habit/group/add_habit/{adminHabitId}")
+    fun addGroupHabit(@Body habit: GroupHabitModel,@Path("adminHabitId") habitId: String):Call<Any>
 
     @PUT("/habit/update_habit/{id}")
     fun updateHabit( @Body habit:HabitModel, @Path("id") id: String?):Call<Any>

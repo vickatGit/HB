@@ -57,7 +57,7 @@ class GroupHabitViewModel @Inject constructor(
                     _uiState.update { GroupHabitUiState.Habits(grpHabits) }
                 }
             } catch (e: Exception) {
-                Log.e("TAG", "getGroupHabits: error ${e.stackTrace}")
+                Log.e("TAG", "getGroupHabits: error ${e.printStackTrace()}")
                 _uiState.update { GroupHabitUiState.Error(e.message+"") }
             }
 

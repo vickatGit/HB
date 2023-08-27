@@ -1,5 +1,6 @@
 package com.example.habit.data.Mapper.HabitMapper
 
+import android.util.Log
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.HabitEntity
 import com.example.habit.data.network.model.HabitsListModel.HabitModel
@@ -78,6 +79,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
     }
 
     override fun mapToHabitEntityFromHabitModel(type: HabitModel): HabitEntity {
+        Log.e("TAG", "mapToHabitEntityFromHabitModel: Habit model $type", )
         return HabitEntity(
             type.localId!!,
             type.serverId!!,

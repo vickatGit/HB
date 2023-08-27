@@ -4,6 +4,7 @@ package com.example.habit.domain.Repository
 import com.example.habit.data.local.entity.EntryEntity
 import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
+import com.example.habit.data.network.model.AddHabitResponseModel.AddHabitResponseModel
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.GroupHabit
 import com.example.habit.domain.models.GroupHabitWithHabits
@@ -31,7 +32,7 @@ interface HabitRepo {
     fun getUnSyncedHabits(): List<HabitEntity>
     fun getGroupUnSyncedHabits(): List<GroupHabitsEntity>
     suspend fun deleteFromRemote(habitId: String, habitServerId: String?)
-    suspend fun addOrUpdateHabitToRemote(habit: HabitEntity)
+    suspend fun addOrUpdateHabitToRemote(habit: HabitEntity): Flow<AddHabitResponseModel?>
     suspend fun updateHabitToRemote(habit: HabitEntity)
     suspend fun updateHabitEntriesToRemote(habitServerId:String?, entryList: Map<LocalDate, EntryEntity>?)
     suspend fun deleteFromLocal(id: String): Int
@@ -51,4 +52,5 @@ interface HabitRepo {
     suspend fun removedMembersFromGroupHabitFromRemote(habitGroupId: String?, userIds: List<String>)
     suspend fun addMembersToGroupHabitFromRemote(groupHabit: String?, userIds: List<String>)
     suspend fun addMembersToGroupHabit(groupHabit: GroupHabit?, userIds: List<String>)
+    suspend fun getGroupAdminHabit(admin: String?, localId: String): HabitEntity
 }

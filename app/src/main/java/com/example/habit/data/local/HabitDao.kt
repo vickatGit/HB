@@ -27,8 +27,10 @@ interface HabitDao {
     @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun updateHabit(habits: HabitEntity)
 
-    @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType AND habitGroupId==NULL")
+    @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType AND habitGroupId IS NULL")
     fun getHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitEntity>>
+    @Query("SELECT * FROM HabitEntity  ")
+    fun getsHabits():Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType")
     fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitGroupWithHabitsEntity>>
@@ -99,7 +101,7 @@ interface HabitDao {
         ):Int
 
 
-    @Query("UPDATE HabitEntity SET " +
+    @Query("UPDATE GroupHabitsEntity SET " +
             "title=:title," +
             "description=:description,"+
             "startDate=:startDate,"+
@@ -107,7 +109,7 @@ interface HabitDao {
             "isReminderOn=:isReminderOn,"+
             "reminderQuestion=:reminderQuestion,"+
             "habitSyncType=:syncType,"+
-            "reminderTime=:reminderTime WHERE id=:groupId"
+            "reminderTime=:reminderTime WHERE localId=:groupId"
     )
     suspend fun updateGroupHabit(
         groupId:String,
@@ -120,5 +122,9 @@ interface HabitDao {
         reminderTime:LocalDateTime,
         syncType:HabitRecordSyncType = HabitRecordSyncType.UpdateHabit
     ):Int
+
+
+    @Query("Select * FROM HabitEntity WHERE habitGroupId=:localId AND userId=:admin")
+    fun getGroupAdminHabit(admin: String?, localId: String):HabitEntity
 
 }

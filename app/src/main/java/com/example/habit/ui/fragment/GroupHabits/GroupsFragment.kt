@@ -50,14 +50,13 @@ class GroupsFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentGroupsBinding.inflate(inflater, container, false)
         binding.ongoingHabits.layoutManager =
-            LinearLayoutManager(requireContext())
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.uiState.collectLatest {
                     when (it) {
                         is GroupHabitUiState.Habits -> {
-
                             groupHabitsAdapter = GroupHabitsAdapter(authPref.getUserId(),it.habits, object : HabitClick {
                                 override fun habitClick(habitId: String) {
                                     findNavController().navigate(

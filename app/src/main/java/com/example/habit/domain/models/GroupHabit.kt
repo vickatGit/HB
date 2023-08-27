@@ -14,5 +14,5 @@ data class GroupHabit(
     var isReminderOn : Boolean?,
     var reminderTime: LocalDateTime?,
     var members : List<Member>? = null,
-    val admin: String? = null
+    var admin: String? = null
 )

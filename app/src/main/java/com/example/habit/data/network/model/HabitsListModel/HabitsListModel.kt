@@ -19,6 +19,7 @@ data class HabitModel(
 	val reminderTime: String? = null,
 	var title: String? = null,
 	var startDate: String? = null,
+	@SerializedName("groupHabitId")
 	var habitGroupId:String?=null,
 	var userId:String?=null
 )

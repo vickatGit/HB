@@ -33,8 +33,16 @@ interface HabitDao {
     @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType")
     fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitGroupWithHabitsEntity>>
 
+
+    //this query returning the all habits in future needs to be optimised
     @Query("SELECT * FROM GroupHabitsEntity WHERE localId IN ( SELECT habitGroupId FROM HabitEntity WHERE userId=:userId ) ")
     fun getGroupHabitThumbs(userId:String):Flow<List<HabitGroupWithHabitsEntity>>
+
+//    @Query("select * from GroupHabitsEntity inner join HabitEntity on GroupHabitsEntity.localId=HabitEntity.habitGroupId where HabitEntity.userId = :userId")
+//    fun getGroupHabitsThumbs(userId:String):Object
+//
+//    @Query("select * from GroupHabitsEntity inner join HabitEntity on GroupHabitsEntity.localId=HabitEntity.habitGroupId where HabitEntity.userId = :userId and GroupHabitsEntity.members LIKE '%' || :userId || '%'")
+//    fun getGroupHabitThumbs(userId:String):Flow<List<HabitGroupWithHabitsEntity>>
 
 
     @Query("SELECT * FROM HabitEntity WHERE id = :habitId")

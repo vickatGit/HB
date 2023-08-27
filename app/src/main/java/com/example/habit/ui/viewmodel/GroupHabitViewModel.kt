@@ -54,11 +54,6 @@ class GroupHabitViewModel @Inject constructor(
             _uiState.update { GroupHabitUiState.Loading }
             try {
                 getGroupHabitsUseCase(this).collect {grpHabits ->
-                    grpHabits.forEach { habits ->
-                        habits.habits.forEach {
-                            Log.e("TAG", "getGroupHabits: res $it")
-                        }
-                    }
                     _uiState.update { GroupHabitUiState.Habits(grpHabits) }
                 }
             } catch (e: Exception) {

@@ -197,8 +197,15 @@ class HabitRepoImpl(
 
             })
         }
-        return habitDao.getGroupHabits().map {
-            it.map { groupHabitMapper.toGroupHabitWithHabits(it) }
+        return habitDao.getGroupHabitThumbs(authPref.getUserId()).map { groupHabits ->
+            groupHabits.map {groupHabit ->
+                val userHabit= groupHabit.habits.find { it.userId==authPref.getUserId() }
+                userHabit?.let {
+                    groupHabit.habits= listOf(userHabit)
+                }
+
+                groupHabitMapper.toGroupHabitWithHabits(groupHabit)
+            }
         }
 
     }

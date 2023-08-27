@@ -56,18 +56,18 @@
         app:layout_constraintStart_toStartOf="@id/start"
         app:layout_constraintTop_toBottomOf="@+id/header" />
 
-    <ToggleButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:fontFamily="@font/regular"
-        android:textAllCaps="false"
-        android:textColor="@color/light_gray_text_color"
-        android:textOff="View More"
-        android:textOn="View Less"
-        app:layout_constraintBottom_toBottomOf="@+id/ongoing_challenges_header"
-        app:layout_constraintEnd_toStartOf="@+id/end"
-        app:layout_constraintTop_toTopOf="@+id/ongoing_challenges_header" />
+<!--    <ToggleButton-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@android:color/transparent"-->
+<!--        android:fontFamily="@font/regular"-->
+<!--        android:textAllCaps="false"-->
+<!--        android:textColor="@color/light_gray_text_color"-->
+<!--        android:textOff="View More"-->
+<!--        android:textOn="View Less"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/ongoing_challenges_header"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/end"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/ongoing_challenges_header" />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ongoing_habits"

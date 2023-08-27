@@ -31,7 +31,6 @@ class GroupHabitsAdapter(val userId:String, val habits: List<GroupHabitWithHabit
 
     override fun onBindViewHolder(holder: GroupHabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
-        Log.e("TAG", "onBindViewHolder: grouHabit $habit", )
         holder.binding?.let { binding ->
             val userHabit =  habit.habits.find { it.userId.equals(userId) }
             userHabit?.let {  habit ->  initialiseProgress(habit,binding) }
@@ -46,6 +45,7 @@ class GroupHabitsAdapter(val userId:String, val habits: List<GroupHabitWithHabit
 
     }
     private fun initialiseProgress(habit: Habit, binding: GroupHabitThumbBinding?) {
+        Log.e("TAG", "initialiseProgress: ", )
         val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)+1
         var daysCompleted = 0
         habit.entries?.mapValues {

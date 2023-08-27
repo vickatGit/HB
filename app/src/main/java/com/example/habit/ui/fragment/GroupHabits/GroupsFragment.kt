@@ -50,7 +50,7 @@ class GroupsFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentGroupsBinding.inflate(inflater, container, false)
         binding.ongoingHabits.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(requireContext())
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

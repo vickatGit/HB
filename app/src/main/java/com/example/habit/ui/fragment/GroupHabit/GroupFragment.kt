@@ -247,6 +247,7 @@ class GroupFragment : Fragment() {
     }
 
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
+        Toast.makeText(requireContext(),"consistency ${mapEntries?.size}",Toast.LENGTH_SHORT).show()
         //values for single line chart on the graph
         val entries: MutableList<Entry> = mutableListOf()
         mapEntries?.mapValues {
@@ -271,6 +272,7 @@ class GroupFragment : Fragment() {
             )
         }
         if (entries.size > 3) {
+            binding.consistency.isVisible=true
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
             val startColor = resources.getColor(R.color.orange_op_20)

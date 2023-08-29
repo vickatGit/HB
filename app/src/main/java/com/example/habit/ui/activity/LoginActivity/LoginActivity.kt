@@ -73,11 +73,11 @@ class LoginActivity : AppCompatActivity() {
                             showProgress()
                         }
                         is LoginUiState.Error -> {
-                            Toast.makeText(this@LoginActivity,"got"+it.error,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity,it.error,Toast.LENGTH_SHORT).show()
                             hideProgress()
                         }
                         is LoginUiState.Success -> {
-                            Toast.makeText(this@LoginActivity,"got"+it.message,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity,it.message,Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this@LoginActivity,HomeActivity::class.java))
                             hideProgress()
                         }

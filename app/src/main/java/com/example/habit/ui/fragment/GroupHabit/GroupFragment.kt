@@ -107,10 +107,8 @@ class GroupFragment : Fragment() {
         _calendarBinding = CalendarLayoutBinding.bind(binding.calendar.root)
         _weekDaysBinding = CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
         groupId = arguments?.getString(GROUP_HABIT_ID, null)
-        Log.e("TAG", "onCreateView: groupId $groupId")
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                Toast.makeText(requireContext(),"onCreatView",Toast.LENGTH_SHORT).show()
                 viewModel.uiState.collectLatest {
                     when (it) {
                         is GroupHabitUiState.GroupHabit -> {
@@ -180,7 +178,7 @@ class GroupFragment : Fragment() {
             setupRecyclerView()
     }
     private fun setupRecyclerView() {
-        Toast.makeText(requireContext(),"recycle",Toast.LENGTH_SHORT).show()
+
         users = mutableListOf()
         var members = groupHabit.habitGroup.members?: emptyList()
         Log.e("TAG", "setupRecyclerView: members $members", )
@@ -225,8 +223,6 @@ class GroupFragment : Fragment() {
     }
 
     private fun bindUserHabitData(habit: HabitView) {
-//        Log.e("TAG", "bindUserHabitData: userId ${authPref.getUserId()} habit userId ${habit.userId}", )
-//        Toast.makeText(requireContext(), "user selected ${authPref.getUserId().equals(habit.userId)}", Toast.LENGTH_SHORT).show()
         binding.streakEditSwitch.isVisible= authPref.getUserId() == habit.userId
 
 

@@ -32,8 +32,10 @@ interface HabitDao {
     @Query("SELECT * FROM HabitEntity  ")
     fun getsHabits():Flow<List<HabitEntity>>
 
-    @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType")
-    fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitGroupWithHabitsEntity>>
+    @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType AND habitSyncType!=:nonMemberSyncType")
+    fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit,
+                       nonMemberSyncType: HabitGroupRecordSyncType=HabitGroupRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT
+                       ):Flow<List<HabitGroupWithHabitsEntity>>
 
 
     //this query returning the all habits in future needs to be optimised
@@ -85,6 +87,8 @@ interface HabitDao {
     @Query("UPDATE GroupHabitsEntity SET habitSyncType=:shouldDelete WHERE localId = :habitId")
     suspend fun updateGroupHabitDeleteStatus(habitId: String,shouldDelete:HabitGroupRecordSyncType=HabitGroupRecordSyncType.DeleteHabit):Int
 
+    @Query("UPDATE GroupHabitsEntity SET habitSyncType=:shouldDelete WHERE localId = :habitId")
+    suspend fun updateRemoveGroupHabitDeleteStatus(habitId: String,shouldDelete:HabitGroupRecordSyncType=HabitGroupRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT):Int
 
 
     @Query("DELETE FROM HabitEntity WHERE id=:habitId")
@@ -99,6 +103,7 @@ interface HabitDao {
         habitGroupId: String,
         userIds: List<String>
         ):Int
+
 
 
     @Query("UPDATE GroupHabitsEntity SET " +

@@ -59,9 +59,13 @@ class NetworkChangeJob : JobService() {
                             habitRepo.deleteFromLocal(habit.id)
                         }
                         HabitRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT -> {
-                            habitRepo.removedMembersFromGroupHabitFromRemote(habit.habitGroupId,
-                                listOf(habit.userId!!)
-                            )
+                            val groupHabit = habitRepo.getGroupHabit(habit.habitGroupId!!)
+                            groupHabit?.let {
+                                habitRepo.removedMembersFromGroupHabitFromRemote(
+                                    groupHabit.habitGroup.serverId,
+                                    listOf(habit.userId!!)
+                                )
+                            }
                         }
                         HabitRecordSyncType.ADD_MEMBER_HABIT -> {
                             removableMembersFromGroupHabitIds.add(habit.userId!!)
@@ -91,9 +95,11 @@ class NetworkChangeJob : JobService() {
                         HabitGroupRecordSyncType.SyncedHabit -> {}
                         HabitGroupRecordSyncType.DeleteHabit -> {}
                         HabitGroupRecordSyncType.DeletedHabit -> {}
+                        HabitGroupRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT -> {}
                         HabitGroupRecordSyncType.UpdateHabit -> {
                             habitRepo.updateGroupHabitToRemote(it)
                         }
+
                     }
 //                }
             }

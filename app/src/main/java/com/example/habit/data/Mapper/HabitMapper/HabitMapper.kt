@@ -2,6 +2,7 @@ package com.example.habit.data.Mapper.HabitMapper
 
 import android.util.Log
 import com.example.habit.data.local.entity.EntryEntity
+import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.local.entity.HabitEntity
 import com.example.habit.data.network.model.HabitsListModel.HabitModel
 import com.example.habit.data.util.HabitRecordSyncType
@@ -77,6 +78,26 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
 
         )
     }
+    override fun mapToGroupHabitHabit(type: HabitEntity?, habitGroup: GroupHabitsEntity): Habit {
+        return Habit(
+            type?.id!!,
+            type.serverId,
+            habitGroup.title,
+            habitGroup?.description,
+            type?.reminderQuestion,
+            habitGroup?.startDate,
+            habitGroup?.endDate,
+            type?.isReminderOn,
+            type?.reminderTime,
+            type?.entryList?.let {
+                it.mapValues {
+                    entryMapper.mapToEntry(it.value)
+                } as HashMap<LocalDate, Entry>
+            },
+            type.habitGroupId,
+            type.userId
+        )
+    }
 
     override fun mapToHabitEntityFromHabitModel(type: HabitModel): HabitEntity {
         Log.e("TAG", "mapToHabitEntityFromHabitModel: Habit model $type", )
@@ -140,5 +161,7 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             localId = type.id
         )
     }
+
+
 
 }

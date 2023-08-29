@@ -109,7 +109,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:backgroundTint="@color/orange"
+        android:backgroundTint="@color/light_orange"
         android:text="Add Members"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@id/end"

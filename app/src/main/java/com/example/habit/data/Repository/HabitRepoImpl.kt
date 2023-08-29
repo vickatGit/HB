@@ -3,6 +3,7 @@ package com.example.habit.data.Repository
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
+import android.widget.Toast
 import com.example.habit.data.Mapper.GroupHabitMapper.GroupHabitMapper
 import com.example.habit.data.Mapper.HabitMapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper.HabitMapper
@@ -124,6 +125,7 @@ class HabitRepoImpl(
             groupHabit.reminderQuestion!!,
             groupHabit.reminderTime!!
         )
+        Log.e("TAG", "updateGroupHabit:s :-- ${s}")
         Log.e("TAG", "updateGroupHabit: ${getGroupHabit(groupHabit.localId)}")
         if (isInternetConnected()) {
             updateGroupHabitToRemote(groupHabit)
@@ -357,34 +359,13 @@ class HabitRepoImpl(
                         habit = groupHabitMapper.toGroupHabitEntity(habitEntity),
                         it.habitId
                     ).enqueue(object : Callback<Any> {
-                        override fun onResponse(call: Call<Any>, response: Response<Any>) {
-
-                        }
-
-                        override fun onFailure(call: Call<Any>, t: Throwable) {
-
-                        }
-
-                    })
+                        override fun onResponse(call: Call<Any>, response: Response<Any>) {}
+                        override fun onFailure(call: Call<Any>, t: Throwable) {} })
 
                     getGroupHabits(this)
                 }
             }
         }
-//        habitApi.addGroupHabit(groupHabitMapper.toGroupHabitEntity(habitEntity), it.habitId)
-//            .enqueue(object : Callback<Any> {
-//                override fun onResponse(call: Call<Any>, response: Response<Any>) {
-//                    Log.e("TAG", "onResponse: $response")
-//                    CoroutineScope(Dispatchers.IO).launch {
-//                        getGroupHabits(this)
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<Any>, t: Throwable) {
-//                    Log.e("TAG", "onResponse: ${t.stackTrace}")
-//                }
-//
-//            })
     }
 
     override suspend fun updateHabitToRemote(habit: HabitEntity) {
@@ -453,6 +434,8 @@ class HabitRepoImpl(
         if (isInternetConnected()) {
             removedMembersFromGroupHabitFromRemote(groupHabitServerId, userIds)
         }
+        val s =habitDao.updateRemoveGroupHabitDeleteStatus(habitGroupId)
+        Log.e("TAG", "removeMembersFromGroupHabit: $s", )
         return habitDao.removeMembersFromGroupHabit(habitGroupId = habitGroupId, userIds = userIds)
     }
 
@@ -548,25 +531,29 @@ class HabitRepoImpl(
 
 
     override suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity) {
-        habitApi.updateGroupHabit(
-            groupHabitMapper.toGroupHabitEntity(groupHabit),
-            groupHabit.serverId!!
-        ).enqueue(
-            object : Callback<Any> {
-                override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    Log.e("TAG", "updateGroupHabitToRemote onResponse: $response")
-                    if (response.isSuccessful) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            getGroupHabits(this)
+        if(groupHabit.serverId!=null) {
+            habitApi.updateGroupHabit(
+                groupHabitMapper.toGroupHabitEntity(groupHabit),
+                groupHabit.serverId!!
+            ).enqueue(
+                object : Callback<Any> {
+                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                        Log.e("TAG", "updateGroupHabitToRemote onResponse: $response")
+                        if (response.isSuccessful) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                getGroupHabits(this)
+                            }
                         }
                     }
-                }
 
-                override fun onFailure(call: Call<Any>, t: Throwable) {
-                    Log.e("TAG", "updateGroupHabitToRemote onFailure: ${t.printStackTrace()}")
-                }
+                    override fun onFailure(call: Call<Any>, t: Throwable) {
+                        Log.e("TAG", "updateGroupHabitToRemote onFailure: ${t.printStackTrace()}")
+                    }
 
-            })
+                })
+        }else{
+            addGroupHabitToRemote(groupHabit)
+        }
     }
 
     //Not Using this function

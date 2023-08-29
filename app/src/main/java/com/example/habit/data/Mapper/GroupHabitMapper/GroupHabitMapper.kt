@@ -93,7 +93,7 @@ class GroupHabitMapper @Inject constructor(
         return GroupHabitWithHabits(
             toGroupHabit(type.habitGroup),
             type.habits.map {
-                habitMapper.mapToHabit(it)
+                habitMapper.mapToGroupHabitHabit(it,type.habitGroup)
             }
         )
     }

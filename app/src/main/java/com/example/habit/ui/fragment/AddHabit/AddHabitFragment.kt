@@ -241,11 +241,15 @@ class AddHabitFragment : Fragment() {
     private fun bindGroupHabitHabitData() {
         binding.title.setText(groupHabit.title)
         binding.reminder.text = "Daily at ${timeFormatter(groupHabit.reminderTime!!)}"
+        habit.reminderTime=groupHabit.reminderTime
         binding.startDate.setText(dateFormatter(groupHabit.startDate!!))
+        habit.startDate=groupHabit.startDate
         binding.endDate.setText(dateFormatter(groupHabit.endDate!!))
+        habit.endDate=groupHabit.endDate
         binding.reminderQuestion.setText(groupHabit.reminderQuestion)
         binding.description.setText(groupHabit.description)
         binding.reminderSwitch.isChecked=groupHabit.isReminderOn!!
+        habit.isReminderOn=groupHabit.isReminderOn
     }
 
     private fun showToast(message: String) {

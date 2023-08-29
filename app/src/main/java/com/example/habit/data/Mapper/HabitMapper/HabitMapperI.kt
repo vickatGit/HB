@@ -1,5 +1,6 @@
 package com.example.habit.data.Mapper.HabitMapper
 
+import com.example.habit.data.local.entity.GroupHabitsEntity
 import com.example.habit.data.util.HabitRecordSyncType
 
 /**
@@ -16,5 +17,6 @@ interface HabitMapperI<A,V,D,L> {
     fun mapHabitModelToFromHabitEntity(type : A ) : L
 
     fun mapToHabit(type: A):D
+    fun mapToGroupHabitHabit(type: A, habitGroup: GroupHabitsEntity): D
 
 }

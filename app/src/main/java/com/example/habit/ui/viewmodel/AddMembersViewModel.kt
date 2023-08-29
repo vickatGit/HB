@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.habit.domain.UseCases.HabitUseCase.AddMembersToGroupHabitUseCase
 import com.example.habit.domain.UseCases.SocialUseCase.GetMembersUseCase
 import com.example.habit.domain.models.GroupHabit
+import com.example.habit.domain.models.User.User
 import com.example.habit.ui.activity.AddMembersActivity.AddMemberUiState
 import com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper
 import com.example.habit.ui.mapper.SocialMapper.UserMapper.toUserView
 import com.example.habit.ui.model.GroupHabitView
+import com.example.habit.ui.model.MemberView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +37,14 @@ class AddMembersViewModel @Inject constructor(
             _uiState.update { AddMemberUiState.Loading }
             viewModelScope.launch {
                 getMembersUseCase().collect{ users ->
-                    _uiState.update { AddMemberUiState.Success(users?.users?.map {
+                    val users = users?.users?.toMutableList()
+                    val memberUserIds = groupHabit?.members?.map { it.userId }
+                    users?.removeIf {
+                        return@removeIf memberUserIds?.contains(it.id) == true
+                    }
+                    Log.e("TAG", "getMembers members: $memberUserIds", )
+                    Log.e("TAG", "getMembers: users $users", )
+                    _uiState.update { AddMemberUiState.Success(users?.map {
                         it.toUserView()
                     }?: emptyList()
                     ) }
@@ -61,4 +70,5 @@ class AddMembersViewModel @Inject constructor(
             _uiState.update { AddMemberUiState.Error("${e.message}") }
         }
     }
+
 }

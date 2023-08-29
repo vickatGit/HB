@@ -2,6 +2,7 @@ package com.example.habit.ui.activity.ProfileActivity
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -38,6 +39,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private var _binding: ActivityProfileBinding? = null
     private val binding get() = _binding!!
+    private lateinit var bioBackground:Drawable
 
     @Inject
     lateinit var authPref: AuthPref
@@ -79,6 +81,8 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        bioBackground=binding.userBio.background
+        isProfileEditable(false)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED ){
                 viewModel.uiState.collectLatest {
@@ -148,6 +152,10 @@ class ProfileActivity : AppCompatActivity() {
         binding.progress.isVisible=false
     }
     private fun isProfileEditable(isEditable:Boolean){
+        if(isEditable)
+            binding.userBio.background= bioBackground
+        else
+            binding.userBio.background=null
         binding.edit.isVisible=!isEditable
         binding.userBio.isEnabled=isEditable
         binding.updateProfile.isVisible=isEditable

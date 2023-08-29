@@ -109,7 +109,6 @@
             android:layout_marginTop="20dp"
             android:textAlignment="center"
             android:layout_marginHorizontal="50dp"
-            android:background="@null"
             android:textSize="13sp"
             android:enabled="false"
             android:textColor="@color/text_color"

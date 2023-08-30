@@ -1,5 +1,6 @@
 package com.example.habit.di
 
+import android.app.Application
 import com.example.habit.data.Repository.SocialRepoImpl
 import com.example.habit.data.network.AuthApi
 import com.example.habit.data.network.SocialApi
@@ -26,7 +27,7 @@ class SocialModule {
 
     @Singleton
     @Provides
-    fun provideSocialRepo (socialApi: SocialApi ): SocialRepo {
-        return SocialRepoImpl(socialApi)
+    fun provideSocialRepo (socialApi: SocialApi,app: Application ): SocialRepo {
+        return SocialRepoImpl(socialApi,app)
     }
 }

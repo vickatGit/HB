@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.habit.data.Mapper.GroupHabitMapper.GroupHabitMapper
 import com.example.habit.data.Mapper.HabitMapper.EntryMapper
 import com.example.habit.data.Mapper.HabitMapper.HabitMapper
+import com.example.habit.data.common.Connectivity
 import com.example.habit.data.local.HabitDao
 import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.data.local.entity.EntryEntity
@@ -51,7 +52,7 @@ class HabitRepoImpl(
 ) : HabitRepo {
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)))
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             addOrUpdateHabitToRemote(
                 habitMapper.mapToHabitEntity(
                     habit,
@@ -87,7 +88,7 @@ class HabitRepoImpl(
                 )
             )
         )
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             habit.admin = authPref.getUserId()
             addGroupHabitToRemote(
                 groupHabitMapper.fromGroupHabit(
@@ -103,8 +104,8 @@ class HabitRepoImpl(
         val habitEntity = habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)
         habitEntity.habitSyncType = HabitRecordSyncType.UpdateHabit
         habitDao.updateHabit(habitEntity)
-        Log.e("TAG", "updateHabit: network ${isInternetConnected()}")
-        if (isInternetConnected()) {
+        Log.e("TAG", "updateHabit: network ${   Connectivity.isInternetConnected(context)}")
+        if (   Connectivity.isInternetConnected(context)) {
             updateHabitToRemote(habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit))
         }
     }
@@ -125,7 +126,7 @@ class HabitRepoImpl(
         )
         Log.e("TAG", "updateGroupHabit:s :-- ${s}")
         Log.e("TAG", "updateGroupHabit: ${getGroupHabit(groupHabit.localId)}")
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             updateGroupHabitToRemote(groupHabit)
         }
     }
@@ -133,7 +134,7 @@ class HabitRepoImpl(
 
     override suspend fun removeHabit(habitServerId: String?, habitId: String?): Int {
         val res = habitDao.updateDeleteStatus(habitId!!)
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             deleteFromRemote(habitId, habitServerId)
         }
         return res
@@ -141,7 +142,7 @@ class HabitRepoImpl(
 
     override suspend fun removeGroupHabit(groupHabitServerId: String?, groupHabitId: String?): Int {
         val res = habitDao.updateGroupHabitDeleteStatus(groupHabitId!!)
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             deleteGroupHabitFromRemote(groupHabitId, groupHabitServerId)
         }
         return res
@@ -149,7 +150,7 @@ class HabitRepoImpl(
 
     override fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>> {
         Log.e("TAG", "onResponse: getHabits local")
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             habitApi.getHabits().enqueue(object : Callback<HabitsListModel> {
                 override fun onResponse(
                     call: Call<HabitsListModel>,
@@ -184,7 +185,7 @@ class HabitRepoImpl(
     override suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<GroupHabitWithHabits>> {
 
 
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             getHabits(coroutineScope)
             habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
                 override fun onResponse(
@@ -450,7 +451,7 @@ class HabitRepoImpl(
         groupHabitServerId: String?,
         userIds: List<String>
     ): Int {
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             removedMembersFromGroupHabitFromRemote(groupHabitServerId, userIds)
         }
         val s = habitDao.updateRemoveGroupHabitDeleteStatus(habitGroupId)
@@ -483,7 +484,7 @@ class HabitRepoImpl(
             )
         }
         habitDao.addHabit(habits)
-        if (isInternetConnected()) {
+        if (   Connectivity.isInternetConnected(context)) {
             return addMembersToGroupHabitFromRemote(groupHabit?.serverId, userIds)
         } else {
             return flow { emit(false) }
@@ -616,7 +617,7 @@ class HabitRepoImpl(
                 entryMapper.mapFromEntry(it.value)
             }.toMutableMap()
         )
-        if (isInternetConnected()) {
+        if (Connectivity.isInternetConnected(context)) {
             updateHabitEntriesToRemote(
                 habitServerId,
                 entries.mapValues { entryMapper.mapFromEntry(it.value) })
@@ -624,12 +625,5 @@ class HabitRepoImpl(
         return res
     }
 
-    private fun isInternetConnected(): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
 
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
-
-    }
 }

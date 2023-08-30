@@ -112,10 +112,11 @@ class ProfileActivity : AppCompatActivity() {
         binding.edit.setOnClickListener {
             isProfileEditable(true)
         }
-        binding.userBio.addTextChangedListener {
-            viewModel.user?.userBio=it.toString()
-        }
+//        binding.userBio.addTextChangedListener {
+//            viewModel.user?.userBio=it.toString()
+//        }
         binding.updateProfile.setOnClickListener {
+            viewModel.user?.userBio=binding.userBio.text.toString()
             viewModel.updateProfile()
         }
         binding.cameraIcon.setOnClickListener {
@@ -177,8 +178,10 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(!binding.edit.isVisible)
+        if(!binding.edit.isVisible) {
             isProfileEditable(false)
+            bindProfileData()
+        }
         else
             super.onBackPressed()
 

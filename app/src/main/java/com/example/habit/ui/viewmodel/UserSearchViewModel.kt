@@ -1,26 +1,36 @@
 package com.example.habit.ui.viewmodel
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.habit.R
 import com.example.habit.domain.UseCases.SocialUseCase.GetFollowersUseCase
 import com.example.habit.domain.UseCases.SocialUseCase.GetFollowingsUseCase
 import com.example.habit.domain.UseCases.SocialUseCase.GetUsersByUserNameUseCase
+import com.example.habit.ui.activity.ProfileActivity.ProfileUiState
 import com.example.habit.ui.activity.UserSearchActivity.UserSearchUiState
 import com.example.habit.ui.mapper.SocialMapper.UserMapper.toUserView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
 class UserSearchViewModel  @Inject constructor(
     private val getUsersByUserNameUseCase: GetUsersByUserNameUseCase,
     private val getFollowersUseCase: GetFollowersUseCase,
-    private val getFollowingsUseCase: GetFollowingsUseCase
+    private val getFollowingsUseCase: GetFollowingsUseCase,
+    private val context: Application
 ) : ViewModel() {
     private var _uiState =  MutableStateFlow<UserSearchUiState>(UserSearchUiState.Nothing)
     val uiState = _uiState.asStateFlow()
@@ -30,14 +40,16 @@ class UserSearchViewModel  @Inject constructor(
         try {
             viewModelScope.launch {
                 _uiState.update { UserSearchUiState.Loading }
-                getUsersByUserNameUseCase(query).collect{users ->
+                getUsersByUserNameUseCase(query).catch {
+                    handleExceptions(Exception(it))
+                }.collect{users ->
                     _uiState.update { UserSearchUiState.Success(users.map {
                         it.toUserView()
                     }) }
                 }
             }
         }catch (e:Exception){
-            _uiState.update { UserSearchUiState.Error(e.message+"") }
+            handleExceptions(e)
         }
     }
     fun getFollowers(){
@@ -53,7 +65,7 @@ class UserSearchViewModel  @Inject constructor(
             }
         }catch (e:Exception){
             Log.e("TAG", "getFollowers: ${e.message}", )
-            _uiState.update { UserSearchUiState.Error(e.message+"") }
+            handleExceptions(e)
         }
     }
     fun getFollowings(){
@@ -68,7 +80,22 @@ class UserSearchViewModel  @Inject constructor(
             }
         }catch (e:Exception){
             Log.e("TAG", "getFollowers: ${e.message}", )
-            _uiState.update { UserSearchUiState.Error(e.message+"") }
+            handleExceptions(e)
+        }
+    }
+    private fun handleExceptions(e:Exception){
+        Log.e("TAG", "handleExceptions:e ${e.cause} ", )
+        Log.e("TAG", "handleExceptions: ${e.printStackTrace()} ", )
+        when(e.cause){
+            is ConnectException -> {
+                _uiState.update { UserSearchUiState.Error(context.getString(R.string.unknown_host_error_msg)) }
+            }
+            is SocketTimeoutException -> {
+                _uiState.update { UserSearchUiState.Error(context.getString(R.string.socket_timeout_exception)) }
+            }
+            else -> {
+                _uiState.update { UserSearchUiState.Error("${e.message}") }
+            }
         }
     }
 }

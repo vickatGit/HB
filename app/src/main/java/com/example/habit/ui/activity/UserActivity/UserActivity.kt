@@ -48,6 +48,7 @@ class UserActivity : AppCompatActivity() {
                         is UserActivityUiState.Error -> {
                             Toast.makeText(this@UserActivity,it.error,Toast.LENGTH_SHORT).show()
                             hideProgress()
+                            binding.followStatus.isChecked=viewModel.followStatus
                         }
                         UserActivityUiState.Loading -> {
                             showProgress()
@@ -55,6 +56,7 @@ class UserActivity : AppCompatActivity() {
                         is UserActivityUiState.UserFollowStatus -> {
                             binding.followStatus.text = if(it.isFollows) "Following" else "Follow"
                             shouldCallFollowApi = false
+                            viewModel.followStatus=it.isFollows
                             binding.followStatus.isChecked = it.isFollows
                             shouldCallFollowApi = true
                             hideProgress()

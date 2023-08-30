@@ -1,8 +1,10 @@
 package com.example.habit.ui.viewmodel
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.habit.R
 import com.example.habit.domain.UseCases.HabitUseCase.AddMembersToGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitFromRemoteUseCase
 import com.example.habit.domain.UseCases.SocialUseCase.GetMembersUseCase
@@ -22,6 +24,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +34,8 @@ class AddMembersViewModel @Inject constructor(
     private val getMembersUseCase: GetMembersUseCase,
     private val addMemberToGroupHabitUseCase : AddMembersToGroupHabitUseCase,
     private val getGroupHabitFromRemoteUseCase : GetGroupHabitFromRemoteUseCase,
-    private val groupHabitMapper: GroupHabitMapper
+    private val groupHabitMapper: GroupHabitMapper,
+    private val context:Application
 ) : ViewModel() {
     private var _uiState=MutableStateFlow<AddMemberUiState>(AddMemberUiState.Nothing)
     val uiState = _uiState.asStateFlow()
@@ -69,6 +75,9 @@ class AddMembersViewModel @Inject constructor(
             viewModelScope.launch {
                 groupHabit?.let {
                     addMemberToGroupHabitUseCase(groupHabitMapper.toGroupHabit(it), selectedMembers.values.toList())
+                        .catch {
+                            handleExceptions(java.lang.Exception(it))
+                        }
                         .collectLatest {
                             Log.e("add", "addMembersToGroupHabit: $it", )
                             _uiState.update { AddMemberUiState.Error("Members Added Successfully") }
@@ -77,7 +86,21 @@ class AddMembersViewModel @Inject constructor(
             }
         }catch (e:Exception){
             Log.e("TAG", "getMembers: ${e.printStackTrace()}", )
-            _uiState.update { AddMemberUiState.Error("${e.message}") }
+            handleExceptions(e)
+        }
+    }
+
+    private fun handleExceptions(e:Exception){
+        when(e.cause){
+            is ConnectException -> {
+                _uiState.update { AddMemberUiState.Error(context.getString(R.string.unknown_host_error_msg)) }
+            }
+            is SocketTimeoutException -> {
+                _uiState.update { AddMemberUiState.Error(context.getString(R.string.socket_timeout_exception)) }
+            }
+            else -> {
+                _uiState.update { AddMemberUiState.Error("${e.message}") }
+            }
         }
     }
 

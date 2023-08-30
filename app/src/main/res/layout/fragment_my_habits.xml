@@ -53,8 +53,8 @@
         app:layout_constraintEnd_toEndOf="@id/end"
         android:layout_marginTop="30dp"
         app:strokeWidth="0dp"
-        app:cardElevation="7dp"
-        android:outlineProvider="bounds"
+        app:cardElevation="5dp"
+
         app:cardCornerRadius="10dp"
         app:cardBackgroundColor="@color/white"
         app:cardPreventCornerOverlap="true"
@@ -103,7 +103,6 @@
             android:layout_marginTop="30dp"
             android:layout_marginStart="15dp"
             android:layout_columnWeight="1"
-            android:outlineProvider="bounds"
             android:layout_rowWeight="1"
             app:strokeWidth="0dp"
             android:layout_height="wrap_content">
@@ -115,7 +114,7 @@
                 android:gravity="bottom|center_horizontal"
                 android:layout_gravity="bottom"
                 android:paddingTop="20dp"
-                android:paddingHorizontal="20dp"
+                android:paddingHorizontal="10dp"
                 android:orientation="vertical">
 
                 <ImageView
@@ -129,6 +128,8 @@
                     android:text="Create New Habit"
                     android:fontFamily="@font/regular"
                     android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:textColor="@color/text_color"
                     android:textAlignment="center"
                     android:layout_marginBottom="10dp"
@@ -143,7 +144,7 @@
             app:cardBackgroundColor="@color/white"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
-            android:outlineProvider="bounds"
+
             android:layout_rowWeight="1"
             app:strokeWidth="0dp"
             android:layout_marginEnd="20dp"
@@ -157,7 +158,7 @@
                 android:gravity="bottom|center_horizontal"
                 android:layout_gravity="bottom"
                 android:paddingTop="20dp"
-                android:paddingHorizontal="20dp"
+                android:paddingHorizontal="10dp"
                 android:orientation="vertical">
 
                 <ImageView
@@ -172,6 +173,8 @@
                     android:text="Group Habits"
                     android:fontFamily="@font/regular"
                     android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:textColor="@color/text_color"
                     android:textAlignment="center"
                     android:layout_marginBottom="10dp"
@@ -186,7 +189,7 @@
             app:cardBackgroundColor="@color/white"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
-            android:outlineProvider="bounds"
+
             android:layout_rowWeight="1"
             android:layout_marginTop="30dp"
             android:layout_marginEnd="20dp"
@@ -214,6 +217,8 @@
                     android:text="Completed Habits"
                     android:fontFamily="@font/regular"
                     android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:textColor="@color/text_color"
                     android:textAlignment="center"
                     android:layout_marginBottom="10dp"
@@ -228,7 +233,7 @@
             app:cardBackgroundColor="@color/white"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
-            android:outlineProvider="bounds"
+
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:layout_marginStart="20dp"
@@ -244,7 +249,7 @@
                 android:gravity="bottom|center_horizontal"
                 android:layout_gravity="bottom"
                 android:paddingTop="20dp"
-                android:paddingHorizontal="20dp"
+                android:paddingHorizontal="10dp"
                 android:orientation="vertical">
 
                 <ImageView
@@ -259,6 +264,8 @@
                     android:text="Your Habits"
                     android:fontFamily="@font/regular"
                     android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:textColor="@color/text_color"
                     android:textAlignment="center"
                     android:layout_marginBottom="10dp"
@@ -273,7 +280,7 @@
             app:cardBackgroundColor="@color/white"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
-            android:outlineProvider="bounds"
+
             android:layout_rowWeight="1"
             app:strokeWidth="0dp"
             android:layout_marginTop="20dp"
@@ -301,6 +308,8 @@
                     android:text="Challenges &amp; Leaderboard"
                     android:fontFamily="@font/regular"
                     android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     android:textColor="@color/text_color"
                     android:textAlignment="center"
                     android:layout_marginBottom="10dp"

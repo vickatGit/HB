@@ -8,6 +8,7 @@ import javax.inject.Inject
 class GetMembersUseCase @Inject constructor(
     private val socialRepo: SocialRepo
 ) {
+    @Throws
     suspend operator fun invoke(): Flow<Follow?> {
         return socialRepo.getMembers()
     }

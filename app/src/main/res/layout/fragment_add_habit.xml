@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/cardview_light_background"
-            android:outlineProvider="bounds"
+
             android:paddingHorizontal="20dp"
             android:paddingVertical="7dp"
             android:theme="@style/Habit"
@@ -107,7 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/cardview_light_background"
-            android:outlineProvider="bounds"
+
             android:paddingHorizontal="20dp"
             android:paddingTop="0dp"
             android:theme="@style/Habit"
@@ -124,6 +124,8 @@
             app:boxStrokeWidth="0dp"
             app:endIconMode="dropdown_menu"
             app:hintEnabled="false"
+            app:boxStrokeWidthFocused="0dp"
+            app:boxBackgroundColor="@color/white"
             app:endIconTint="@color/light_grey"
             app:endIconDrawable="@drawable/opened_dropdown_icon"
             android:layout_height="wrap_content">
@@ -152,7 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/cardview_light_background"
-            android:outlineProvider="bounds"
+
             android:theme="@style/Habit"
             app:cardElevation="5dp"
             app:layout_constraintEnd_toEndOf="@id/end"
@@ -267,7 +269,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/cardview_light_background"
-            android:outlineProvider="bounds"
+
             android:paddingHorizontal="20dp"
             android:theme="@style/Habit"
             app:cardElevation="5dp"
@@ -368,7 +370,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/cardview_light_background"
-            android:outlineProvider="bounds"
             android:paddingHorizontal="20dp"
             android:theme="@style/Habit"
             app:cardElevation="5dp"

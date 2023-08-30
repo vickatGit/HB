@@ -46,8 +46,8 @@
         app:layout_constraintEnd_toEndOf="@id/end"
         android:layout_marginTop="30dp"
         app:strokeWidth="0dp"
-        app:cardElevation="7dp"
-        android:outlineProvider="bounds"
+        app:cardElevation="5dp"
+
         app:cardCornerRadius="10dp"
         app:cardBackgroundColor="@color/white"
         app:cardPreventCornerOverlap="true"

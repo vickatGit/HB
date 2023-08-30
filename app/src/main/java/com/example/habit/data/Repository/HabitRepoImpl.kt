@@ -88,7 +88,7 @@ class HabitRepoImpl(
             )
         )
         if (isInternetConnected()) {
-            habit.admin=authPref.getUserId()
+            habit.admin = authPref.getUserId()
             addGroupHabitToRemote(
                 groupHabitMapper.fromGroupHabit(
                     habit,
@@ -255,15 +255,15 @@ class HabitRepoImpl(
     override suspend fun getGroupHabitFromRemote(groupId: String): Flow<Boolean> {
         return flow {
             val response = habitApi.getGroupHabit(groupId)
-            if(response.isSuccessful){
+            if (response.isSuccessful) {
                 response.body()?.let {
                     CoroutineScope(Dispatchers.IO).launch {
-                        Log.e("TAG", "getGroupHabitFromRemote: $it ",)
+                        Log.e("TAG", "getGroupHabitFromRemote: $it ")
                         habitDao.addGroupHabit(listOf(groupHabitMapper.toGroupHabitModel(it.data!!)))
                         emit(true)
                     }
                 }
-            }else{
+            } else {
                 emit(false)
             }
         }
@@ -349,33 +349,37 @@ class HabitRepoImpl(
     }
 
     override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity): Flow<AddHabitResponseModel?> {
-        Log.e("grp", "addOrUpdateHabitToRemote: $habit ", )
+        Log.e("grp", "addOrUpdateHabitToRemote: $habit ")
         return flow {
             val response = habitApi.addHabit(habitMapper.mapHabitModelToFromHabitEntity(habit))
-            Log.e("grp", "addOrUpdateHabitToRemote: $response", )
+            Log.e("grp", "addOrUpdateHabitToRemote: $response")
             if (response.isSuccessful) {
                 emit(response.body())
-                Log.e("grp", "addOrUpdateHabitToRemote: response ${response.body()}", )
-            }
-            else {
+                Log.e("grp", "addOrUpdateHabitToRemote: response ${response.body()}")
+            } else {
                 emit(response.body())
             }
         }
     }
+
     override suspend fun addGroupHabitToRemote(habitEntity: GroupHabitsEntity) {
 
         CoroutineScope(Dispatchers.IO).launch {
             val groupHabit = getGroupAdminHabit(habitEntity.admin, habitEntity.localId)
-            Log.e("grp", "addGroupHabitsToRemote: $groupHabit habitId ${habitEntity.localId} admin ${habitEntity.admin}", )
+            Log.e(
+                "grp",
+                "addGroupHabitsToRemote: $groupHabit habitId ${habitEntity.localId} admin ${habitEntity.admin}",
+            )
             addOrUpdateHabitToRemote(groupHabit).collect {
                 it?.let {
-                Log.e("grp", "addGroupHabitToRemote: $it ", )
+                    Log.e("grp", "addGroupHabitToRemote: $it ")
                     habitApi.addGroupHabit(
                         habit = groupHabitMapper.toGroupHabitEntity(habitEntity),
                         it.habitId
                     ).enqueue(object : Callback<Any> {
                         override fun onResponse(call: Call<Any>, response: Response<Any>) {}
-                        override fun onFailure(call: Call<Any>, t: Throwable) {} })
+                        override fun onFailure(call: Call<Any>, t: Throwable) {}
+                    })
 
                     getGroupHabits(this)
                 }
@@ -449,8 +453,8 @@ class HabitRepoImpl(
         if (isInternetConnected()) {
             removedMembersFromGroupHabitFromRemote(groupHabitServerId, userIds)
         }
-        val s =habitDao.updateRemoveGroupHabitDeleteStatus(habitGroupId)
-        Log.e("TAG", "removeMembersFromGroupHabit: $s", )
+        val s = habitDao.updateRemoveGroupHabitDeleteStatus(habitGroupId)
+        Log.e("TAG", "removeMembersFromGroupHabit: $s")
         return habitDao.removeMembersFromGroupHabit(habitGroupId = habitGroupId, userIds = userIds)
     }
 
@@ -481,7 +485,7 @@ class HabitRepoImpl(
         habitDao.addHabit(habits)
         if (isInternetConnected()) {
             return addMembersToGroupHabitFromRemote(groupHabit?.serverId, userIds)
-        }else{
+        } else {
             return flow { emit(false) }
         }
 
@@ -517,7 +521,6 @@ class HabitRepoImpl(
     }
 
 
-
     override suspend fun addMembersToGroupHabitFromRemote(
         groupHabitServerId: String?,
         userIds: List<String>
@@ -525,14 +528,21 @@ class HabitRepoImpl(
         return flow {
             groupHabitServerId?.let {
                 runCatching {
-                    val addMemberResponse = habitApi.addMembersToGroup(groupHabitServerId, UserIdsModel(userIds))
+                    val addMemberResponse =
+                        habitApi.addMembersToGroup(groupHabitServerId, UserIdsModel(userIds))
                     if (addMemberResponse.isSuccessful) {
                         val getHabitResponse = habitApi.getGroupHabit(groupHabitServerId)
-                        val groupHabit=getHabitResponse.body()?.data
-                        if(getHabitResponse.isSuccessful) {
-                            habitDao.addGroupHabit(listOf(groupHabitMapper.toGroupHabitModel(getHabitResponse.body()?.data!!)))
+                        val groupHabit = getHabitResponse.body()?.data
+                        if (getHabitResponse.isSuccessful) {
+                            habitDao.addGroupHabit(
+                                listOf(
+                                    groupHabitMapper.toGroupHabitModel(
+                                        getHabitResponse.body()?.data!!
+                                    )
+                                )
+                            )
                             var habits = mutableListOf<HabitEntity>()
-                                getHabitResponse.body()?.data?.habits?.map {
+                            getHabitResponse.body()?.data?.habits?.map {
                                 it?.let { habit ->
                                     habit?.startDate = groupHabit?.startDate
                                     habit?.endDate = groupHabit?.endDate
@@ -544,43 +554,21 @@ class HabitRepoImpl(
                             }
                             habitDao.addHabit(habits)
                             emit(true)
-                        }else emit(false)
-                    }else emit(false)
+                        } else emit(false)
+                    } else emit(false)
                 }.onFailure {
-                    Log.e("add", "addMembersToGroupHabitFromRemote error : ${it.message}", )
+                    Log.e("add", "addMembersToGroupHabitFromRemote error : ${it.message}")
                     emit(false)
                 }
 
             }
         }
 
-//        groupHabitServerId?.let {
-//            habitApi.addMembersToGroup(
-//                groupHabitServerId,
-//                UserIdsModel(userIds)
-//            ).enqueue(object : Callback<Any> {
-//                override fun onResponse(call: Call<Any>, response: Response<Any>) {
-//                    Log.e("TAG", "onResponse: addMembersFromGroupHabitFromRemote $response")
-//                    if (response.isSuccessful) {
-//                        CoroutineScope(Dispatchers.IO).launch {
-//                            getGroupHabits(this)
-//                        }
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<Any>, t: Throwable) {
-//                    Log.e("TAG", "onFailure: addMembersFromGroupHabitFromRemote ${t.message}")
-//                }
-//
-//            })
-//        }
     }
 
 
-
-
     override suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity) {
-        if(groupHabit.serverId!=null) {
+        if (groupHabit.serverId != null) {
             habitApi.updateGroupHabit(
                 groupHabitMapper.toGroupHabitEntity(groupHabit),
                 groupHabit.serverId!!
@@ -600,7 +588,7 @@ class HabitRepoImpl(
                     }
 
                 })
-        }else{
+        } else {
             addGroupHabitToRemote(groupHabit)
         }
     }

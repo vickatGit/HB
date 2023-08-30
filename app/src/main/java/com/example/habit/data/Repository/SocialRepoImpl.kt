@@ -1,5 +1,6 @@
 package com.example.habit.data.Repository
 
+import android.accounts.NetworkErrorException
 import android.net.Uri
 import android.util.Log
 import com.example.habit.data.Mapper.SocialMapper.FollowMapper.toFollow
@@ -11,6 +12,7 @@ import com.example.habit.domain.models.Follow.Follow
 import com.example.habit.domain.models.User.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.lang.Error
 
 class SocialRepoImpl(
     private val socialApi: SocialApi
@@ -59,12 +61,18 @@ class SocialRepoImpl(
 
     override suspend fun getMembers(): Flow<Follow?> {
         return flow {
-            val response = socialApi.getMembers()
-            if(response.isSuccessful){
-                emit(response.body()?.toFollow())
-            }else{
-                emit(null)
+            try {
+                val response = socialApi.getMembers()
+                if(response.isSuccessful){
+                    emit(response.body()?.toFollow())
+                }else{
+                    emit(null)
+                }
+            }catch (e:Exception){
+                Log.e("TAG", "getMembers: ${e.message}", )
+                throw e
             }
+
         }
     }
 

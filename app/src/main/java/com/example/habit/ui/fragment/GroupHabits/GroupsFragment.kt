@@ -80,6 +80,9 @@ class GroupsFragment : Fragment() {
                 }
             }
         }
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
         viewModel.getGroupHabits()
 
         return binding.root

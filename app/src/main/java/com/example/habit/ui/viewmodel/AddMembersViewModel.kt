@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habit.domain.UseCases.HabitUseCase.AddMembersToGroupHabitUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitFromRemoteUseCase
 import com.example.habit.domain.UseCases.SocialUseCase.GetMembersUseCase
 import com.example.habit.domain.models.GroupHabit
 import com.example.habit.domain.models.User.User
@@ -13,9 +14,11 @@ import com.example.habit.ui.mapper.SocialMapper.UserMapper.toUserView
 import com.example.habit.ui.model.GroupHabitView
 import com.example.habit.ui.model.MemberView
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +27,7 @@ import javax.inject.Inject
 class AddMembersViewModel @Inject constructor(
     private val getMembersUseCase: GetMembersUseCase,
     private val addMemberToGroupHabitUseCase : AddMembersToGroupHabitUseCase,
+    private val getGroupHabitFromRemoteUseCase : GetGroupHabitFromRemoteUseCase,
     private val groupHabitMapper: GroupHabitMapper
 ) : ViewModel() {
     private var _uiState=MutableStateFlow<AddMemberUiState>(AddMemberUiState.Nothing)
@@ -62,7 +66,10 @@ class AddMembersViewModel @Inject constructor(
             viewModelScope.launch {
                 groupHabit?.let {
                     addMemberToGroupHabitUseCase(groupHabitMapper.toGroupHabit(it), selectedMembers.values.toList())
-                    _uiState.update { AddMemberUiState.Error("Members Added Successfully") }
+                        .collectLatest {
+                            Log.e("add", "addMembersToGroupHabit: $it", )
+                            _uiState.update { AddMemberUiState.Error("Members Added Successfully") }
+                        }
                 }
             }
         }catch (e:Exception){

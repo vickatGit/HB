@@ -8,6 +8,9 @@ data class GroupHabitsModel(
 	val data: List<GroupHabitModel?>? = null
 )
 
+data class GroupHabitDataModel(
+	val data: GroupHabitModel? = null
+)
 data class GroupHabitModel(
 	@SerializedName("_id")
 	val id: String? = null,

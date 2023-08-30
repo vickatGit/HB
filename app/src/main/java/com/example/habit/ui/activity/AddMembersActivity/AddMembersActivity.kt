@@ -21,6 +21,7 @@ import com.example.habit.ui.adapter.MembersAdapter
 import com.example.habit.ui.adapter.UserListAdapter
 import com.example.habit.ui.callback.MemberCheckChange
 import com.example.habit.ui.callback.OnUserClick
+import com.example.habit.ui.fragment.GroupHabit.GroupFragment
 import com.example.habit.ui.model.GroupHabitView
 import com.example.habit.ui.model.User.UserView
 import com.example.habit.ui.viewmodel.AddMembersViewModel
@@ -44,6 +45,7 @@ class AddMembersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityAddMembersBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setDefaultContractResult()
         viewModel.groupHabit=intent.getParcelableExtra(HABIT_GROUP)
         binding.usersRecycler.layoutManager = LinearLayoutManager(this@AddMembersActivity)
         usersAdapter = MembersAdapter(users, object : MemberCheckChange {
@@ -73,6 +75,11 @@ class AddMembersActivity : AppCompatActivity() {
                         is AddMemberUiState.Error -> {
                             Toast.makeText(this@AddMembersActivity, it.error, Toast.LENGTH_SHORT).show()
                             binding.progress.isVisible=false
+                            val intent = Intent()
+                            intent.putExtra(GroupFragment.IS_MEMBERS_ARE_ADDED,true)
+                            setResult(RESULT_OK,intent)
+
+                            onBackPressed()
                         }
                         AddMemberUiState.Loading -> {
                             binding.progress.isVisible=true
@@ -102,6 +109,12 @@ class AddMembersActivity : AppCompatActivity() {
             onBackPressed()
         }
         viewModel.getMembers()
+    }
+
+    private fun setDefaultContractResult() {
+        val intent = Intent()
+        intent.putExtra(GroupFragment.IS_MEMBERS_ARE_ADDED,false)
+        setResult(RESULT_OK,intent)
     }
 
     companion object {

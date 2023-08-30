@@ -68,10 +68,14 @@ class NetworkChangeJob : JobService() {
                             }
                         }
                         HabitRecordSyncType.ADD_MEMBER_HABIT -> {
-                            removableMembersFromGroupHabitIds.add(habit.userId!!)
-                            habitRepo.addMembersToGroupHabitFromRemote(groupHabit = habit.habitGroupId,
-                                listOf(habit.userId!!)
-                            )
+                            val groupHabit = habitRepo.getGroupHabit(habit.habitGroupId!!)
+                            groupHabit?.let {
+                                removableMembersFromGroupHabitIds.add(habit.userId!!)
+                                habitRepo.addMembersToGroupHabitFromRemote(
+                                    groupHabit = groupHabit.habitGroup.serverId,
+                                    listOf(habit.userId!!)
+                                )
+                            }
                         }
                         HabitRecordSyncType.ADD_ADMIN_MEMBER_HABIT -> {
                             habitRepo.addOrUpdateHabitToRemote(habit)

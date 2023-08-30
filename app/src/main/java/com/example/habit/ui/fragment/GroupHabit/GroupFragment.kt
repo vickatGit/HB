@@ -1,7 +1,9 @@
 package com.example.habit.ui.fragment.GroupHabit
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,6 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -64,6 +71,8 @@ import javax.inject.Inject
 class GroupFragment : Fragment() {
     companion object {
         val GROUP_HABIT_ID: String = "group_habit_id"
+        const val IS_MEMBERS_ARE_ADDED: String = "is_members_are_added_to_group_habit"
+        const val IS_MEMBERS_ARE_ADDED_CODE: Int = 36546
     }
 
     private lateinit var users: MutableList<UserGroupThumbProgressModel>
@@ -96,6 +105,14 @@ class GroupFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+
+    private val AddMembersResultLauncher = registerForActivityResult(AddMembersContract()) {
+        it?.let {
+//            findNavController().popBackStack()
+            Log.e("add", "AddMembersResultLauncher:$it ", )
+            if (it) groupId?.let { groupHabitId -> viewModel.getGroupHabit(groupHabitId) }
+        }
     }
 
     override fun onCreateView(
@@ -159,7 +176,7 @@ class GroupFragment : Fragment() {
         binding.addMembers.setOnClickListener {
             val intent = Intent(requireContext(),AddMembersActivity::class.java)
             intent.putExtra(AddMembersActivity.HABIT_GROUP,groupHabit.habitGroup)
-            startActivity(intent)
+            AddMembersResultLauncher.launch(intent)
         }
         binding.back.setOnClickListener {
             requireActivity().onBackPressed()
@@ -175,7 +192,7 @@ class GroupFragment : Fragment() {
         binding.delete.isVisible = isAdmin
         binding.addMembers.isVisible = isAdmin
         binding.leaveHabitGroupCard.isVisible= !isAdmin
-            setupRecyclerView()
+        setupRecyclerView()
     }
     private fun setupRecyclerView() {
 
@@ -519,6 +536,19 @@ class GroupFragment : Fragment() {
 
     private fun showProgress(){ binding.progress.isVisible=true }
     private fun hideProgress(){ binding.progress.isVisible=false }
+
+    private class AddMembersContract : ActivityResultContract<Intent, Boolean>(){
+
+
+        override fun createIntent(context: Context, input: Intent): Intent {
+            return input
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
+                return intent?.getBooleanExtra(IS_MEMBERS_ARE_ADDED,false)?:false
+        }
+
+    }
 
 
 }

@@ -25,6 +25,8 @@ interface HabitRepo {
     suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<GroupHabitWithHabits>>
     suspend fun getHabit(habitId:String):Habit
     suspend fun getGroupHabit(groupId:String): GroupHabitWithHabits?
+
+    suspend fun getGroupHabitFromRemote(groupId:String): Flow<Boolean>
     suspend fun getHabitEntries(habitId: String) : HashMap<LocalDate, Entry>?
     suspend fun updateHabitEntries(habitServerId:String?, habitId: String,entries:HashMap<LocalDate,Entry>) : Int
     suspend fun getHabitThumb(habitId: String): Habit
@@ -50,7 +52,7 @@ interface HabitRepo {
         userIds: List<String>
     ) : Int
     suspend fun removedMembersFromGroupHabitFromRemote(habitGroupId: String?, userIds: List<String>)
-    suspend fun addMembersToGroupHabitFromRemote(groupHabit: String?, userIds: List<String>)
-    suspend fun addMembersToGroupHabit(groupHabit: GroupHabit?, userIds: List<String>)
+    suspend fun addMembersToGroupHabitFromRemote(groupHabit: String?, userIds: List<String>): Flow<Boolean>
+    suspend fun addMembersToGroupHabit(groupHabit: GroupHabit?, userIds: List<String>): Flow<Boolean>
     suspend fun getGroupAdminHabit(admin: String?, localId: String): HabitEntity
 }

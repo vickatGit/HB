@@ -69,14 +69,14 @@ class GroupHabitViewModel @Inject constructor(
             viewModelScope.launch {
                 val groupHabit = getGroupHabitUseCase(groupId)
                 groupHabit?.let {
-                    Log.e("TAG", "getGroupHabit: ${groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)}", )
+                    Log.e("add", "getGroupHabit: ${groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)}", )
                     _uiState.update { GroupHabitUiState.GroupHabit(groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)) }
                 }
 
 
             }
         }catch (e:Exception){
-            Log.e("TAG", "getGroupHabit: ${e.printStackTrace()}", )
+            Log.e("add", "getGroupHabit: ${e.printStackTrace()}", )
             _uiState.update { GroupHabitUiState.Error(e.message+"") }
         }
 

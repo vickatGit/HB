@@ -1,6 +1,7 @@
 package com.example.habit.data.network
 
 import com.example.habit.data.network.model.AddHabitResponseModel.AddHabitResponseModel
+import com.example.habit.data.network.model.GroupHabitModel.GroupHabitDataModel
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitModel
 import com.example.habit.data.network.model.GroupHabitModel.GroupHabitsModel
 import com.example.habit.data.network.model.HabitsListModel.HabitModel
@@ -25,6 +26,8 @@ interface HabitApi {
     @GET("/habit/group/get_habits")
     fun getGroupHabits():Call<GroupHabitsModel>
 
+    @GET("/habit/group/get_habit/{groupHabitId}")
+    suspend fun getGroupHabit(@Path("groupHabitId") groupHabitId: String):Response<GroupHabitDataModel>
     @POST("/habit/add_habit")
     suspend fun addHabit( @Body habit:HabitModel):Response<AddHabitResponseModel>
 
@@ -50,5 +53,5 @@ interface HabitApi {
     fun removeMemberFromGroup(@Path("habitGroupId") habitGroupId:String, @Body userIds: UserIdsModel):Call<Any>
 
     @PATCH("habit/group/add_member/{habitGroupId}")
-    fun addMembersToGroup(@Path("habitGroupId") habitGroupId:String, @Body userIds: UserIdsModel):Call<Any>
+    suspend fun addMembersToGroup(@Path("habitGroupId") habitGroupId:String, @Body userIds: UserIdsModel):Response<Any>
 }

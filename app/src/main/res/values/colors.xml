@@ -16,8 +16,9 @@
     <color name="transparent">#00FFFFFF</color>
     <color name="habit_header_color">#181818</color>
     <color name="consistency_graph_grid_color">#F5F1FF</color>
-    <color name="streak_card_border">#FFCEC4</color>
+    <color name="streak_card_border">#B3FFCEC4</color>
     <color name="light_gray_text_color">#888888</color>
     <color name="lavender">#C9B0FD</color>
     <color name="light_purple">#F5F1FF</color>
+    <color name="progress_wave_bg">#FFCEC4</color>
 </resources>

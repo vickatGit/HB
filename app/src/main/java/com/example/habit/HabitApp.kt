@@ -9,9 +9,13 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.multidex.MultiDex
 import androidx.work.Configuration
 import com.example.habit.data.NetworkChangeJob
+import com.example.habit.domain.Repository.SocialRepo
 import com.google.android.material.color.DynamicColors
 import com.judemanutd.autostarter.AutoStartPermissionHelper
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -20,6 +24,9 @@ class HabitApp : Application(),Configuration.Provider {
 
     @Inject
     lateinit var hiltWorkerFactory: HiltWorkerFactory
+
+    @Inject
+    lateinit var socialRepo: SocialRepo
     override fun onCreate() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
@@ -36,6 +43,9 @@ class HabitApp : Application(),Configuration.Provider {
             AutoStartPermissionHelper.getInstance().getAutoStartPermission(this, true, true)
         }else{
             Log.e("TAG", "onCreate: its not working on this device", )
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            socialRepo.getHomeData()
         }
 
     }

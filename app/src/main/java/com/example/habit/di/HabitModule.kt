@@ -21,7 +21,6 @@ import com.example.habit.data.network.HabitApi
 import com.example.habit.domain.Repository.HabitRepo
 import com.example.habit.domain.UseCases.HabitUseCase.DeleteAlarmUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
-import com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapperI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,6 +30,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Duration
 import javax.inject.Singleton
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -92,6 +92,9 @@ class HabitModule {
     @Provides
     @Singleton
     fun provideRetrofit(app: Application, httpClient: OkHttpClient ): Retrofit {
+//        val gsonBuilder = GsonBuilder()
+//        gsonBuilder.registerTypeAdapter(HomeElements::class.java, HomeElementInstanceFactory())
+//        val gson = gsonBuilder.create()
         return Retrofit.Builder().apply {
             client(httpClient)
             baseUrl("http://192.168.43.53:8080/")

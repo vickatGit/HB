@@ -2,8 +2,8 @@ package com.example.habit.di
 
 import android.app.Application
 import com.example.habit.data.Repository.SocialRepoImpl
-import com.example.habit.data.network.AuthApi
 import com.example.habit.data.network.SocialApi
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HomeSectionsFactory
 import com.example.habit.domain.Repository.SocialRepo
 import dagger.Module
 import dagger.Provides
@@ -27,7 +27,7 @@ class SocialModule {
 
     @Singleton
     @Provides
-    fun provideSocialRepo (socialApi: SocialApi,app: Application ): SocialRepo {
-        return SocialRepoImpl(socialApi,app)
+    fun provideSocialRepo (socialApi: SocialApi,app: Application,homeElementsFactory: HomeSectionsFactory ): SocialRepo {
+        return SocialRepoImpl(socialApi,app,homeElementsFactory)
     }
 }

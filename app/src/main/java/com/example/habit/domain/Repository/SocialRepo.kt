@@ -1,7 +1,11 @@
 package com.example.habit.domain.Repository
 
+import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
+import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.example.habit.domain.models.Follow.Follow
 import com.example.habit.domain.models.User.User
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 
 interface SocialRepo {
@@ -17,4 +21,8 @@ interface SocialRepo {
     suspend fun getFollowings(): Flow<Follow?>
     suspend fun getMembers(): Flow<Follow?>
 
+    suspend fun getHomeData(): HomeData?
+    suspend fun HomeDataCreater(asJsonObject: JsonObject?): List<HomeElements>
+
+    suspend fun getHomeElements(asJsonArray: JsonArray?): List<HomeElements>
 }

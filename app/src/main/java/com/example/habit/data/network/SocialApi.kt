@@ -3,9 +3,11 @@ package com.example.habit.data.network
 import com.example.habit.data.network.model.FollowModel.FollowerModel
 import com.example.habit.data.network.model.FollowModel.FollowingModel
 import com.example.habit.data.network.model.IsUserFollowingModel.IsUserFollowingResponseModel
+import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
 import com.example.habit.data.network.model.UsersModel.ProfileModel
 import com.example.habit.data.network.model.UsersModel.UserModel
 import com.example.habit.data.network.model.UsersModel.UsersModel
+import com.google.gson.JsonElement
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -41,6 +43,9 @@ interface SocialApi {
 
     @GET("/social/get_members")
     suspend fun getMembers():Response<FollowingModel>
+
+    @GET("/social/user")
+    suspend fun getUserData():Response<JsonElement>
 
 
 }

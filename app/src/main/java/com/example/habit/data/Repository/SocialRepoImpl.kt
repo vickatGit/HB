@@ -1,25 +1,28 @@
 package com.example.habit.data.Repository
 
-import android.accounts.NetworkErrorException
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.example.habit.data.Mapper.SocialMapper.FollowMapper.toFollow
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUser
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUserModel
-import com.example.habit.data.common.Connectivity
 import com.example.habit.data.network.SocialApi
+import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
+import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HomeSectionsFactory
 import com.example.habit.domain.Repository.SocialRepo
 import com.example.habit.domain.models.Follow.Follow
 import com.example.habit.domain.models.User.User
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.lang.Error
-import java.net.UnknownHostException
 
 class SocialRepoImpl(
     private val socialApi: SocialApi,
-    private val context:Context
+    private val context:Context,
+    private val homeElementsFactory: HomeSectionsFactory
 ) : SocialRepo {
 
 
@@ -98,6 +101,23 @@ class SocialRepoImpl(
             }
 
         }
+    }
+
+    override suspend fun getHomeData(): HomeData? {
+        val response = socialApi.getUserData()
+        val json=response.body()
+        val data = HomeDataCreater(json?.asJsonObject?.getAsJsonObject("data"))
+        Log.e("TAG", "getHomeData: ${Gson().toJson(data) }")
+
+        return null
+    }
+
+    override suspend fun HomeDataCreater(json: JsonObject?): List<HomeElements> {
+        return getHomeElements(json?.getAsJsonArray("sections"))
+    }
+
+    override suspend fun getHomeElements(sections: JsonArray?): List<HomeElements> {
+        return homeElementsFactory.create(sections)
     }
 
 

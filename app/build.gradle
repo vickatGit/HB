@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.dagger.hilt.android'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
 }
 
 android {
@@ -53,6 +54,7 @@ dependencies {
     def room_version = "2.5.2"
     def hilt_version = "2.44"
     def coroutines_version = "1.7.1"
+    def epoxyVersion = "2.8.0"
 
 
     implementation 'androidx.core:core-ktx:1.10.1'
@@ -126,5 +128,17 @@ dependencies {
     implementation 'com.auth0.android:jwtdecode:2.0.0'
 
     implementation 'androidx.multidex:multidex:2.0.1'
+
+    //Wave View
+    implementation 'com.yangpingapps:ypwaveview:1.0.4'
+
+    //Epoxy
+    implementation "com.airbnb.android:epoxy:$epoxyVersion"
+    kapt "com.airbnb.android:epoxy-processor:$epoxyVersion"
+
+    //Json Serialization
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0'
+
+
 
 }

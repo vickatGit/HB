@@ -57,10 +57,10 @@ data class NavSectionEpoxyModel(
                         width = DpPxUtils.dpToPX(it.iconSizeInDp, menu.context)
                         height = DpPxUtils.dpToPX(it.iconSizeInDp, menu.context)
                         val gravityList= mutableListOf<Int>()
-                            if(it.iconHorizontalPosition.toLowerCase()=="start") gravityList.add(Gravity.START)
-                            if(it.iconHorizontalPosition.toLowerCase()=="end") gravityList.add(Gravity.END)
-                            if(it.iconVerticalPosition.toLowerCase()=="top") gravityList.add(Gravity.TOP)
-                            if(it.iconVerticalPosition.toLowerCase()=="bottom") gravityList.add(Gravity.BOTTOM)
+                        if(it.iconHorizontalPosition.toLowerCase()=="start") gravityList.add(Gravity.START)
+                        if(it.iconHorizontalPosition.toLowerCase()=="end") gravityList.add(Gravity.END)
+                        if(it.iconVerticalPosition.toLowerCase()=="top") gravityList.add(Gravity.TOP)
+                        if(it.iconVerticalPosition.toLowerCase()=="bottom") gravityList.add(Gravity.BOTTOM)
                         gravity=gravityList.reduce { a, b -> a xor b } ?: Gravity.NO_GRAVITY
                     }
                     notification.setColorFilter(Color.parseColor(it.iconColor),PorterDuff.Mode.SRC_ATOP)

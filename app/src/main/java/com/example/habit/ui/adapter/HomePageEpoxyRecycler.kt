@@ -4,6 +4,7 @@ import android.util.Log
 import com.airbnb.epoxy.EpoxyController
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.example.habit.ui.model.Epoxy.NavSectionEpoxyModel
+import com.example.habit.ui.model.Epoxy.UserInfoSectionEpoxyModel
 import kotlin.math.log
 
 class HomePageEpoxyRecycler : EpoxyController() {
@@ -20,12 +21,14 @@ class HomePageEpoxyRecycler : EpoxyController() {
                 is HomeElements.NavSection -> {
                     NavSectionEpoxyModel(it){  }.id(it.id).addTo(this)
                 }
+                is HomeElements.UserInfoSection -> {
+                    UserInfoSectionEpoxyModel(it){ }.id(it.id).addTo(this)
+                }
 
                 is HomeElements.HeaderSection -> {}
                 is HomeElements.NavSectionItem -> {}
                 is HomeElements.QuoteCarousalSection -> {}
                 is HomeElements.QuoteSection -> {}
-                is HomeElements.UserInfoSection -> {}
                 is HomeElements.UserProgressSection -> {}
                 else -> {}
             }

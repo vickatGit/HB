@@ -20,6 +20,7 @@ class HomeElemFactoryImpl @Inject constructor():HomeElemFactory{
                     type.get("verticalPosition").asString,
                     type.get("horizontalPosition").asString,
                     type.get("headerFont")?.asString,
+                    type.get("textColor").asString,
                 )
             }
             "UserProfileImage" -> {
@@ -31,6 +32,7 @@ class HomeElemFactoryImpl @Inject constructor():HomeElemFactory{
                     type.get("sizeInDp").asFloat,
                     type.get("verticalPosition").asString,
                     type.get("horizontalPosition").asString,
+                    type.get("cornerRadius").asFloat,
                 )
             }
 

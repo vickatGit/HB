@@ -17,7 +17,8 @@ class UserInfoSectionFactoryImpl @Inject constructor(
             section.get("id").asString,
             section.get("sectionType").asString,
             section.getAsJsonArray("elements").map {
-                it?.asJsonObject?.let { homeElemFactory.create(it) }
+                it?.asJsonObject?.let { homeElemFactory.
+                create(it) }
             },
             section.get("paddingTop").asString.toFloat(),
             section.get("paddingBottom").asString.toFloat(),

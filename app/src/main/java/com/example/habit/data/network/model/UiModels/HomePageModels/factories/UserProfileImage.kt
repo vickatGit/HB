@@ -17,6 +17,7 @@ class UserProfileImageFactoryImpl @Inject constructor():UserProfileImageFactory 
             profile.get("sizeInDp").asFloat,
             profile.get("verticalPosition").asString,
             profile.get("horizontalPosition").asString,
+            profile.get("cornerRadius").asFloat,
         )
     }
 }

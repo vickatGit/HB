@@ -29,7 +29,8 @@ sealed class HomeElements : Section {
         val headerTextStyle: String,
         val verticalPosition: String,
         val horizontalPosition: String,
-        val headerFont: String?
+        val headerFont: String?,
+        val textColor:String
     ) : HomeElements()
 
     @Serializable
@@ -68,6 +69,7 @@ sealed class HomeElements : Section {
         val sizeIndDp: Float,
         val verticalPosition: String,
         val horizontalPosition: String,
+        val cornerRadius:Float
     ) : HomeElements()
 
     @Serializable

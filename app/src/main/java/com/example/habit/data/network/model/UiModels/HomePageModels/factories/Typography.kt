@@ -18,6 +18,7 @@ class TypographyFactoryImpl @Inject constructor():TypographyFactory {
             typo.get("verticalPosition").asString,
             typo.get("horizontalPosition").asString,
             typo.get("headerFont")?.asString,
+            typo.get("textColor").asString,
         )
     }
 }

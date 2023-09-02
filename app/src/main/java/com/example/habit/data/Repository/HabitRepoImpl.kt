@@ -31,6 +31,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -52,13 +53,19 @@ class HabitRepoImpl(
 ) : HabitRepo {
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)))
-        if (   Connectivity.isInternetConnected(context)) {
-            addOrUpdateHabitToRemote(
-                habitMapper.mapToHabitEntity(
-                    habit,
-                    HabitRecordSyncType.AddHabit
-                )
-            )
+        if ( Connectivity.isInternetConnected(context)) {
+            val job = CoroutineScope(Dispatchers.IO).launch {
+                addOrUpdateHabitToRemote(
+                    habitMapper.mapToHabitEntity(
+                        habit,
+                        HabitRecordSyncType.AddHabit
+                    )
+                ).collectLatest {
+                    Log.e("TAG", "addHabit: Added to server successfully $it", )
+                }
+
+            }
+            job.join()
         }
     }
 
@@ -350,10 +357,10 @@ class HabitRepoImpl(
     }
 
     override suspend fun addOrUpdateHabitToRemote(habit: HabitEntity): Flow<AddHabitResponseModel?> {
-        Log.e("grp", "addOrUpdateHabitToRemote: $habit ")
+        Log.e("grp", "addOrUpdateHabitToRemote: out $habit ")
         return flow {
             val response = habitApi.addHabit(habitMapper.mapHabitModelToFromHabitEntity(habit))
-            Log.e("grp", "addOrUpdateHabitToRemote: $response")
+
             if (response.isSuccessful) {
                 emit(response.body())
                 Log.e("grp", "addOrUpdateHabitToRemote: response ${response.body()}")

@@ -32,6 +32,8 @@ class UserProgressSectionFactoryImpl @Inject constructor(
             typographyFactory.create(section.get("progressPercentageTypographyProperties").asJsonObject) as HomeElements.Typography,
             section.get("habitProgressType").asString,
             typographyFactory.create(section.get("habitPercentageTypographyProperties").asJsonObject) as HomeElements.Typography,
+            section.get("progressSize").asFloat,
+            section.get("progressBackgroundColor").asString,
 
         )
     }

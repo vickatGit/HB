@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/user_progress_section"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:paddingEnd="15dp"
+        android:layout_height="wrap_content">
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/wave_progress_shape_bg"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.yangp.ypwaveview.YPWaveView
+                android:id="@+id/wave_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:backgroundTint="@color/light_orange"
+                app:behideColor="@color/medium_orange"
+                app:borderColor="@android:color/transparent"
+                app:borderWidthSize="0dp"
+                app:progress="0"
+                app:animatorEnable="true"
+                app:frontColor="@color/orange"
+                app:layout_constraintStart_toStartOf="@id/view"
+                app:layout_constraintTop_toTopOf="@id/view"
+                app:layout_constraintEnd_toEndOf="@id/view"
+                app:layout_constraintBottom_toBottomOf="@id/view"
+                app:shapePadding="0dp"
+                app:strong="150"
+                app:textColor="@color/white"
+                app:textHidden="true"
+                 />
+
+        <TextView
+            android:id="@+id/total_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/mulish"
+            android:text="Today's Progress"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/light_grey"
+            app:layout_constraintStart_toStartOf="@id/wave_view"
+            app:layout_constraintEnd_toEndOf="@id/wave_view"
+            app:layout_constraintTop_toBottomOf="@+id/wave_view" />
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/habits_recycler"
+        android:layout_width="match_parent"
+
+        tools:itemCount="5"
+        android:paddingStart="15dp"
+        tools:listitem="@layout/user_progress_section_habit_iem_layout"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

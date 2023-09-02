@@ -132,18 +132,20 @@ sealed class HomeElements : Section {
         val marginBottom: Float,
         val marginLeft: Float,
         val marginRight: Float,
-        val progressTypographyProperties:Typography,
-        val progressType:String,
-        val isAnimationOn:Boolean,
-        val animationSpeed:Float,
-        val shouldShowProgressPercentage:Boolean,
-        val progressPrimaryColor:String,
-        val progressSecondaryColor:String,
-        val progressPercentageTypographyProperties:Typography,
-        val habitProgressType:String,
-        val habitPercentageTypographyProperties:Typography
+        val progressTypographyProperties: Typography,
+        val progressType: String,
+        val isAnimationOn: Boolean,
+        val animationSpeed: Float,
+        val shouldShowProgressPercentage: Boolean,
+        val progressPrimaryColor: String,
+        val progressSecondaryColor: String,
+        val progressPercentageTypographyProperties: Typography,
+        val habitProgressType: String,
+        val habitPercentageTypographyProperties: Typography,
+        val progressSize: Float,
+        val progressBackgroundColor: String,
 
-    ):HomeElements()
+        ):HomeElements()
 
 
 }

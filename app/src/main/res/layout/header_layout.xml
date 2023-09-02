@@ -4,7 +4,7 @@
     android:layout_weight="1"
     android:layout_height="wrap_content"
     android:text="Hi Diya !! Nice To Meet You !!"
-    android:fontFamily="@font/bold"
+    android:fontFamily="@font/mulish"
     android:textSize="16sp"
     android:paddingEnd="50dp"
     android:textColor="@color/text_color"

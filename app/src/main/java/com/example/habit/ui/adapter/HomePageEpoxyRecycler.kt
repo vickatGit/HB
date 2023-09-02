@@ -3,11 +3,16 @@ package com.example.habit.ui.adapter
 import android.util.Log
 import com.airbnb.epoxy.EpoxyController
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
+import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
+import com.example.habit.ui.model.Epoxy.HeaderSectionEpoxyModel
 import com.example.habit.ui.model.Epoxy.NavSectionEpoxyModel
 import com.example.habit.ui.model.Epoxy.UserInfoSectionEpoxyModel
-import kotlin.math.log
+import com.example.habit.ui.model.Epoxy.UserProgressSectionEpoxyModel
 
-class HomePageEpoxyRecycler : EpoxyController() {
+class HomePageEpoxyRecycler(
+    private val getHabitThumbsUseCase: GetHabitThumbsUseCase
+) : EpoxyController() {
      var homeSections:List<HomeElements> = emptyList()
         set(value){
             field=value
@@ -25,11 +30,15 @@ class HomePageEpoxyRecycler : EpoxyController() {
                     UserInfoSectionEpoxyModel(it){ }.id(it.id).addTo(this)
                 }
 
-                is HomeElements.HeaderSection -> {}
+                is HomeElements.HeaderSection -> {
+                    HeaderSectionEpoxyModel(it).id(it.id).addTo(this)
+                }
                 is HomeElements.NavSectionItem -> {}
                 is HomeElements.QuoteCarousalSection -> {}
                 is HomeElements.QuoteSection -> {}
-                is HomeElements.UserProgressSection -> {}
+                is HomeElements.UserProgressSection -> {
+                    UserProgressSectionEpoxyModel(getHabitThumbsUseCase,it).id(it.id).addTo(this)
+                }
                 else -> {}
             }
         }

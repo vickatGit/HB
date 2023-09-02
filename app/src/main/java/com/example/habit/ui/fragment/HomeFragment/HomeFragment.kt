@@ -13,17 +13,21 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.habit.R
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.example.habit.databinding.FragmentHomeBinding
+import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
 import com.example.habit.ui.adapter.HomePageEpoxyRecycler
 import com.example.habit.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
 
+    @Inject
+    lateinit var getHabitThumbsUseCase: GetHabitThumbsUseCase
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -39,7 +43,7 @@ class HomeFragment : Fragment() {
                 viewModel.uiState.collectLatest {
                     when(it){
                         is HomeUiState.HomeData -> {
-                            val epoxyController = HomePageEpoxyRecycler()
+                            val epoxyController = HomePageEpoxyRecycler(getHabitThumbsUseCase)
                             binding.homeRecycler.setController(epoxyController)
                             Log.e("TAG", "onCreateView: home data $it ", )
                             it.homeUiData?.data?.sections?.let {

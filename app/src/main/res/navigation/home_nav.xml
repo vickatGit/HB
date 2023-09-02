@@ -42,7 +42,7 @@
         tools:layout="@layout/fragment_date" />
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.habit.ui.fragment.HomeFragment"
+        android:name="com.example.habit.ui.fragment.HomeFragment.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action

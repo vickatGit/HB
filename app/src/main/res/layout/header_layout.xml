@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:id="@+id/header"
+    android:layout_width="match_parent"
+    android:layout_weight="1"
+    android:layout_height="wrap_content"
+    android:text="Hi Diya !! Nice To Meet You !!"
+    android:fontFamily="@font/bold"
+    android:textSize="16sp"
+    android:paddingEnd="50dp"
+    android:textColor="@color/text_color"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

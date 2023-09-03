@@ -20,7 +20,9 @@ class QouteCarousalSectionFactoryImpl @Inject constructor():QouteCarousalSection
             section.get("marginBottom").asString.toFloat(),
             section.get("marginLeft").asString.toFloat(),
             section.get("marginRight").asString.toFloat(),
-            section.get("images").asJsonArray.map { it.asString }
+            section.get("images").asJsonArray.map { it.asString },
+            section.get("imageCornerRadius").asString.toFloat(),
+            section.get("imageHeight").asString.toFloat(),
         )
     }
 }

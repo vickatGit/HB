@@ -3,10 +3,10 @@ package com.example.habit.ui.adapter
 import android.util.Log
 import com.airbnb.epoxy.EpoxyController
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
-import com.example.habit.domain.UseCases.HabitUseCase.GetGroupHabitUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
 import com.example.habit.ui.model.Epoxy.HeaderSectionEpoxyModel
 import com.example.habit.ui.model.Epoxy.NavSectionEpoxyModel
+import com.example.habit.ui.model.Epoxy.QuoteScrollerEpoxyModel
 import com.example.habit.ui.model.Epoxy.UserInfoSectionEpoxyModel
 import com.example.habit.ui.model.Epoxy.UserProgressSectionEpoxyModel
 
@@ -21,7 +21,7 @@ class HomePageEpoxyRecycler(
     override fun buildModels() {
         Log.e("TAG", "buildModels: ", )
         homeSections.forEach {
-            Log.e("TAG", "buildModels: type ${it.sectionType} ", )
+//            Log.e("TAG", "buildModels: type ${it.sectionType} ", )
             when(it){
                 is HomeElements.NavSection -> {
                     NavSectionEpoxyModel(it){  }.id(it.id).addTo(this)
@@ -34,8 +34,10 @@ class HomePageEpoxyRecycler(
                     HeaderSectionEpoxyModel(it).id(it.id).addTo(this)
                 }
                 is HomeElements.NavSectionItem -> {}
-                is HomeElements.QuoteCarousalSection -> {}
-                is HomeElements.QuoteSection -> {}
+                is HomeElements.QuoteCarousalSection -> {
+                    Log.e("TAG", "buildModels: $it", )
+                    QuoteScrollerEpoxyModel(it).id(it.id).addTo(this)
+                }
                 is HomeElements.UserProgressSection -> {
                     UserProgressSectionEpoxyModel(getHabitThumbsUseCase,it).id(it.id).addTo(this)
                 }

@@ -117,7 +117,9 @@ sealed class HomeElements : Section {
         val marginBottom: Float,
         val marginLeft: Float,
         val marginRight: Float,
-        val images:List<String>
+        val images:List<String>,
+        val imageCornerRadius:Float,
+        val imageHeight:Float
     ):HomeElements()
 
     @Serializable

@@ -1,5 +1,11 @@
 package com.example.habit.di
 
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.ActionFactory
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.ActionFactoryImpl
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HabitCarousalSectionFactory
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HabitCarousalSectionFactoryImpl
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HabitSectionItemFactory
+import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HabitSectionItemFactoryImpl
 import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HeaderSectionFactory
 import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HeaderSectionFactoryImpl
 import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HomeElemFactory
@@ -59,4 +65,13 @@ abstract class ServerUiModule {
 
     @Binds
     abstract fun bindHomeElementFactory(impl:HomeSectionsFactoryImpl):HomeSectionsFactory
+
+    @Binds
+    abstract fun bindActionFactory(impl:ActionFactoryImpl):ActionFactory
+
+    @Binds
+    abstract fun bindHabitSectionItemFactory(impl:HabitSectionItemFactoryImpl):HabitSectionItemFactory
+
+    @Binds
+    abstract fun bindHabitCarousalSectionFactory(impl:HabitCarousalSectionFactoryImpl):HabitCarousalSectionFactory
 }

@@ -7,7 +7,9 @@ import javax.inject.Inject
 interface UserProfileImageFactory{
     fun create(profile: JsonObject):HomeElements
 }
-class UserProfileImageFactoryImpl @Inject constructor():UserProfileImageFactory {
+class UserProfileImageFactoryImpl @Inject constructor(
+    private val actionFactory: ActionFactory
+):UserProfileImageFactory {
     override fun create(profile: JsonObject): HomeElements {
         return HomeElements.UserProfileImage(
             profile.get("id").asString,
@@ -18,6 +20,7 @@ class UserProfileImageFactoryImpl @Inject constructor():UserProfileImageFactory 
             profile.get("verticalPosition").asString,
             profile.get("horizontalPosition").asString,
             profile.get("cornerRadius").asFloat,
+            actionFactory.create(profile.get("action")?.asJsonObject)
         )
     }
 }

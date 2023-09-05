@@ -14,7 +14,8 @@ class HomeSectionsFactoryImpl @Inject constructor(
     private val userInfoSectionFactory: UserInfoSectionFactory,
     private val headerSectionFactory: HeaderSectionFactory,
     private val qouteCarousalSectionFactory: QouteCarousalSectionFactory,
-    private val userProgressSectionFactory: UserProgressSectionFactory
+    private val userProgressSectionFactory: UserProgressSectionFactory,
+    private val habitCarousalSectionFactory: HabitCarousalSectionFactory
 ):HomeSectionsFactory {
     override fun create(sections: JsonArray?): List<HomeElements> {
         val homeElements= mutableListOf<HomeElements>()
@@ -37,6 +38,9 @@ class HomeSectionsFactoryImpl @Inject constructor(
                 }
                 "UserProgressSection" -> {
                     homeElements.add(userProgressSectionFactory.create(section))
+                }
+                "habit_corousal" -> {
+                    homeElements.add(habitCarousalSectionFactory.create(section))
                 }
             }
         }

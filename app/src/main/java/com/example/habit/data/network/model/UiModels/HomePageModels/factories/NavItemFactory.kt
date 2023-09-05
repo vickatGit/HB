@@ -7,7 +7,9 @@ import javax.inject.Inject
 interface NavItemFactory{
     fun create(type: JsonObject): HomeElements.NavSectionItem
 }
-class NavItemFactoryImpl @Inject constructor():NavItemFactory {
+class NavItemFactoryImpl @Inject constructor(
+    private val actionFactory: ActionFactory
+):NavItemFactory {
     override fun create(type: JsonObject): HomeElements.NavSectionItem {
         return HomeElements.NavSectionItem(
             type.get("id").asString,
@@ -17,7 +19,7 @@ class NavItemFactoryImpl @Inject constructor():NavItemFactory {
             type.get("iconColor").asString,
             type.get("iconVerticalPosition").asString,
             type.get("iconHorizontalPosition").asString,
-            null
+            actionFactory.create(type.get("action")?.asJsonObject)
         )
     }
 }

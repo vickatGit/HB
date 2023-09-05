@@ -5,15 +5,20 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.habit.R
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.example.habit.databinding.QuoteScrollerSectionLayoutBinding
 import com.example.habit.ui.adapter.QuoteScrollerAdapter
 import com.example.habit.ui.util.DpPxUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class QuoteScrollerEpoxyModel(
-    private val quoteSection: HomeElements.QuoteCarousalSection
+    private val quoteSection: HomeElements.QuoteCarousalSection,
+    private val uiScopes:CoroutineScope
 ):ViewBindingKotlinModel<QuoteScrollerSectionLayoutBinding>(R.layout.quote_scroller_section_layout) {
     override fun QuoteScrollerSectionLayoutBinding.bind() {
         Log.e("TAG", "bind: QuoteScrollerEpoxyModel", )
@@ -35,8 +40,8 @@ class QuoteScrollerEpoxyModel(
         }
         val quoteImagesAdapter = QuoteScrollerAdapter(quoteSection.images,quoteSection.marginLeft,quoteSection.imageCornerRadius)
         imageScroller.adapter=quoteImagesAdapter
-//        imageScroller.clipChildren=false
-//        imageScroller.clipToPadding=false
+        imageScroller.clipChildren=false
+        imageScroller.clipToPadding=false
         imageScroller.offscreenPageLimit=3
         imageScroller.getChildAt(0).overScrollMode=RecyclerView.OVER_SCROLL_NEVER
         val pageTransformer = CompositePageTransformer()

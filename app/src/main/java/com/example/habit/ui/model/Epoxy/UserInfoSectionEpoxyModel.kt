@@ -75,6 +75,7 @@ data class UserInfoSectionEpoxyModel(
                                 gravity=gravityList.reduce { a, b -> a xor b } ?: Gravity.NO_GRAVITY
                             }
                             userCircleAvatar.requestLayout()
+                            userCircleAvatar.setOnClickListener { click -> it.action?.let { action -> onClick(action) } }
                         }
                         "square" -> {
                             userSquareAvatarCont.isVisible=true
@@ -92,6 +93,7 @@ data class UserInfoSectionEpoxyModel(
                                 gravity=gravityList.reduce { a, b -> a xor b } ?: Gravity.NO_GRAVITY
                             }
                             userSquareAvatarCont.requestLayout()
+                            userSquareAvatar.setOnClickListener { click -> it.action?.let { action -> onClick(action) } }
                         }
                     }
                 }

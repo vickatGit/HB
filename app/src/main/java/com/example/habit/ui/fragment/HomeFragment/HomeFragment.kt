@@ -1,5 +1,6 @@
 package com.example.habit.ui.fragment.HomeFragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,10 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.habit.R
-import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
+import com.example.habit.data.network.model.UiModels.HomePageModels.Action
 import com.example.habit.databinding.FragmentHomeBinding
 import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
+import com.example.habit.ui.activity.ProfileActivity.ProfileActivity
 import com.example.habit.ui.adapter.HomePageEpoxyRecycler
 import com.example.habit.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,7 +44,9 @@ class HomeFragment : Fragment() {
                 viewModel.uiState.collectLatest {
                     when(it){
                         is HomeUiState.HomeData -> {
-                            val epoxyController = HomePageEpoxyRecycler(getHabitThumbsUseCase)
+                            val epoxyController = HomePageEpoxyRecycler(getHabitThumbsUseCase,this){
+                                handleEvents(it)
+                            }
                             binding.homeRecycler.setController(epoxyController)
                             Log.e("TAG", "onCreateView: home data $it ", )
                             it.homeUiData?.data?.sections?.let {
@@ -65,6 +68,21 @@ class HomeFragment : Fragment() {
         }
         viewModel.getHomeData()
         return binding.root
+    }
+
+    private fun handleEvents(it: Action) {
+        when(it.actionType){
+            "open_screen" -> {
+                handleServerNavigation(it.screenType)
+            }
+        }
+    }
+
+    private fun handleServerNavigation(screenType: String) {
+        when(screenType){
+            "profile" -> { startActivity(Intent(requireContext(),ProfileActivity::class.java)) }
+        }
+
     }
 
 

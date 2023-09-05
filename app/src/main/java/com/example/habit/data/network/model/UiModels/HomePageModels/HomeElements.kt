@@ -57,7 +57,7 @@ sealed class HomeElements : Section {
         val iconColor: String,
         val iconVerticalPosition: String,
         val iconHorizontalPosition: String,
-        val action: HomeActionScreen?
+        val action: Action?
     ) : HomeElements()
 
     @Serializable
@@ -69,7 +69,8 @@ sealed class HomeElements : Section {
         val sizeIndDp: Float,
         val verticalPosition: String,
         val horizontalPosition: String,
-        val cornerRadius:Float
+        val cornerRadius:Float,
+        val action: Action?
     ) : HomeElements()
 
     @Serializable
@@ -148,6 +149,33 @@ sealed class HomeElements : Section {
         val progressBackgroundColor: String,
 
         ):HomeElements()
+
+    data class HabitCarousalSection(
+        override val id: String,
+        override val sectionType: String,
+        val paddingTop: Float,
+        val paddingBottom: Float,
+        val paddingLeft: Float,
+        val paddingRight: Float,
+        val marginTop: Float,
+        val marginBottom: Float,
+        val marginLeft: Float,
+        val marginRight: Float,
+        val imageCornerRadius: Float,
+        val imageHeight: Float,
+        val width: String?,
+        val height: String?,
+        val habitTitleProperties:Typography,
+        val habits:List<HabitsSectionItem>,
+        val action: Action?
+    ):HomeElements()
+
+    data class HabitsSectionItem(
+        override val id: String,
+        override val sectionType: String,
+        val habitName:String,
+        val habitThumbnail:String
+    ):HomeElements()
 
 
 }

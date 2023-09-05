@@ -7,7 +7,9 @@ import javax.inject.Inject
 interface HomeElemFactory{
     fun create(type:JsonObject): HomeElements?
 }
-class HomeElemFactoryImpl @Inject constructor():HomeElemFactory{
+class HomeElemFactoryImpl @Inject constructor(
+    private val actionFactory: ActionFactory
+):HomeElemFactory{
     override fun create(type: JsonObject): HomeElements? {
         return when(type.get("id").asString){
             "Typography" -> {
@@ -33,6 +35,7 @@ class HomeElemFactoryImpl @Inject constructor():HomeElemFactory{
                     type.get("verticalPosition").asString,
                     type.get("horizontalPosition").asString,
                     type.get("cornerRadius").asFloat,
+                    actionFactory.create(type.get("action")?.asJsonObject)
                 )
             }
 

@@ -101,10 +101,8 @@ class HabitRepoImpl(
         val habitEntity = habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)
         habitEntity.habitSyncType = HabitRecordSyncType.UpdateHabit
         habitDao.updateHabit(habitEntity)
-        Log.e("TAG", "updateHabit: network ${   Connectivity.isInternetConnected(context)}")
-        if (   Connectivity.isInternetConnected(context)) {
+        if (Connectivity.isInternetConnected(context))
             updateHabitToRemote(habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit))
-        }
     }
 
     override suspend fun updateGroupHabit(habit: GroupHabit) {
@@ -380,25 +378,18 @@ class HabitRepoImpl(
 
     override suspend fun updateHabitToRemote(habit: HabitEntity) {
         if (habit.serverId != null) {
-            habitApi.updateHabit(
-
-                habitMapper.mapHabitModelToFromHabitEntity(habit),
-                habit.serverId
-            ).enqueue(object : Callback<Any> {
+            habitApi.updateHabit(habitMapper.mapHabitModelToFromHabitEntity(habit), habit.serverId).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     Log.e("TAG", "onResponse: updateHabitToRemote $response")
-                    if (response.code() == 200) {
-
-                    }
+                    if (response.code() == 200) { }
                 }
-
                 override fun onFailure(call: Call<Any>, t: Throwable) {
                     Log.e("TAG", "onFailure: updateHabitToRemote ${t.localizedMessage}")
                 }
-
             })
         } else {
-            addOrUpdateHabitToRemote(habit)
+            //In case of Habit is Added and updated without internet access (habit is not added to server due no internet)
+            addOrUpdateHabitToRemote(habit).collectLatest {  }
         }
     }
 

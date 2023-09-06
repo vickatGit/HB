@@ -30,7 +30,7 @@ data class HabitItemEpoxyModel(
     val imageHeight: Float,
     val habitWidth: String?,
     val habitHeight: String?,
-    val onClick:() -> Unit
+    val onClick:(habitTitle:String) -> Unit
 ):ViewBindingKotlinModel<HomeHabitItemLayoutBinding>(R.layout.home_habit_item_layout){
     override fun HomeHabitItemLayoutBinding.bind() {
         habitCard.layoutParams.apply { 
@@ -87,6 +87,9 @@ data class HabitItemEpoxyModel(
             else if(habitTitleProperties.headerTextStyle.toLowerCase()=="bold_italic") Typeface.BOLD_ITALIC
             else Typeface.NORMAL
         habitName.typeface= Typeface.create(habitName.typeface,userTextStyle)
+        habitCont.setOnClickListener {
+            onClick(habit.habitName!!)
+        }
 
 
 

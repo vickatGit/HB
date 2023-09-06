@@ -34,6 +34,14 @@
             app:argType="com.example.habit.ui.model.GroupHabitView"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="isFromHome"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="habitTitle"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/dateFragment"
@@ -50,6 +58,9 @@
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="true"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_addHabitFragment2"
+            app:destination="@id/addHabitFragment" />
     </fragment>
     <fragment
         android:id="@+id/communityFragment"

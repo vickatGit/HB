@@ -53,20 +53,10 @@ class HabitRepoImpl(
 ) : HabitRepo {
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)))
-        if ( Connectivity.isInternetConnected(context)) {
-            val job = CoroutineScope(Dispatchers.IO).launch {
+        if ( Connectivity.isInternetConnected(context))
                 addOrUpdateHabitToRemote(
-                    habitMapper.mapToHabitEntity(
-                        habit,
-                        HabitRecordSyncType.AddHabit
-                    )
-                ).collectLatest {
-                    Log.e("TAG", "addHabit: Added to server successfully $it", )
-                }
-
-            }
-            job.join()
-        }
+                    habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)
+                ).collectLatest { Log.e("TAG", "addHabit: Added to server successfully $it", ) }
     }
 
     override suspend fun addGroupHabit(habit: GroupHabit) {
@@ -374,22 +364,15 @@ class HabitRepoImpl(
 
         CoroutineScope(Dispatchers.IO).launch {
             val groupHabit = getGroupAdminHabit(habitEntity.admin, habitEntity.localId)
-            Log.e(
-                "grp",
-                "addGroupHabitsToRemote: $groupHabit habitId ${habitEntity.localId} admin ${habitEntity.admin}",
-            )
             addOrUpdateHabitToRemote(groupHabit).collect {
                 it?.let {
-                    Log.e("grp", "addGroupHabitToRemote: $it ")
                     habitApi.addGroupHabit(
-                        habit = groupHabitMapper.toGroupHabitEntity(habitEntity),
+                        groupHabitMapper.toGroupHabitEntity(habitEntity),
                         it.habitId
                     ).enqueue(object : Callback<Any> {
                         override fun onResponse(call: Call<Any>, response: Response<Any>) {}
                         override fun onFailure(call: Call<Any>, t: Throwable) {}
                     })
-
-                    getGroupHabits(this)
                 }
             }
         }

@@ -38,7 +38,9 @@ import java.util.UUID
 @AndroidEntryPoint
 class AddHabitFragment : Fragment() {
 
+    private lateinit var habitTitle: String
     private var isGroupUpdate: Boolean=false
+    private var isFromHome: Boolean=false
     private var selectedHabitType: Int = 0
     private var _binding: FragmentAddHabitBinding? = null
     private val binding get() = _binding!!
@@ -55,8 +57,10 @@ class AddHabitFragment : Fragment() {
         super.onCreate(savedInstanceState)
         isUpdate = arguments?.getBoolean("isUpdate")?:false
         isGroupUpdate = arguments?.getBoolean("isFromGroupHabitUpdate",false)?:false
+        isFromHome = arguments?.getBoolean("isFromHome",false)?:false
         if(isUpdate) habit=arguments?.getParcelable("habit")!!
         if(isGroupUpdate) groupHabit=arguments?.getParcelable("groupHabit")!!
+        if(isFromHome) habitTitle=arguments?.getString("habitTitle")!!
     }
 
     override fun onCreateView(
@@ -76,6 +80,9 @@ class AddHabitFragment : Fragment() {
             }else {
                 habit.id = UUID.randomUUID().toString()
             }
+        }
+        if(isFromHome){
+            binding.title.setText(habitTitle)
         }
 
         habitTypeAdapter=

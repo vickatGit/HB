@@ -20,6 +20,7 @@ import com.example.habit.domain.Repository.HabitRepo
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,7 +45,7 @@ class NetworkChangeJob : JobService() {
 
                     when(habit.habitSyncType){
                         HabitRecordSyncType.AddHabit -> {
-                            habitRepo.addOrUpdateHabitToRemote(habit)
+                            habitRepo.addOrUpdateHabitToRemote(habit).collectLatest {  }
                         }
                         HabitRecordSyncType.UpdateHabit -> {
                             habitRepo.updateHabitToRemote(habit)
@@ -74,11 +75,11 @@ class NetworkChangeJob : JobService() {
                                 habitRepo.addMembersToGroupHabitFromRemote(
                                     groupHabit = groupHabit.habitGroup.serverId,
                                     listOf(habit.userId!!)
-                                )
+                                ).collectLatest {  }
                             }
                         }
                         HabitRecordSyncType.ADD_ADMIN_MEMBER_HABIT -> {
-                            habitRepo.addOrUpdateHabitToRemote(habit)
+                            habitRepo.addOrUpdateHabitToRemote(habit).collectLatest {  }
                         }
 
                         HabitRecordSyncType.SyncedHabit -> {}

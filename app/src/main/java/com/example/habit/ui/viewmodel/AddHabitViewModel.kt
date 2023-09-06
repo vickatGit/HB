@@ -47,9 +47,6 @@ class AddHabitViewModel @Inject constructor(
     private var _uiState = MutableStateFlow<AddHabitUiState>(AddHabitUiState.Error(""))
     val uiState = _uiState.asStateFlow()
 
-    private var _grHabits = MutableStateFlow<List<HabitEntity>>(emptyList())
-    val grHabits = _grHabits.asStateFlow()
-
     fun addHabit(habit: HabitView, context: Context) {
         habit.reminderTime?.let { reminderTime ->
             viewModelScope.launch {

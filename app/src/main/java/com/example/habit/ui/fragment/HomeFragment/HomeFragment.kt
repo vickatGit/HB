@@ -11,6 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.example.habit.R
 import com.example.habit.data.network.model.UiModels.HomePageModels.Action
 import com.example.habit.databinding.FragmentHomeBinding
 import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
@@ -73,14 +75,20 @@ class HomeFragment : Fragment() {
     private fun handleEvents(it: Action) {
         when(it.actionType){
             "open_screen" -> {
-                handleServerNavigation(it.screenType)
+                handleServerNavigation(it.screenType,it.resId)
             }
         }
     }
 
-    private fun handleServerNavigation(screenType: String) {
+    private fun handleServerNavigation(screenType: String, resId: String?) {
         when(screenType){
             "profile" -> { startActivity(Intent(requireContext(),ProfileActivity::class.java)) }
+            "add_habit" -> {
+                val bundle = Bundle()
+                bundle.putBoolean("isFromHome",true)
+                bundle.putString("habitTitle",resId)
+                findNavController().navigate(R.id.action_homeFragment_to_addHabitFragment2,bundle)
+            }
         }
 
     }

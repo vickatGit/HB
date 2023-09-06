@@ -64,10 +64,18 @@ class HomePageEpoxyRecycler(
                             it.imageHeight,
                             it.width,
                             it.height
-                        ){}.id(habit.habitName)
-                    }
-                    val carousal = CarouselModel_()
+                        ){habitTitle ->
+                            onClick(object : Action {
+                                override val actionType: String
+                                    get() = "open_screen"
+                                override val resId: String?
+                                    get() = habitTitle
+                                override val screenType: String
+                                    get() = "add_habit"
 
+                            })
+                        }.id(habit.habitName)
+                    }
                     CarouselModel_().paddingDp(20).models(modelList)
                         .id(it.id).addTo(this)
 

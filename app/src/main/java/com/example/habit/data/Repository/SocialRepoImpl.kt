@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.habit.data.Mapper.SocialMapper.FollowMapper.toFollow
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUser
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUserModel
+import com.example.habit.data.common.Connectivity
 import com.example.habit.data.network.SocialApi
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
@@ -17,8 +18,15 @@ import com.example.habit.domain.models.User.User
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class SocialRepoImpl(
     private val socialApi: SocialApi,
@@ -105,12 +113,55 @@ class SocialRepoImpl(
     }
 
     override suspend fun getHomeData(): HomeData? {
-        val response = socialApi.getUserData()
-        val json=response.body()
-        val data = HomeDataCreater(json?.asJsonObject?.getAsJsonObject("data"))
-        Log.e("TAG", "getHomeData: ${Gson().toJson(data) }")
+       var data:List<HomeElements>? = null
+        if(Connectivity.isInternetConnected(context)) {
+            val response = socialApi.getUserData()
+            val json = response.body()
+            data = HomeDataCreater(json?.asJsonObject?.getAsJsonObject("data"))
+            Log.e("TAG", "getHomeData: ${Gson().toJson(json?.asJsonObject)}")
+            writeUiToFile(json?.asJsonObject)
+        }else{
+            val json = readUiFromFile()
+            json?.let {
+                val jsonElement = JsonParser.parseString(it)
+                val jsonObj: JsonObject = jsonElement.asJsonObject
+                data = HomeDataCreater(jsonObj?.getAsJsonObject("data"))
+            }
+        }
 
-        return HomeData(Sections(data))
+
+        return data?.let { HomeData( Sections(it) ) }?:null
+    }
+
+    private fun writeUiToFile(data: JsonObject?) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val outputStream = context.openFileOutput("server_ui.json", Context.MODE_PRIVATE)
+                outputStream.write(Gson().toJson(data).toString().toByteArray())
+                outputStream.close()
+            } catch (e: Exception) {
+                Log.e("TAG", "writeUiToFile: e ", )
+                Log.e("TAG", "writeUiToFile: ${e.printStackTrace()}", )
+            }
+        }
+
+    }
+    private fun readUiFromFile(): String? {
+        try {
+            val inputStream = context.openFileInput("server_ui.json")
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val stringBuilder = StringBuilder()
+            var line:String?
+            while (reader.readLine().also { line = it }!=null){
+                stringBuilder.append(line)
+            }
+            return stringBuilder.toString()
+
+        }catch (e:Exception){
+            Log.e("TAG", "readUiFromFile: ${e.message} ", )
+            Log.e("TAG", "readUiFromFile: ${e.printStackTrace()}", )
+            return null
+        }
     }
 
     override suspend fun HomeDataCreater(json: JsonObject?): List<HomeElements> {

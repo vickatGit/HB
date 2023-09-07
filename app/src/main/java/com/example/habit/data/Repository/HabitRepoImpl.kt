@@ -105,10 +105,8 @@ class HabitRepoImpl(
     }
 
     override suspend fun updateGroupHabit(habit: GroupHabit) {
-        val groupHabit =
-            groupHabitMapper.fromGroupHabit(habit, HabitGroupRecordSyncType.UpdateHabit)
-        Log.e("TAG", "updateGroupHabit: $groupHabit")
-        val s = habitDao.updateGroupHabit(
+        val groupHabit = groupHabitMapper.fromGroupHabit(habit, HabitGroupRecordSyncType.UpdateHabit)
+        habitDao.updateGroupHabit(
             groupHabit.localId,
             groupHabit.title!!,
             groupHabit.description!!,
@@ -118,8 +116,6 @@ class HabitRepoImpl(
             groupHabit.reminderQuestion!!,
             groupHabit.reminderTime!!
         )
-        Log.e("TAG", "updateGroupHabit:s :-- ${s}")
-        Log.e("TAG", "updateGroupHabit: ${getGroupHabit(groupHabit.localId)}")
         if (Connectivity.isInternetConnected(context)) {
             updateGroupHabitToRemote(groupHabit)
         }
@@ -560,26 +556,13 @@ class HabitRepoImpl(
 
     override suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity) {
         if (groupHabit.serverId != null) {
-            habitApi.updateGroupHabit(
-                groupHabitMapper.toGroupHabitEntity(groupHabit),
-                groupHabit.serverId!!
-            ).enqueue(
-                object : Callback<Any> {
-                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                        Log.e("TAG", "updateGroupHabitToRemote onResponse: $response")
-                        if (response.isSuccessful) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                getGroupHabits(this).collectLatest {  }
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Any>, t: Throwable) {
-                        Log.e("TAG", "updateGroupHabitToRemote onFailure: ${t.printStackTrace()}")
-                    }
-
-                })
+            val response = habitApi.updateGroupHabit( groupHabitMapper.toGroupHabitEntity(groupHabit), groupHabit.serverId!!)
+            if(response.isSuccessful)
+                CoroutineScope(Dispatchers.IO).launch { getGroupHabits(this).collectLatest {  } }
+            else
+                Log.e("TAG", "updateGroupHabitToRemote: ${Gson().toJson(response.errorBody())}", )
         } else {
+            //In case of GroupHabit is Added and updated without internet access (GroupHabit is not added to server due no internet)
             addGroupHabitToRemote(groupHabit)
         }
     }

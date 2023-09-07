@@ -55,5 +55,4 @@ interface HabitRepo {
     suspend fun addMembersToGroupHabitFromRemote(groupHabit: String?, userIds: List<String>): Flow<Boolean>
     suspend fun addMembersToGroupHabit(groupHabit: GroupHabit?, userIds: List<String>): Flow<Boolean>
     suspend fun getGroupAdminHabit(admin: String?, localId: String): HabitEntity
-    suspend fun addAdminHabitToRemote(habit: HabitEntity)
 }

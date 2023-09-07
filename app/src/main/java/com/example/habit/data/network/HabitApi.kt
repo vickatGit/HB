@@ -41,7 +41,7 @@ interface HabitApi {
     fun updateHabitEntries( @Body habitEntries: EntriesModel, @Path("id") id:String):Call<Any>
 
     @PATCH("/habit/group/update_habit/{groupId}")
-    fun updateGroupHabit(@Body groupHabitModel:GroupHabitModel,@Path("groupId") id:String):Call<Any>
+    suspend fun updateGroupHabit(@Body groupHabitModel:GroupHabitModel,@Path("groupId") id:String):Response<Any>
 
     @DELETE("/habit/group/delete_habit/{groupId}")
     fun deleteGroupHabit(@Path("groupId") id:String):Call<Any>

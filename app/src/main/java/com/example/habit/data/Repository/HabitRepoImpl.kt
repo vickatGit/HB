@@ -398,22 +398,11 @@ class HabitRepoImpl(
         entryList: Map<LocalDate, EntryEntity>?
     ) {
         habitServerId?.let {
-            habitApi.updateHabitEntries(
-                EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }),
-                it
-            ).enqueue(object : Callback<Any> {
-                override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    Log.e("TAG", "onResponse: updateHabitEntriesToRemote $response")
-                    if (response.code() == 200) {
-                        //                    getHabits(CoroutineScope(Dispatchers.IO))
-                    }
-                }
-
-                override fun onFailure(call: Call<Any>, t: Throwable) {
-                    Log.e("TAG", "onFailure: updateHabitEntriesToRemote")
-                }
-
-            })
+            val response = habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }), it)
+            if(response.isSuccessful)
+                Log.e("TAG", "onResponse: updateHabitEntriesToRemote $response")
+            else
+                Log.e("TAG", "onFailure: updateHabitEntriesToRemote")
         }
     }
 
@@ -577,27 +566,13 @@ class HabitRepoImpl(
         habitId: String,
         entries: HashMap<LocalDate, Entry>
     ): Int {
-        Log.e("TAG", "updateHabitEntries: from repo entry src ${Gson().toJson(entries)}")
-        val res = habitDao.updateHabitEntries(
-            habitId,
-            entries.mapValues {
-                entryMapper.mapFromEntry(it.value)
-            }.toMutableMap()
-        )
-        if (Connectivity.isInternetConnected(context)) {
-            updateHabitEntriesToRemote(
-                habitServerId,
-                entries.mapValues { entryMapper.mapFromEntry(it.value) })
-        }
+        val mappedEntries = entries.mapValues { entryMapper.mapFromEntry(it.value) }.toMutableMap()
+        val res = habitDao.updateHabitEntries(habitId, mappedEntries)
+        if (Connectivity.isInternetConnected(context))
+            updateHabitEntriesToRemote(habitServerId, mappedEntries)
         return res
     }
-    fun getCallingFunctionName(): String? {
-        val stackTrace = Thread.currentThread().stackTrace
-        if (stackTrace.size < 4) return null // At least 4 elements in the stack trace are needed
 
-        val caller = stackTrace[3] // Get the caller's StackTraceElement
-        return caller.methodName // Get the method name
-    }
 
 
 }

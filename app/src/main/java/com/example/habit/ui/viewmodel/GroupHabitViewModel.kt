@@ -22,7 +22,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import javax.inject.Inject
 
-@HiltViewModel 
+@HiltViewModel
 class GroupHabitViewModel @Inject constructor(
     private val getGroupHabitsUseCase: GetGroupHabitsUseCase,
     private val getGroupHabitUseCase: GetGroupHabitUseCase,
@@ -36,16 +36,16 @@ class GroupHabitViewModel @Inject constructor(
     private var _uiState = MutableStateFlow<GroupHabitUiState>(GroupHabitUiState.Error(""))
     val uiState = _uiState.asStateFlow()
 
-    private var _currentViewingMonth: YearMonth?=null
+    private var _currentViewingMonth: YearMonth? = null
     fun getCurrentViewingMonth() = _currentViewingMonth
     fun setCurrentViewingMonth(currentViewingMonth: YearMonth) {
-        this._currentViewingMonth=currentViewingMonth
+        this._currentViewingMonth = currentViewingMonth
     }
 
-    private var userPosition=0
+    private var userPosition = 0
     fun getHabitStatePos(): Int = userPosition
-    fun setHabitStatePos(pos:Int){
-        userPosition=pos
+    fun setHabitStatePos(pos: Int) {
+        userPosition = pos
     }
 
 
@@ -53,31 +53,41 @@ class GroupHabitViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { GroupHabitUiState.Loading }
             try {
-                getGroupHabitsUseCase(this).collect {grpHabits ->
+                getGroupHabitsUseCase(this).collect { grpHabits ->
                     _uiState.update { GroupHabitUiState.Habits(grpHabits) }
                 }
             } catch (e: Exception) {
                 Log.e("TAG", "getGroupHabits: error ${e.printStackTrace()}")
-                _uiState.update { GroupHabitUiState.Error(e.message+"") }
+                _uiState.update { GroupHabitUiState.Error(e.message + "") }
             }
 
         }
     }
-    fun getGroupHabit(groupId:String){
+
+    fun getGroupHabit(groupId: String) {
         _uiState.update { GroupHabitUiState.Loading }
         try {
             viewModelScope.launch {
                 val groupHabit = getGroupHabitUseCase(groupId)
                 groupHabit?.let {
-                    Log.e("add", "getGroupHabit: ${groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)}", )
-                    _uiState.update { GroupHabitUiState.GroupHabit(groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)) }
+                    Log.e(
+                        "add",
+                        "getGroupHabit: ${groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)}",
+                    )
+                    _uiState.update {
+                        GroupHabitUiState.GroupHabit(
+                            groupHabitMapper.fromGroupHabitsWithHabit(
+                                groupHabit
+                            )
+                        )
+                    }
                 }
 
 
             }
-        }catch (e:Exception){
-            Log.e("add", "getGroupHabit: ${e.printStackTrace()}", )
-            _uiState.update { GroupHabitUiState.Error(e.message+"") }
+        } catch (e: Exception) {
+            Log.e("add", "getGroupHabit: ${e.printStackTrace()}")
+            _uiState.update { GroupHabitUiState.Error(e.message + "") }
         }
 
     }
@@ -86,55 +96,51 @@ class GroupHabitViewModel @Inject constructor(
         habitServerId: String,
         habitId: String,
         entries: HashMap<LocalDate, EntryView>
-    ){
+    ) {
         viewModelScope.launch {
             _uiState.update { GroupHabitUiState.Loading }
             try {
-                var habitEntries=0
-                try {
-
-                    val h = entries.mapValues { entryMapper.mapToEntry(it.value) }
-                    Log.e("TAG", "updateHabitEntries: list ${Gson().toJson(entries)}", )
-                    updateHabitEntriesUseCase(
-                        habitServerId = habitServerId,
-                        habitId = habitId,
-                        entries = h.toMutableMap() as HashMap<LocalDate, Entry>
-                    )
-                    _uiState.update { GroupHabitUiState.Nothing }
-                }catch (e:Exception){
-                    Log.e("TAG", "updateHabitEntries: due to update entries ${e.printStackTrace()}", )
-                }
-
-            }catch (e:Exception){
-                Log.e("TAG", "updateHabitEntries: due to get entries $e", )
-                _uiState.update { GroupHabitUiState.Error(e.message?:"") }
+                val mappedEntries = entries.mapValues { entryMapper.mapToEntry(it.value) }
+                Log.e("TAG", "updateHabitEntries: list ${Gson().toJson(entries)}")
+                updateHabitEntriesUseCase(
+                    habitServerId = habitServerId,
+                    habitId = habitId,
+                    entries = mappedEntries.toMutableMap() as HashMap<LocalDate, Entry>
+                )
+                _uiState.update { GroupHabitUiState.Nothing }
+            } catch (e: Exception) {
+                Log.e("TAG", "updateHabitEntries: due to get entries $e")
+                _uiState.update { GroupHabitUiState.Error(e.message ?: "") }
             }
-
         }
     }
 
-    fun deleteGroupHabit(groupHabitId:String, groupHabitServerId: String?){
-       viewModelScope.launch {
-           _uiState.update { GroupHabitUiState.Loading }
-           try {
-               deleteGroupHabitUseCase(groupHabitServerId, groupHabitId)
-               _uiState.update { GroupHabitUiState.Success("Habit Group Deleted Suc") }
-           }catch (e:Exception){
-               Log.e("TAG", "deleteGroupHabit: ${e.printStackTrace()}", )
-               _uiState.update { GroupHabitUiState.Error(e.message+"") }
-           }
-       }
+    fun deleteGroupHabit(groupHabitId: String, groupHabitServerId: String?) {
+        viewModelScope.launch {
+            _uiState.update { GroupHabitUiState.Loading }
+            try {
+                deleteGroupHabitUseCase(groupHabitServerId, groupHabitId)
+                _uiState.update { GroupHabitUiState.Success("Habit Group Deleted Suc") }
+            } catch (e: Exception) {
+                Log.e("TAG", "deleteGroupHabit: ${e.printStackTrace()}")
+                _uiState.update { GroupHabitUiState.Error(e.message + "") }
+            }
+        }
     }
 
-    fun removeMembersFromGroupHabit(groupHabitServerId: String?, groupHabitId: String, userIds: List<String>){
+    fun removeMembersFromGroupHabit(
+        groupHabitServerId: String?,
+        groupHabitId: String,
+        userIds: List<String>
+    ) {
         viewModelScope.launch {
             _uiState.update { GroupHabitUiState.Loading }
             try {
                 removeMembersFromHabitGroupUseCase.invoke(groupHabitId, userIds, groupHabitServerId)
                 _uiState.update { GroupHabitUiState.Success("Exited From Group Successfully") }
-            }catch (e:Exception){
-                Log.e("TAG", "removeMembersFromGroupHabit: ${e.printStackTrace()}", )
-                _uiState.update { GroupHabitUiState.Error(e.message+"") }
+            } catch (e: Exception) {
+                Log.e("TAG", "removeMembersFromGroupHabit: ${e.printStackTrace()}")
+                _uiState.update { GroupHabitUiState.Error(e.message + "") }
             }
         }
     }

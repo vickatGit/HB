@@ -107,13 +107,13 @@ class AddHabitViewModel @Inject constructor(
     fun addGroupHabit(habit: HabitView) {
         viewModelScope.launch {
             _uiState.update { AddHabitUiState.Loading }
-//            try {
+            try {
                 addGroupHabitUseCase(groupHabitMapper.toGroupHabitFromHabit(habit))
                 _uiState.update { AddHabitUiState.Success("GroupC Created Successfully") }
-//            } catch (e: Exception) {
-//                Log.e("TAG", "addGroupHabit: ${e.message}")
-//                _uiState.update { AddHabitUiState.Error(e.message ?: "") }
-//            }
+            } catch (e: Exception) {
+                Log.e("TAG", "addGroupHabit: ${e.message}")
+                _uiState.update { AddHabitUiState.Error(e.message ?: "") }
+            }
 
         }
     }

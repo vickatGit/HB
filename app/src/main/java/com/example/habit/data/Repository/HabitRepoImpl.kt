@@ -177,13 +177,12 @@ class HabitRepoImpl(
 
 
         if (Connectivity.isInternetConnected(context)) {
-            getHabits(coroutineScope)
+//            getHabits(coroutineScope)
             habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
                 override fun onResponse(
                     call: Call<GroupHabitsModel>,
                     response: Response<GroupHabitsModel>
                 ) {
-                    Log.e("TAG", "onResponse: getGroupHabits $response")
                     response.body()?.let {
                         var habitsList: List<HabitEntity> = listOf()
                         val groupHabits = response.body()?.let {
@@ -203,9 +202,7 @@ class HabitRepoImpl(
                                 }
                             }
                         }
-                        Log.e("TAG", "onResponse vghcv cxgh: $groupHabits")
                         CoroutineScope(Dispatchers.IO).launch {
-                            Log.e("TAG", "onResponse vghcv cxgh 2: $habitsList")
                             habitDao.deleteAllGroupHabits()
                             groupHabits?.let { habitDao.addGroupHabit(groupHabits) }
                             habitDao.addHabit(habitsList)
@@ -222,10 +219,7 @@ class HabitRepoImpl(
         return habitDao.getGroupHabits().map { groupHabits ->
             groupHabits.map { groupHabit ->
                 val userHabit = groupHabit.habits.find { it.userId == authPref.getUserId() }
-                userHabit?.let {
-                    groupHabit.habits = listOf(userHabit)
-                }
-
+                userHabit?.let { groupHabit.habits = listOf(userHabit) }
                 groupHabitMapper.toGroupHabitWithHabits(groupHabit)
             }
         }

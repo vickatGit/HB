@@ -130,6 +130,6 @@ interface HabitDao {
 
 
     @Query("Select * FROM HabitEntity WHERE habitGroupId=:localId AND userId=:admin")
-    fun getGroupAdminHabit(admin: String?, localId: String):HabitEntity
+    suspend fun getGroupAdminHabit(admin: String?, localId: String):HabitEntity
 
 }

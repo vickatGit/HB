@@ -79,7 +79,7 @@ class NetworkChangeJob : JobService() {
                             }
                         }
                         HabitRecordSyncType.ADD_ADMIN_MEMBER_HABIT -> {
-                            habitRepo.addOrUpdateHabitToRemote(habit).collectLatest {  }
+//                            habitRepo.addAdminHabitToRemote(habit)
                         }
 
                         HabitRecordSyncType.SyncedHabit -> {}

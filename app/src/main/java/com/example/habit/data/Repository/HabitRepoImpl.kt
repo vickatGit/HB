@@ -154,7 +154,6 @@ class HabitRepoImpl(
                         }
                         Log.e("TAG", "onResponse: habits get $habits")
                         coroutineScope.launch {
-                            habitDao.deleteAllHabits()
                             habitDao.addHabit(habits)
                         }
                     }
@@ -177,7 +176,7 @@ class HabitRepoImpl(
 
 
         if (Connectivity.isInternetConnected(context)) {
-//            getHabits(coroutineScope)
+            getHabits(coroutineScope)
             habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
                 override fun onResponse(
                     call: Call<GroupHabitsModel>,
@@ -234,6 +233,7 @@ class HabitRepoImpl(
 
     override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits? {
         val res = habitDao.getGroupHabit(groupId)
+        Log.e("TAG", "getGroupHabit: repo $res", )
         return res?.let { groupHabitMapper.toGroupHabitWithHabits(res) }
     }
 
@@ -443,8 +443,9 @@ class HabitRepoImpl(
                     groupHabit?.reminderTime,
                     null,
                     HabitRecordSyncType.ADD_MEMBER_HABIT,
-                    groupHabit?.id,
-                    userId
+                    groupHabit?.serverId,
+                    userId,
+                    habitGroupLocalId = groupHabit?.id
                 )
             )
         }
@@ -500,13 +501,7 @@ class HabitRepoImpl(
                         val getHabitResponse = habitApi.getGroupHabit(groupHabitServerId)
                         if (getHabitResponse.isSuccessful) {
                             val groupHabit = getHabitResponse.body()?.data
-                            habitDao.addGroupHabit(
-                                listOf(
-                                    groupHabitMapper.toGroupHabitModel(
-                                        getHabitResponse.body()?.data!!
-                                    )
-                                )
-                            )
+                            habitDao.addGroupHabit(listOf(groupHabitMapper.toGroupHabitModel(getHabitResponse.body()?.data!!)))
                             var habits = mutableListOf<HabitEntity>()
                             getHabitResponse.body()?.data?.habits?.map {
                                 it?.let { habit ->
@@ -514,7 +509,8 @@ class HabitRepoImpl(
                                     habit?.endDate = groupHabit?.endDate
                                     habit?.description = groupHabit?.description
                                     habit?.title = groupHabit?.title
-                                    habit?.habitGroupId = groupHabit?.localId
+                                    habit?.habitGroupId = groupHabit?.id
+                                    habit?.habitGroupLoacalId = groupHabit?.localId
                                     habits.add(habitMapper.mapToHabitEntityFromHabitModel(habit))
                                 }
                             }

@@ -9,10 +9,16 @@ import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
 import com.example.habit.ui.model.Epoxy.HabitItemEpoxyModel
 import com.example.habit.ui.model.Epoxy.HeaderSectionEpoxyModel
 import com.example.habit.ui.model.Epoxy.NavSectionEpoxyModel
+import com.example.habit.ui.model.Epoxy.ProgressSectionHabit
 import com.example.habit.ui.model.Epoxy.QuoteScrollerEpoxyModel
 import com.example.habit.ui.model.Epoxy.UserInfoSectionEpoxyModel
 import com.example.habit.ui.model.Epoxy.UserProgressSectionEpoxyModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 class HomePageEpoxyRecycler(
     private val getHabitThumbsUseCase: GetHabitThumbsUseCase,
@@ -45,7 +51,41 @@ class HomePageEpoxyRecycler(
                     QuoteScrollerEpoxyModel(it,uiScope).id(it.id).addTo(this)
                 }
                 is HomeElements.UserProgressSection -> {
-                    UserProgressSectionEpoxyModel(getHabitThumbsUseCase,it).id(it.id).addTo(this)
+                    val progresss = it
+                    CoroutineScope(Dispatchers.IO).launch {
+                        getHabitThumbsUseCase(this).collectLatest {
+                            val habits = mutableListOf<ProgressSectionHabit>()
+                            var totalHabits = 0
+                            var completedHabits = 0
+                            it.forEach { habit ->
+                                if (habit.entries != null) {
+                                    if (habit.entries!!.isEmpty()) {
+                                        totalHabits++
+                                        habits.add(ProgressSectionHabit(habit.title!!, false))
+                                    }
+                                    habit.entries?.forEach {
+                                        if (it.key == LocalDate.now()) {
+                                            totalHabits++
+                                            if (it.value.completed) ++completedHabits
+                                            habits.add(
+                                                ProgressSectionHabit(
+                                                    habit.title!!,
+                                                    it.value.completed
+                                                )
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    totalHabits++
+                                }
+                                withContext(Dispatchers.Main){
+                                    UserProgressSectionEpoxyModel(progresss,totalHabits,completedHabits,habits).id(progresss.id).addTo(this@HomePageEpoxyRecycler)
+                                }
+                            }
+                        }
+                    }
+
+
                 }
                 is HomeElements.HabitCarousalSection -> {
                     val modelList = it.habits.map { habit ->

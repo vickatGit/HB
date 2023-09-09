@@ -194,8 +194,8 @@ class HabitRepoImpl(
                                         it?.endDate = groupHabit.endDate
                                         it?.description = groupHabit.description
                                         it?.title = groupHabit.title
-                                        it?.habitGroupId = groupHabit.localId
-                                        Log.e("TAG", "onResponse:  $it")
+                                        it?.habitGroupId = groupHabit.id
+                                        it?.habitGroupLoacalId = groupHabit.localId
                                         habitMapper.mapToHabitEntityFromHabitModel(it!!)
                                     }
                                     groupHabitMapper.toGroupHabitModel(groupHabit!!)
@@ -228,14 +228,12 @@ class HabitRepoImpl(
 
     override suspend fun getHabit(habitId: String): Habit {
         return habitDao.getHabit(habitId).let {
-            Log.e("TAG", "getHabit: data" + habitId)
             habitMapper.mapToHabit(habitDao.getHabit(habitId))
         }
     }
 
     override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits? {
         val res = habitDao.getGroupHabit(groupId)
-        Log.e("TAG", "getGroupHabit: $res")
         return res?.let { groupHabitMapper.toGroupHabitWithHabits(res) }
     }
 
@@ -245,7 +243,6 @@ class HabitRepoImpl(
             if (response.isSuccessful) {
                 response.body()?.let {
                     CoroutineScope(Dispatchers.IO).launch {
-                        Log.e("TAG", "getGroupHabitFromRemote: $it ")
                         habitDao.addGroupHabit(listOf(groupHabitMapper.toGroupHabitModel(it.data!!)))
                         emit(true)
                     }
@@ -259,7 +256,6 @@ class HabitRepoImpl(
 
     override suspend fun getHabitThumb(habitId: String): Habit {
         return habitDao.getHabit(habitId).let {
-            Log.e("TAG", "getHabit: data" + habitId)
             habitMapper.mapToHabit(habitDao.getHabit(habitId))
         }
     }

@@ -51,7 +51,8 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
             },
             syncType,
             type.habitGroupId,
-            type.userId
+            type.userId,
+            habitGroupLocalId = type.habitGroupLocalId
 
 
         )
@@ -74,7 +75,8 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                 } as HashMap<LocalDate, Entry>
             },
             type.habitGroupId,
-            type.userId
+            type.userId,
+            habitGroupLocalId = type.habitGroupLocalId
 
         )
     }
@@ -95,7 +97,8 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                 } as HashMap<LocalDate, Entry>
             },
             type.habitGroupId,
-            type.userId
+            type.userId,
+            habitGroupLocalId = type.habitGroupLocalId
         )
     }
 
@@ -117,7 +120,8 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                 }
             }?.associateBy { it?.timestamp!! } as? HashMap<LocalDate,EntryEntity>,
             habitGroupId = type.habitGroupId,
-            userId = type.userId
+            userId = type.userId,
+            habitGroupLocalId = type.habitGroupLoacalId
 
 
         )

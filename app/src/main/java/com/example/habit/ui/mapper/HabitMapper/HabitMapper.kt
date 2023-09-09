@@ -22,7 +22,11 @@ class HabitMapper @Inject constructor(val entryMapper: EntryMapper) :
             type.endDate,
             type.isReminderOn,
             type.reminderTime,
-            null
+            null,
+            habitGroupId = type.habitGroupId,
+            habitGroupLocalId = type.habitGroupLocalId
+
+
         )
     }
 
@@ -44,7 +48,8 @@ class HabitMapper @Inject constructor(val entryMapper: EntryMapper) :
                 }.toMutableMap() as HashMap<LocalDate, EntryView>
             },
             type.habitGroupId?:null,
-            type.userId?:null
+            type.userId?:null,
+            habitGroupLocalId = type.habitGroupLocalId
 
 
         )

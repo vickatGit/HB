@@ -8,7 +8,7 @@ data class HabitGroupWithHabitsEntity(
     val habitGroup:GroupHabitsEntity,
     @Relation(
         parentColumn = "localId",
-        entityColumn = "habitGroupId",
+        entityColumn = "habitGroupLocalId",
     )
     var habits : List<HabitEntity>
 

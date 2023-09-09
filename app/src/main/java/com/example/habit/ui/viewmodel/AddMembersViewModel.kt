@@ -52,15 +52,8 @@ class AddMembersViewModel @Inject constructor(
                 }.collect{ users ->
                     val users = users?.users?.toMutableList()
                     val memberUserIds = groupHabit?.members?.map { it.userId }
-                    users?.removeIf {
-                        return@removeIf memberUserIds?.contains(it.id) == true
-                    }
-                    Log.e("TAG", "getMembers members: $memberUserIds", )
-                    Log.e("TAG", "getMembers: users $users", )
-                    _uiState.update { AddMemberUiState.Success(users?.map {
-                        it.toUserView()
-                    }?: emptyList()
-                    ) }
+                    users?.removeIf { return@removeIf memberUserIds?.contains(it.id) == true }
+                    _uiState.update { AddMemberUiState.Success(users?.map { it.toUserView() }?: emptyList()) }
                 }
             }
         }catch (e:Exception){

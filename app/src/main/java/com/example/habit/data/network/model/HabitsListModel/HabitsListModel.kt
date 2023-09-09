@@ -21,7 +21,9 @@ data class HabitModel(
     var startDate: String? = null,
     @SerializedName("groupHabitId")
 	var habitGroupId:String?=null,
-    var userId:String?=null
+    var userId:String?=null,
+    @SerializedName("groupHabitLocalId")
+	var habitGroupLoacalId:String?=null,
 )
 
 data class EntryModel(

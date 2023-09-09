@@ -24,7 +24,8 @@ data class HabitEntity(
     var entryList: Map<LocalDate, EntryEntity>? = null,
     var habitSyncType:HabitRecordSyncType=HabitRecordSyncType.SyncedHabit,
     var habitGroupId:String?=null,
-    var userId:String?=null
+    var userId:String?=null,
+    var habitGroupLocalId:String?=null,
 ) : Parcelable{
     constructor():this("",null,null,null,null,null,null,null,null,null)
 }

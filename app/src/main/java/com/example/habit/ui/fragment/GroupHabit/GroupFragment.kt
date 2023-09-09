@@ -198,7 +198,6 @@ class GroupFragment : Fragment() {
 
         users = mutableListOf()
         var members = groupHabit.habitGroup.members?: emptyList()
-        Log.e("TAG", "setupRecyclerView: members $members", )
 
 
         //don't know the reason of error that's why added Try-Catch
@@ -212,6 +211,7 @@ class GroupFragment : Fragment() {
                         it
                     )
                 )
+
             }
             val userIndex = users.indexOfFirst { it.member.userId==authPref.getUserId() }
             val user = users.get(userIndex)

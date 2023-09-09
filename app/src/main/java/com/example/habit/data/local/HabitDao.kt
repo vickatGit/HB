@@ -52,7 +52,7 @@ interface HabitDao {
     @Query("SELECT * FROM HabitEntity WHERE id = :habitId")
     suspend fun getHabit(habitId:String): HabitEntity?
 
-    @Query("SELECT * FROM GroupHabitsEntity WHERE localId IN (SELECT habitGroupId FROM HabitEntity WHERE habitGroupId=:groupId)")
+    @Query("SELECT * FROM GroupHabitsEntity WHERE localId IN (SELECT habitGroupLocalId FROM HabitEntity WHERE habitGroupLocalId=:groupId)")
     suspend fun getGroupHabit(groupId:String):HabitGroupWithHabitsEntity
 
     @Query("SELECT * FROM HabitEntity WHERE endDate < :date")

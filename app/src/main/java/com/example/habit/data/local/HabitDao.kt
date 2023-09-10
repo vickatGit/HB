@@ -97,7 +97,7 @@ interface HabitDao {
     @Query("DELETE FROM GroupHabitsEntity WHERE localId=:habitGroupId")
     suspend fun deleteGroupHabit(habitGroupId: String):Int
 
-    @Query("UPDATE HabitEntity SET habitSyncType=:syncType WHERE habitGroupId=:habitGroupId AND userId IN (:userIds)")
+    @Query("UPDATE HabitEntity SET habitSyncType=:syncType WHERE habitGroupLocalId=:habitGroupId AND userId IN (:userIds)")
     suspend fun removeMembersFromGroupHabit(
         syncType: HabitRecordSyncType = HabitRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT,
         habitGroupId: String,

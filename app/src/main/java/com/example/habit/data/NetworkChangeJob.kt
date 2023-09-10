@@ -60,7 +60,7 @@ class NetworkChangeJob : JobService() {
                             habitRepo.deleteFromLocal(habit.id)
                         }
                         HabitRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT -> {
-                            val groupHabit = habitRepo.getGroupHabit(habit.habitGroupId!!)
+                            val groupHabit = habitRepo.getGroupHabit(habit.habitGroupLocalId!!)
                             groupHabit?.let {
                                 habitRepo.removedMembersFromGroupHabitFromRemote(
                                     groupHabit.habitGroup.serverId,

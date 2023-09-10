@@ -124,6 +124,7 @@ class HabitRepoImpl(
 
     override suspend fun removeHabit(habitServerId: String?, habitId: String?): Int {
         val res = habitDao.updateDeleteStatus(habitId!!)
+
         if (Connectivity.isInternetConnected(context)) {
             deleteFromRemote(habitId, habitServerId)
         }
@@ -132,6 +133,7 @@ class HabitRepoImpl(
 
     override suspend fun removeGroupHabit(groupHabitServerId: String?, groupHabitId: String?): Int {
         val res = habitDao.updateGroupHabitDeleteStatus(groupHabitId!!)
+        Log.e("TAG", "removeHabit: $groupHabitId", )
         if (Connectivity.isInternetConnected(context)) {
             deleteGroupHabitFromRemote(groupHabitId, groupHabitServerId)
         }
@@ -139,7 +141,6 @@ class HabitRepoImpl(
     }
 
     override fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>> {
-        Log.e("TAG", "onResponse: getHabits local")
         if (Connectivity.isInternetConnected(context)) {
             habitApi.getHabits().enqueue(object : Callback<HabitsListModel> {
                 override fun onResponse(

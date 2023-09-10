@@ -233,7 +233,6 @@ class HabitRepoImpl(
 
     override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits? {
         val res = habitDao.getGroupHabit(groupId)
-        Log.e("TAG", "getGroupHabit: repo $res", )
         return res?.let { groupHabitMapper.toGroupHabitWithHabits(res) }
     }
 
@@ -419,8 +418,7 @@ class HabitRepoImpl(
         if (Connectivity.isInternetConnected(context)) {
             removedMembersFromGroupHabitFromRemote(groupHabitServerId, userIds)
         }
-        val s = habitDao.updateRemoveGroupHabitDeleteStatus(habitGroupId)
-        Log.e("TAG", "removeMembersFromGroupHabit: $s")
+        habitDao.updateRemoveGroupHabitDeleteStatus(habitGroupId)
         return habitDao.removeMembersFromGroupHabit(habitGroupId = habitGroupId, userIds = userIds)
     }
 
@@ -470,18 +468,11 @@ class HabitRepoImpl(
             habitApi.removeMemberFromGroup(groupHabitId, UserIdsModel(userIds))
                 .enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                        if (response.isSuccessful) {
-                            Log.e("TAG", "onResponse: ${response.body()}")
-                        }
+                        if (response.isSuccessful) { Log.e("TAG", "onResponse: ${response.body()}") }
                     }
-
                     override fun onFailure(call: Call<Any>, t: Throwable) {
-                        Log.e(
-                            "TAG",
-                            "onFailure: removedMembersFromGroupHabitFromRemote ${t.printStackTrace()}",
-                        )
+                        Log.e("TAG", "onFailure: removedMembersFromGroupHabitFromRemote ${t.printStackTrace()}",)
                     }
-
                 })
         }
 

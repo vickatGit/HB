@@ -233,6 +233,7 @@ class HabitRepoImpl(
 
     override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits? {
         val res = habitDao.getGroupHabit(groupId)
+        Log.e("TAG", "getGroupHabit: repo $res", )
         return res?.let { groupHabitMapper.toGroupHabitWithHabits(res) }
     }
 

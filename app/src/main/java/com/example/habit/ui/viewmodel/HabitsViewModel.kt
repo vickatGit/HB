@@ -27,17 +27,10 @@ class HabitsViewModel @Inject constructor(
     fun getHabits() {
         viewModelScope.launch {
             _habitsState.update { HabitsUiState.Loading }
-            val statD=System.currentTimeMillis()
             try {
                 getHabitUseCase(this).collect { habits ->
-                    val endD=System.currentTimeMillis()
-                    Log.e("TAG", "getHabits: milli ${endD-statD}", )
                     _habitsState.update {
-                        HabitsUiState.HabitsFetched(
-                            habits.map {
-                                habitsMapper.mapToHabitThumbView(it)
-                            }
-                        )
+                        HabitsUiState.HabitsFetched(habits.map { habitsMapper.mapToHabitThumbView(it) })
                     }
                 }
             } catch (e: Exception) {
@@ -54,11 +47,7 @@ class HabitsViewModel @Inject constructor(
             try {
                 getCompletedHabitThumbsUseCase().collect { habits ->
                     _habitsState.update {
-                        HabitsUiState.HabitsFetched(
-                            habits.map {
-                                habitsMapper.mapToHabitThumbView(it)
-                            }
-                        )
+                        HabitsUiState.HabitsFetched(habits.map { habitsMapper.mapToHabitThumbView(it) })
                     }
                 }
             } catch (e: Exception) {

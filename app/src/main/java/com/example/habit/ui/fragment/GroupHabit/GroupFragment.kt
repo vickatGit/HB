@@ -83,7 +83,6 @@ class GroupFragment : Fragment() {
 
     private var maxScored: Int = 0
     private var habitEntries: HashMap<LocalDate, EntryView> = hashMapOf()
-    private var groupId: String? = null
     private lateinit var groupHabit: GroupHabitWithHabitsView
     var weekdays = arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     private var selectedDates = mutableMapOf<LocalDate, LocalDate>()
@@ -111,7 +110,7 @@ class GroupFragment : Fragment() {
         it?.let {
 //            findNavController().popBackStack()
             Log.e("add", "AddMembersResultLauncher:$it ", )
-            if (it) groupId?.let { groupHabitId -> viewModel.getGroupHabit(groupHabitId) }
+            if (it) viewModel.groupId?.let { groupHabitId -> viewModel.getGroupHabit(groupHabitId) }
         }
     }
 
@@ -123,7 +122,7 @@ class GroupFragment : Fragment() {
         _binding = FragmentGroupBinding.inflate(inflater, container, false)
         _calendarBinding = CalendarLayoutBinding.bind(binding.calendar.root)
         _weekDaysBinding = CalendarDayLegendContainerBinding.bind(calendarBinding.weekDays.root)
-        groupId = arguments?.getString(GROUP_HABIT_ID, null)
+        viewModel.groupId = arguments?.getString(GROUP_HABIT_ID, null)
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.uiState.collectLatest {
@@ -152,7 +151,7 @@ class GroupFragment : Fragment() {
                 }
             }
         }
-        groupId?.let { viewModel.getGroupHabit(it) }
+        viewModel.groupId?.let { viewModel.getGroupHabit(it) }
 
         binding.edit.setOnClickListener {
             val args = Bundle().apply {

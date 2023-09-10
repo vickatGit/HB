@@ -310,13 +310,9 @@ class HabitRepoImpl(
         if (habitGroupServerId != null) {
             habitApi.deleteGroupHabit(habitGroupServerId).enqueue(object : Callback<Any> {
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                    Log.e("TAG", "onResponse: deleteHabitGroupFromRemote $response")
                     if (response.code() == 200) {
                         CoroutineScope(Dispatchers.IO).launch {
-                            habitDao.updateGroupHabitDeleteStatus(
-                                habitId = habitGroupId,
-                                shouldDelete = HabitGroupRecordSyncType.DeletedHabit
-                            )
+                            habitDao.updateGroupHabitDeleteStatus(habitId = habitGroupId, shouldDelete = HabitGroupRecordSyncType.DeletedHabit)
                             deleteGroupHabitFromLocal(habitGroupId)
                         }
                     }

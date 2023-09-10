@@ -33,6 +33,7 @@ class GroupHabitViewModel @Inject constructor(
     private val groupHabitMapper: com.example.habit.ui.mapper.GroupHabitMapper.GroupHabitMapper
 ) : ViewModel() {
 
+    var groupId:String? = null
     private var _uiState = MutableStateFlow<GroupHabitUiState>(GroupHabitUiState.Error(""))
     val uiState = _uiState.asStateFlow()
 
@@ -70,20 +71,10 @@ class GroupHabitViewModel @Inject constructor(
             viewModelScope.launch {
                 val groupHabit = getGroupHabitUseCase(groupId)
                 groupHabit?.let {
-                    Log.e(
-                        "add",
-                        "getGroupHabit: ${groupHabitMapper.fromGroupHabitsWithHabit(groupHabit)}",
-                    )
                     _uiState.update {
-                        GroupHabitUiState.GroupHabit(
-                            groupHabitMapper.fromGroupHabitsWithHabit(
-                                groupHabit
-                            )
-                        )
+                        GroupHabitUiState.GroupHabit(groupHabitMapper.fromGroupHabitsWithHabit(groupHabit))
                     }
                 }
-
-
             }
         } catch (e: Exception) {
             Log.e("add", "getGroupHabit: ${e.printStackTrace()}")
@@ -108,6 +99,7 @@ class GroupHabitViewModel @Inject constructor(
                     entries = mappedEntries.toMutableMap() as HashMap<LocalDate, Entry>
                 )
                 _uiState.update { GroupHabitUiState.Nothing }
+                groupId?.let { getGroupHabit(it) }
             } catch (e: Exception) {
                 Log.e("TAG", "updateHabitEntries: due to get entries $e")
                 _uiState.update { GroupHabitUiState.Error(e.message ?: "") }
@@ -120,7 +112,7 @@ class GroupHabitViewModel @Inject constructor(
             _uiState.update { GroupHabitUiState.Loading }
             try {
                 deleteGroupHabitUseCase(groupHabitServerId, groupHabitId)
-                _uiState.update { GroupHabitUiState.Success("Habit Group Deleted Suc") }
+                _uiState.update { GroupHabitUiState.Success("Habit Group Deleted Successfully") }
             } catch (e: Exception) {
                 Log.e("TAG", "deleteGroupHabit: ${e.printStackTrace()}")
                 _uiState.update { GroupHabitUiState.Error(e.message + "") }

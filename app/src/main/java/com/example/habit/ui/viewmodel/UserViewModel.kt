@@ -46,7 +46,7 @@ class UserViewModel @Inject constructor(
            viewModelScope.launch {
                isUserFollowingUseCase(friendId)
                    .catch {
-//                       handleExceptions(Exception(it))
+                       handleExceptions(Exception(it))
                    }
                    .collect{isFollowing ->
                    _uiState.update { UserActivityUiState.UserFollowStatus(isFollowing) }

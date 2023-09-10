@@ -109,7 +109,7 @@ class AddHabitViewModel @Inject constructor(
             _uiState.update { AddHabitUiState.Loading }
             try {
                 addGroupHabitUseCase(groupHabitMapper.toGroupHabitFromHabit(habit))
-                _uiState.update { AddHabitUiState.Success("GroupC Created Successfully") }
+                _uiState.update { AddHabitUiState.Success("Group Created Successfully") }
             } catch (e: Exception) {
                 Log.e("TAG", "addGroupHabit: ${e.message}")
                 _uiState.update { AddHabitUiState.Error(e.message ?: "") }

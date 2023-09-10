@@ -18,10 +18,15 @@ import com.example.habit.databinding.FragmentHomeBinding
 import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
 import com.example.habit.ui.activity.ProfileActivity.ProfileActivity
 import com.example.habit.ui.adapter.HomePageEpoxyRecycler
+import com.example.habit.ui.model.Epoxy.ProgressSectionHabit
 import com.example.habit.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import javax.inject.Inject
 
 
@@ -46,14 +51,52 @@ class HomeFragment : Fragment() {
                 viewModel.uiState.collectLatest {
                     when(it){
                         is HomeUiState.HomeData -> {
-                            val epoxyController = HomePageEpoxyRecycler(getHabitThumbsUseCase,this){
-                                handleEvents(it)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                getHabitThumbsUseCase(this).collectLatest { progresses ->
+                                    val habits = mutableListOf<ProgressSectionHabit>()
+                                    var totalHabits = 0
+                                    var completedHabits = 0
+                                    progresses.forEach { habit ->
+                                        if (habit.entries != null) {
+                                            if (habit.entries!!.isEmpty()) {
+                                                totalHabits++
+                                                habits.add(ProgressSectionHabit(habit.title!!, false))
+                                            }
+                                            habit.entries?.forEach {
+                                                if (it.key == LocalDate.now()) {
+                                                    totalHabits++
+                                                    if (it.value.completed) ++completedHabits
+                                                    habits.add(
+                                                        ProgressSectionHabit(
+                                                            habit.title!!,
+                                                            it.value.completed
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        } else {
+                                            totalHabits++
+                                        }
+                                        withContext(Dispatchers.Main) {
+                                            val epoxyController = HomePageEpoxyRecycler(
+                                                progresses,
+                                                totalHabits,
+                                                completedHabits,
+                                                habits,
+                                                this
+                                            ) {
+                                                handleEvents(it)
+                                            }
+                                            binding.homeRecycler.setController(epoxyController)
+                                            Log.e("TAG", "onCreateView: home data $it ",)
+                                            it.homeUiData?.data?.sections?.let {
+                                                epoxyController.homeSections = it
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                            binding.homeRecycler.setController(epoxyController)
-                            Log.e("TAG", "onCreateView: home data $it ", )
-                            it.homeUiData?.data?.sections?.let {
-                                epoxyController.homeSections= it
-                            }
+
                         }
                         is HomeUiState.Error -> {
 

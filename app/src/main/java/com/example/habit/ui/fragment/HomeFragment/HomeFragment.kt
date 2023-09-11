@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.habit.R
 import com.example.habit.data.network.model.UiModels.HomePageModels.Action
 import com.example.habit.databinding.FragmentHomeBinding
+import com.example.habit.domain.UseCases.HabitUseCase.GetAllHabitsUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
 import com.example.habit.ui.activity.ProfileActivity.ProfileActivity
 import com.example.habit.ui.adapter.HomePageEpoxyRecycler
@@ -35,7 +36,7 @@ class HomeFragment : Fragment() {
 
 
     @Inject
-    lateinit var getHabitThumbsUseCase: GetHabitThumbsUseCase
+    lateinit var getAllHabitsUseCase: GetAllHabitsUseCase
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -52,7 +53,7 @@ class HomeFragment : Fragment() {
                     when(it){
                         is HomeUiState.HomeData -> {
                             CoroutineScope(Dispatchers.IO).launch {
-                                getHabitThumbsUseCase(this).collectLatest { progresses ->
+                                getAllHabitsUseCase(this).collectLatest { progresses ->
                                     val habits = mutableListOf<ProgressSectionHabit>()
                                     var totalHabits = 0
                                     var completedHabits = 0

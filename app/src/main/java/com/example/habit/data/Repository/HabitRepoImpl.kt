@@ -172,6 +172,14 @@ class HabitRepoImpl(
         }
     }
 
+    override fun getHabitsForProgress(coroutineScope: CoroutineScope): Flow<List<HabitThumb>> {
+        return habitDao.getHabitsForProgress(userId = authPref.getUserId()).map {
+            it.map {
+                habitMapper.mapFromHabitEntity(it)
+            }
+        }
+    }
+
 
     override suspend fun getGroupHabits(coroutineScope: CoroutineScope): Flow<List<GroupHabitWithHabits>> {
 

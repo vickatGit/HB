@@ -50,8 +50,6 @@ class HomeActivity : AppCompatActivity() {
                 R.id.community -> {
                     navController.popBackStack(R.id.communityFragment, true)
                     startActivity(Intent(this@HomeActivity, UserSearchActivity::class.java))
-//                    startActivity(Intent(this@HomeActivity,ProfileActivity::class.java))
-//                    navController.navigate(R.id.communityFragment)
                     false
                 }
 
@@ -78,9 +76,19 @@ class HomeActivity : AppCompatActivity() {
                 R.id.communityFragment -> {
                     binding.bottomNavigationView.menu[3].isChecked=true
                 }
+                else -> {
+
+//                    for (i in 0 until binding.bottomNavigationView.menu.size()) {
+//                        val item = binding.bottomNavigationView.menu.getItem(i)
+//                        item.isChecked = false
+//                    }
+                }
             }
             binding.bottomNavigationView.setOnItemSelectedListener(navListener)
         })
+        binding.addHabitFab.setOnClickListener {
+            navController.navigate(R.id.addHabitFragment)
+        }
         binding.bottomNavigationView.setOnItemSelectedListener(navListener)
 
         setContentView(binding.root)

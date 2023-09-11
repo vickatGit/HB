@@ -50,7 +50,15 @@ class HomePageEpoxyRecycler(
                 }
                 is HomeElements.UserProgressSection -> {
                     val progresss = it
-                    buildUserProgressSection(progresss,totalHabits,completedHabits, habits, this)
+                    if(totalHabits>0) {
+                        buildUserProgressSection(
+                            progresss,
+                            totalHabits,
+                            completedHabits,
+                            habits,
+                            this
+                        )
+                    }
 
 
 

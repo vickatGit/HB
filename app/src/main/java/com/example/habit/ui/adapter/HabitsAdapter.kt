@@ -1,11 +1,14 @@
 package com.example.habit.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habit.R
+import com.example.habit.databinding.GroupHabitThumbBinding
 import com.example.habit.databinding.HabitItemLayoutBinding
+import com.example.habit.domain.models.Habit
 import com.example.habit.ui.callback.HabitClick
 import com.example.habit.ui.model.EntryView
 import com.example.habit.ui.model.HabitThumbView
@@ -44,16 +47,17 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
         }
 
     }
-    private fun initialiseProgress(habit: HabitThumbView,binding:HabitItemLayoutBinding?) {
-        val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
+    private fun initialiseProgress(habit: HabitThumbView, binding: HabitItemLayoutBinding?) {
+        Log.e("TAG", "initialiseProgress: ", )
+        val totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)+1
         var daysCompleted = 0
         habit.entries?.mapValues {
 //            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
             if (it.value.completed) ++daysCompleted
 //            }
         }
-        val progress = (totalHabitDuration!! / 100f) * daysCompleted!!
-        binding?.progress?.progress = progress.roundToInt()
+        val progress = (daysCompleted.toFloat() / totalHabitDuration.toFloat()) * 100f
+        binding?.progress?.progress = progress.toInt()
         binding?.progressPercentage?.text = "${DecimalFormat("#.#").format(progress)}%"
     }
 

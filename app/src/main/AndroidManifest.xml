@@ -109,6 +109,14 @@
                     android:scheme="com.example.habit" />
             </intent-filter>
         </activity>
+        <service android:name=".recievers.HabitRequestNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action
+                    android:name="com.google.firebase.MESSAGING_EVENT">
+                </action>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

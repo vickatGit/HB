@@ -23,6 +23,7 @@ import com.example.habit.ui.activity.HomeActivity
 import com.example.habit.ui.activity.SignupActivity.SignupActivity
 import com.example.habit.ui.constants.AuthConstants
 import com.example.habit.ui.viewmodel.AuthViewModel
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -61,6 +62,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        getFcmToken()
         if(authPref.getToken()!=null && !authPref.getToken().isBlank()){
             startActivity(Intent(this@LoginActivity,HomeActivity::class.java))
             finish()
@@ -92,7 +94,7 @@ class LoginActivity : AppCompatActivity() {
             }else if(binding.password.text.toString().isBlank()){
                 Toast.makeText(this,"Password can't be blank",Toast.LENGTH_SHORT).show()
             }else{
-                viewModel.doLogin(LoginView(binding.email.text.toString(),binding.password.text.toString()))
+                viewModel.doLogin(LoginView(binding.email.text.toString(),binding.password.text.toString(),AuthPref(this@LoginActivity).getFcmToken()))
             }
         }
         binding.navSignup.setOnClickListener {
@@ -126,6 +128,15 @@ class LoginActivity : AppCompatActivity() {
 
 
 
+        }
+    }
+
+    private fun getFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if(it.isSuccessful) {
+                Log.e("TAG", "onCreate: got FCM token Successfully ${it.result} ", )
+                AuthPref(this@LoginActivity).setFcmToken(it.result.toString())
+            }
         }
     }
 

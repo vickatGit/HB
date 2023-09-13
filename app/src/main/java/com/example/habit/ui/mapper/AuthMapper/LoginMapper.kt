@@ -8,7 +8,7 @@ import com.example.habit.domain.models.Login.LoginView
 
 class LoginMapper : LoginMapperI<Login,LoginView,LoginResponseView,LoginResponse> {
     override fun fromLogin(type: LoginView): Login {
-        return Login(type.email,type.password)
+        return Login(type.email,type.password,type.fcmToken)
     }
 
     override fun toLoginResponse(type: LoginResponse): LoginResponseView {

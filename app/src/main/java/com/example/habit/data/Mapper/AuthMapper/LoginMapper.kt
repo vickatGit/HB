@@ -13,7 +13,8 @@ class LoginMapper : LoginMapperI<Login, LoginModel, LoginResponseModel, LoginRes
     override fun fromLogin(type: Login): LoginModel {
         return LoginModel(
             email = type.email,
-            password = type.password
+            password = type.password,
+            fcmToken = type.fcmToken
         )
     }
 

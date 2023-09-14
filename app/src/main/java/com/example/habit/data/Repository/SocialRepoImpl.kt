@@ -3,11 +3,14 @@ package com.example.habit.data.Repository
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.example.habit.data.Mapper.NotificationMapper.NotificationMapper
+import com.example.habit.data.Mapper.NotificationMapper.NotificationMapper.toHabitRequest
 import com.example.habit.data.Mapper.SocialMapper.FollowMapper.toFollow
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUser
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUserModel
 import com.example.habit.data.common.Connectivity
 import com.example.habit.data.network.SocialApi
+import com.example.habit.data.network.model.HabitRequestModel.HabitRequestModel
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.example.habit.data.network.model.UiModels.HomePageModels.Sections
@@ -15,6 +18,7 @@ import com.example.habit.data.network.model.UiModels.HomePageModels.factories.Ho
 import com.example.habit.domain.Repository.SocialRepo
 import com.example.habit.domain.models.Follow.Follow
 import com.example.habit.domain.models.User.User
+import com.example.habit.domain.models.notification.HabitRequest
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -170,6 +174,20 @@ class SocialRepoImpl(
 
     override suspend fun getHomeElements(sections: JsonArray?): List<HomeElements> {
         return homeElementsFactory.create(sections)
+    }
+
+    override suspend fun getHabitRequests(): Flow<List<HabitRequest>?> {
+        return flow {
+            val response = socialApi.getHabitRequests()
+            if(response.isSuccessful)
+                emit(response.body()?.habitRequests?.map {
+                    it.toHabitRequest()
+                })
+            else {
+                Log.e("TAG", "getHabitRequests: ${response.errorBody()?.string()}", )
+                emit(null)
+            }
+        }
     }
 
 

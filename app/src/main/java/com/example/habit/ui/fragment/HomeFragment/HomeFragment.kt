@@ -17,6 +17,7 @@ import com.example.habit.data.network.model.UiModels.HomePageModels.Action
 import com.example.habit.databinding.FragmentHomeBinding
 import com.example.habit.domain.UseCases.HabitUseCase.GetAllHabitsUseCase
 import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
+import com.example.habit.ui.activity.NotificationActivity.NotificationActivity
 import com.example.habit.ui.activity.ProfileActivity.ProfileActivity
 import com.example.habit.ui.adapter.HomePageEpoxyRecycler
 import com.example.habit.ui.model.Epoxy.ProgressSectionHabit
@@ -132,6 +133,9 @@ class HomeFragment : Fragment() {
                 bundle.putBoolean("isFromHome",true)
                 bundle.putString("habitTitle",resId)
                 findNavController().navigate(R.id.action_homeFragment_to_addHabitFragment2,bundle)
+            }
+            "notification" -> {
+                startActivity(Intent(requireContext(),NotificationActivity::class.java))
             }
         }
 

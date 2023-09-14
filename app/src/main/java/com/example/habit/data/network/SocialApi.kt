@@ -2,6 +2,7 @@ package com.example.habit.data.network
 
 import com.example.habit.data.network.model.FollowModel.FollowerModel
 import com.example.habit.data.network.model.FollowModel.FollowingModel
+import com.example.habit.data.network.model.HabitRequestModel.HabitRequestsModel
 import com.example.habit.data.network.model.IsUserFollowingModel.IsUserFollowingResponseModel
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
 import com.example.habit.data.network.model.UsersModel.ProfileModel
@@ -46,6 +47,9 @@ interface SocialApi {
 
     @GET("/social/user")
     suspend fun getUserData():Response<JsonElement>
+
+    @GET("/social/habit_requests")
+    suspend fun getHabitRequests():Response<HabitRequestsModel>
 
 
 }

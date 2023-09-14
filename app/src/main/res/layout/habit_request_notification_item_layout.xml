@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="5dp"
+    android:layout_marginHorizontal="15dp"
+    app:cardCornerRadius="20dp"
+    android:layout_marginBottom="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="13dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/habitTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Regular Exercise"
+            android:textColor="@color/text_color"
+            android:fontFamily="@font/semi_bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/regular"
+            android:textColor="@color/grey_text"
+            android:textSize="12sp"
+            android:layout_marginStart="5dp"
+            app:layout_constraintBottom_toBottomOf="@+id/habitTitle"
+            app:layout_constraintStart_toEndOf="@+id/habitTitle"
+            app:layout_constraintTop_toTopOf="@id/habitTitle"
+            tools:text="John Snow" />
+
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/regular"
+            android:textSize="12sp"
+            tools:text="Daily | Sep 20, 2022 - Oct 25, 2022"
+            app:layout_constraintTop_toBottomOf="@id/habitTitle"
+            app:layout_constraintStart_toStartOf="@id/habitTitle"
+            android:textColor="@color/grey_text"/>
+        <TextView
+            android:id="@+id/members"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="4 Members"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/regular"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/duration"
+            app:layout_constraintStart_toStartOf="@id/duration"
+            tools:textColor="@color/grey_text"/>
+
+        <ImageView
+            android:id="@+id/accept"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:src="@drawable/check_filled_icon"
+            app:layout_constraintTop_toBottomOf="@id/members"
+            app:layout_constraintStart_toStartOf="@id/members"
+            android:layout_marginTop="10dp"/>
+
+        <ImageView
+            android:id="@+id/reject"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:src="@drawable/cross_icon"
+            android:layout_marginStart="30dp"
+            app:layout_constraintTop_toBottomOf="@id/members"
+            app:layout_constraintStart_toEndOf="@id/accept"
+            android:layout_marginTop="10dp"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

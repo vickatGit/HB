@@ -7,4 +7,6 @@ sealed class NotificationUiState {
     object Loading: NotificationUiState()
     data class Error(val error:String) : NotificationUiState()
     object Nothing: NotificationUiState()
+    data class RequestAccepted(val msg:String) : NotificationUiState()
+    object RequestRejected : NotificationUiState()
 }

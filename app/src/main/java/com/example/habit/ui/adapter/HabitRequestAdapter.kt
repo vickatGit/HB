@@ -11,7 +11,9 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class HabitRequestAdapter(
-    private val habitRequests: List<HabitRequest>
+    private val habitRequests: List<HabitRequest>,
+    private val acceptRequest : (groupHabitId:String) -> Unit,
+    private val rejectRequest : (groupHabitId:String) -> Unit,
 ) : RecyclerView.Adapter<HabitRequestAdapter.HabitRequestHolder>() {
 
     inner class HabitRequestHolder(val binding: HabitRequestNotificationItemLayoutBinding) : ViewHolder(binding.root)
@@ -31,6 +33,12 @@ class HabitRequestAdapter(
         holder.binding.habitTitle.text = habit.habitTitle
         holder.binding.duration.text = "${dateFormatter(habit.startDate)} - ${dateFormatter(habit.endDate)}"
         holder.binding.from.text = "From ${habit.from.username}"
+        holder.binding.accept.setOnClickListener {
+            acceptRequest(habit.groupHabitId)
+        }
+        holder.binding.reject.setOnClickListener {
+            rejectRequest(habit.groupHabitId)
+        }
     }
     private fun dateFormatter(localDate: LocalDate):String{
         val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH)

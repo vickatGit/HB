@@ -13,4 +13,5 @@ data class HabitRequestModel(
     val startDate:String,
     val endDate:String,
     val habitTitle:String,
+    val groupHabitId:String
 )

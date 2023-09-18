@@ -190,6 +190,26 @@ class SocialRepoImpl(
         }
     }
 
+    override fun acceptHabitRequest(habitGroupId:String): Flow<Boolean> {
+        return flow {
+            val response = socialApi.acceptHabitRequest(habitGroupId)
+            if(response.isSuccessful)
+                emit(true)
+            else
+                emit(false)
+        }
+    }
+
+    override fun rejectHabitRequest(habitGroupId:String): Flow<Boolean> {
+        return flow {
+            val response = socialApi.rejectHabitRequest(habitGroupId)
+            if(response.isSuccessful)
+                emit(true)
+            else
+                emit(false)
+        }
+    }
+
 
     override fun getUsersByUsername(username: String): Flow<List<User>> {
 //        // if(!Connectivity.isInternetConnected(context)) throw UnknownHostException()

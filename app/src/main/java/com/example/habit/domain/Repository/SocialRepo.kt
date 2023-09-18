@@ -9,6 +9,7 @@ import com.example.habit.domain.models.notification.HabitRequest
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 interface SocialRepo {
     fun getUsersByUsername(username:String): Flow<List<User>>
@@ -29,4 +30,7 @@ interface SocialRepo {
     suspend fun getHomeElements(asJsonArray: JsonArray?): List<HomeElements>
 
     suspend fun getHabitRequests(): Flow<List<HabitRequest>?>
+
+    fun acceptHabitRequest(habitGroupId:String):Flow<Boolean>
+    fun rejectHabitRequest(habitGroupId:String):Flow<Boolean>
 }

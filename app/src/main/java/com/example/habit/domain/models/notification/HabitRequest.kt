@@ -9,4 +9,5 @@ data class HabitRequest(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val habitTitle:String,
+    val groupHabitId:String
 )

@@ -14,8 +14,8 @@ object NotificationMapper {
             to,
             localDateConverter(startDate)!!,
             localDateConverter(endDate)!!,
-            habitTitle
-
+            habitTitle,
+            groupHabitId
         )
     }
 

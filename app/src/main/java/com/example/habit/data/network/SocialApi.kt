@@ -51,5 +51,11 @@ interface SocialApi {
     @GET("/social/habit_requests")
     suspend fun getHabitRequests():Response<HabitRequestsModel>
 
+    @GET("social/accept_habit_request/{habitGroupId}")
+    suspend fun acceptHabitRequest(@Path("habitGroupId") habitGroupId : String ):Response<Any>
+
+    @GET("social/reject_habit_request/{habitGroupId}")
+    suspend fun rejectHabitRequest(@Path("habitGroupId") habitGroupId : String ):Response<Any>
+
 
 }

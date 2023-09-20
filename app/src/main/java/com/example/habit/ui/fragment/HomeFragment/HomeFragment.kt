@@ -26,7 +26,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
@@ -53,13 +56,15 @@ class HomeFragment : Fragment() {
                 viewModel.uiState.collectLatest {
                     when(it){
                         is HomeUiState.HomeData -> {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                getAllHabitsUseCase(this).collectLatest { progresses ->
-                                    val habits = mutableListOf<ProgressSectionHabit>()
-                                    var totalHabits = 0
-                                    var completedHabits = 0
-                                    progresses.forEach { habit ->
-                                        if (habit.entries != null) {
+                            val habits = mutableListOf<ProgressSectionHabit>()
+                            var totalHabits = 0
+                            var completedHabits = 0
+                            val adata = getAllHabitsUseCase(this).toList()
+                            Log.e("TAG", "onCreateView: adata $adata", )
+
+                                getAllHabitsUseCase(this).forEach { habit ->
+                                    Log.e("TAG", "onCreateView: collect", )
+                                    if (habit.entries != null) {
                                             if (habit.entries!!.isEmpty()) {
                                                 totalHabits++
                                                 habits.add(ProgressSectionHabit(habit.title!!, false))
@@ -68,36 +73,31 @@ class HomeFragment : Fragment() {
                                                 if (it.key == LocalDate.now()) {
                                                     totalHabits++
                                                     if (it.value.completed) ++completedHabits
-                                                    habits.add(
-                                                        ProgressSectionHabit(
-                                                            habit.title!!,
-                                                            it.value.completed
-                                                        )
-                                                    )
+                                                    habits.add(ProgressSectionHabit(habit.title!!, it.value.completed))
                                                 }
                                             }
                                         } else {
                                             totalHabits++
                                         }
-                                        withContext(Dispatchers.Main) {
-                                            val epoxyController = HomePageEpoxyRecycler(
-                                                progresses,
-                                                totalHabits,
-                                                completedHabits,
-                                                habits,
-                                                this
-                                            ) {
-                                                handleEvents(it)
-                                            }
-                                            binding.homeRecycler.setController(epoxyController)
-                                            Log.e("TAG", "onCreateView: home data $it ",)
-                                            it.homeUiData?.data?.sections?.let {
-                                                epoxyController.homeSections = it
-                                            }
-                                        }
-                                    }
                                 }
+                            withContext(Dispatchers.Main) {
+                                Log.e("TAG", "onCreateView: collect mAin", )
+                                val epoxyController = HomePageEpoxyRecycler(
+                                    totalHabits,
+                                    completedHabits,
+                                    habits,
+                                    this
+                                ) {
+                                    handleEvents(it)
+                                }
+                                binding.homeRecycler.setController(epoxyController)
+                                it.homeUiData?.data?.sections?.let {
+                                    epoxyController.homeSections = it
+                                }
+                                return@withContext
                             }
+
+
 
                         }
                         is HomeUiState.Error -> {

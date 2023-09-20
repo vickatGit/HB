@@ -16,7 +16,6 @@ import com.example.habit.ui.model.Epoxy.UserProgressSectionEpoxyModel
 import kotlinx.coroutines.CoroutineScope
 
 class HomePageEpoxyRecycler(
-    val progresss: List<HabitThumb>,
     val totalHabits: Int,
     val completedHabits: Int,
     val habits: MutableList<ProgressSectionHabit>,

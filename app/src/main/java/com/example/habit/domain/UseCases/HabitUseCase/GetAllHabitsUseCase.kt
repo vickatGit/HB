@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetAllHabitsUseCase @Inject constructor(
     private val habitRepo: HabitRepo
 ) {
-    operator fun invoke(coroutineScope: CoroutineScope): Flow<List<HabitThumb>> {
+    suspend operator fun invoke(coroutineScope: CoroutineScope): List<HabitThumb> {
         return habitRepo.getHabitsForProgress(coroutineScope)
     }
 }

@@ -148,6 +148,7 @@ class HabitRepoImpl(
                     response: Response<HabitsListModel>
                 ) {
                     if (response.code() == 200) {
+
                         Log.e("TAG", "onResponse: getHabits")
                         val habitList = response.body()
                         val habits = habitList!!.data.map { habit ->
@@ -155,6 +156,7 @@ class HabitRepoImpl(
                         }
                         Log.e("TAG", "onResponse: habits get $habits")
                         coroutineScope.launch {
+                            habitDao.deleteAllHabits()
                             habitDao.addHabit(habits)
                         }
                     }
@@ -172,12 +174,12 @@ class HabitRepoImpl(
         }
     }
 
-    override fun getHabitsForProgress(coroutineScope: CoroutineScope): Flow<List<HabitThumb>> {
-        return habitDao.getHabitsForProgress(userId = authPref.getUserId()).map {
-            it.map {
-                habitMapper.mapFromHabitEntity(it)
-            }
+    override suspend fun getHabitsForProgress(coroutineScope: CoroutineScope): List<HabitThumb> {
+        val habits = mutableListOf<HabitThumb>()
+        habitDao.getHabitsForProgress(userId = authPref.getUserId()).forEach {
+            habits.add(habitMapper.mapFromHabitEntity(it))
         }
+        return habits
     }
 
 
@@ -185,6 +187,7 @@ class HabitRepoImpl(
 
 
         if (Connectivity.isInternetConnected(context)) {
+            habitDao.deleteAllGroupHabits()
             getHabits(coroutineScope)
             habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
                 override fun onResponse(

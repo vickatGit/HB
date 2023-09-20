@@ -30,7 +30,7 @@ interface HabitDao {
     @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType AND habitGroupId IS NULL")
     fun getHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitEntity>>
     @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType AND userId=:userId")
-    fun getHabitsForProgress(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit,userId:String):Flow<List<HabitEntity>>
+    suspend fun getHabitsForProgress(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit,userId:String):List<HabitEntity>
     @Query("SELECT * FROM HabitEntity  ")
     fun getsHabits():Flow<List<HabitEntity>>
 

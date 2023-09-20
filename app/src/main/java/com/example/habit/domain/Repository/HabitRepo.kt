@@ -55,5 +55,5 @@ interface HabitRepo {
     suspend fun addMembersToGroupHabitFromRemote(groupHabit: String?, userIds: List<String>): Flow<Boolean>
     suspend fun addMembersToGroupHabit(groupHabit: GroupHabit?, userIds: List<String>): Flow<Boolean>
     suspend fun getGroupAdminHabit(admin: String?, localId: String): HabitEntity
-    fun getHabitsForProgress(coroutineScope: CoroutineScope): Flow<List<HabitThumb>>
+    suspend fun getHabitsForProgress(coroutineScope: CoroutineScope): List<HabitThumb>
 }

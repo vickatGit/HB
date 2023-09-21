@@ -44,44 +44,40 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel:HomeViewModel  by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentHomeBinding.inflate(inflater,container,false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.uiState.collectLatest {
-                    when(it){
+                    when (it) {
                         is HomeUiState.HomeData -> {
                             val habits = mutableListOf<ProgressSectionHabit>()
                             var totalHabits = 0
                             var completedHabits = 0
-                            val adata = getAllHabitsUseCase(this).toList()
-                            Log.e("TAG", "onCreateView: adata $adata", )
-
-                                getAllHabitsUseCase(this).forEach { habit ->
-                                    Log.e("TAG", "onCreateView: collect", )
-                                    if (habit.entries != null) {
-                                            if (habit.entries!!.isEmpty()) {
-                                                totalHabits++
-                                                habits.add(ProgressSectionHabit(habit.title!!, false))
-                                            }
-                                            habit.entries?.forEach {
-                                                if (it.key == LocalDate.now()) {
-                                                    totalHabits++
-                                                    if (it.value.completed) ++completedHabits
-                                                    habits.add(ProgressSectionHabit(habit.title!!, it.value.completed))
-                                                }
-                                            }
-                                        } else {
+                            getAllHabitsUseCase(this).forEach { habit ->
+                                if (habit.entries != null) {
+                                    if (habit.entries!!.isEmpty()) {
+                                        totalHabits++
+                                        habits.add(ProgressSectionHabit(habit.title!!, false))
+                                    }
+                                    habit.entries?.forEach {
+                                        if (it.key == LocalDate.now()) {
                                             totalHabits++
+                                            if (it.value.completed) ++completedHabits
+                                            habits.add(ProgressSectionHabit(habit.title!!, it.value.completed))
                                         }
+                                    }
+                                } else {
+                                    totalHabits++
                                 }
+                            }
                             withContext(Dispatchers.Main) {
-                                Log.e("TAG", "onCreateView: collect mAin", )
+                                Log.e("TAG", "onCreateView: collect mAin")
                                 val epoxyController = HomePageEpoxyRecycler(
                                     totalHabits,
                                     completedHabits,
@@ -98,14 +94,16 @@ class HomeFragment : Fragment() {
                             }
 
 
-
                         }
+
                         is HomeUiState.Error -> {
 
                         }
+
                         HomeUiState.Loading -> {
 
                         }
+
                         HomeUiState.Nothing -> {
 
                         }
@@ -118,24 +116,28 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleEvents(it: Action) {
-        when(it.actionType){
+        when (it.actionType) {
             "open_screen" -> {
-                handleServerNavigation(it.screenType,it.resId)
+                handleServerNavigation(it.screenType, it.resId)
             }
         }
     }
 
     private fun handleServerNavigation(screenType: String, resId: String?) {
-        when(screenType){
-            "profile" -> { startActivity(Intent(requireContext(),ProfileActivity::class.java)) }
+        when (screenType) {
+            "profile" -> {
+                startActivity(Intent(requireContext(), ProfileActivity::class.java))
+            }
+
             "add_habit" -> {
                 val bundle = Bundle()
-                bundle.putBoolean("isFromHome",true)
-                bundle.putString("habitTitle",resId)
-                findNavController().navigate(R.id.action_homeFragment_to_addHabitFragment2,bundle)
+                bundle.putBoolean("isFromHome", true)
+                bundle.putString("habitTitle", resId)
+                findNavController().navigate(R.id.action_homeFragment_to_addHabitFragment2, bundle)
             }
+
             "notification" -> {
-                startActivity(Intent(requireContext(),NotificationActivity::class.java))
+                startActivity(Intent(requireContext(), NotificationActivity::class.java))
             }
         }
 

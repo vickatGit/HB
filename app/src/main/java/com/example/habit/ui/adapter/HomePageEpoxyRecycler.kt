@@ -1,6 +1,8 @@
 package com.example.habit.ui.adapter
 
+import android.content.Context
 import android.util.Log
+import android.view.LayoutInflater
 import com.airbnb.epoxy.CarouselModel_
 import com.airbnb.epoxy.EpoxyController
 import com.example.habit.data.network.model.UiModels.HomePageModels.Action
@@ -91,8 +93,12 @@ class HomePageEpoxyRecycler(
                             })
                         }.id(habit.habitName)
                     }
+                    val carousal = CarouselModel_()
+                    carousal.hasFixedSize(true)
+
                     CarouselModel_().paddingDp(20).models(modelList)
                         .id(it.id).addTo(this)
+
 
 
 

@@ -61,10 +61,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/habits_recycler"
         android:layout_width="match_parent"
-
         tools:itemCount="5"
         android:paddingStart="15dp"
         tools:listitem="@layout/user_progress_section_habit_iem_layout"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

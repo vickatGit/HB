@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.habit.R
 import com.example.habit.databinding.FragmentHabitsBinding
 import com.example.habit.ui.adapter.HabitsAdapter
@@ -67,7 +68,8 @@ class HabitsFragment : Fragment() {
                 }
             }
         })
-        binding.habits.layoutManager=GridLayoutManager(requireContext(),1)
+        binding.habits.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+//        binding.habits.layoutManager=GridLayoutManager(requireContext(),1)
         binding.habits.adapter=habitsAdapter
        lifecycleScope.launch {
            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED){

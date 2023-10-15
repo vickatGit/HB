@@ -13,6 +13,8 @@ import com.example.habit.domain.Repository.SocialRepo
 import com.google.android.material.color.DynamicColors
 import com.judemanutd.autostarter.AutoStartPermissionHelper
 import dagger.hilt.android.HiltAndroidApp
+import io.socket.client.IO
+import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,12 +28,34 @@ class HabitApp : Application(),Configuration.Provider {
     lateinit var hiltWorkerFactory: HiltWorkerFactory
 
     @Inject
+    lateinit var socket:Socket
+
+
+
+    @Inject
     lateinit var socialRepo: SocialRepo
     override fun onCreate() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
         MultiDex.install(this);
-        val scheduler=getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+        try {
+
+            socket.connect()
+            Log.e("TAG", "provideSocket: socket"+socket.id() )
+            socket.emit("msg","from client")
+            if(socket.connected())
+                Log.e("TAG", "provideSocket: socket connected", )
+            else
+                Log.e("TAG", "provideSocket: socket failed to connect", )
+
+
+        }catch (e:Exception){
+            Log.e("TAG", "provideSocket: socket failed to connnect " )
+            e.printStackTrace()
+        }
+        //
+
+         val scheduler=getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
         val component= ComponentName(this,NetworkChangeJob::class.java)
         val jobinfo = JobInfo.Builder(1,component)
             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)

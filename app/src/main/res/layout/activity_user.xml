@@ -99,13 +99,23 @@
             app:layout_constraintStart_toStartOf="@+id/start"
             app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@+id/user_bio"
+            app:layout_constraintStart_toStartOf="@+id/user_bio"
+            app:layout_constraintTop_toBottomOf="@+id/user_bio"
+            android:layout_marginTop="30dp">
+
         <com.google.android.material.chip.Chip
             android:id="@+id/follow_status"
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="0dp"
             android:layout_height="55dp"
-            android:layout_marginTop="30dp"
             android:text="Follow"
+            android:layout_weight="1"
+            android:layout_marginEnd="15dp"
             android:textAlignment="center"
             android:textSize="15sp"
             app:chipCornerRadius="20dp"
@@ -117,6 +127,20 @@
             app:layout_constraintStart_toStartOf="@+id/user_bio"
             app:layout_constraintTop_toBottomOf="@+id/user_bio"
             app:rippleColor="@android:color/transparent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="15dp"
+                android:backgroundTint="@android:color/transparent"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/orange"
+                android:text="Message"
+                android:textColor="@color/text_color"/>
+
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progress"

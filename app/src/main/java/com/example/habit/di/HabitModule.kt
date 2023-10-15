@@ -120,7 +120,9 @@ class HabitModule {
     @Singleton
     fun provideHttpClient(app: Application,auth:AuthPref): OkHttpClient {
         return OkHttpClient.Builder().apply {
-            connectTimeout(Duration.ofSeconds(5))
+            connectTimeout(Duration.ofSeconds(10))
+            readTimeout(Duration.ofSeconds(10))
+            writeTimeout(Duration.ofSeconds(10))
             addInterceptor { chain ->
                 val request = chain.request()
                     .newBuilder()

@@ -1,5 +1,6 @@
 package com.example.habit.ui.activity.UserActivity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -11,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.habit.R
 import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.ActivityUserBinding
+import com.example.habit.ui.activity.Chat.ChatActivity
 import com.example.habit.ui.util.DebounceCheckedChangeListener.OnDebouncCheckedChangeListener
 import com.example.habit.ui.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,6 +93,11 @@ class UserActivity : AppCompatActivity() {
                 binding.followStatus.setTextColor(resources.getColor(R.color.white))
                 viewModel.unfollowUser(friendId!!)
             }
+        }
+        binding.message.setOnClickListener {
+            startActivity(Intent(this,ChatActivity::class.java).apply {
+                putExtra(ChatActivity.FRIEND_ID,friendId)
+            })
         }
         binding.back.setOnClickListener {
             onBackPressed()

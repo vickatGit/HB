@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.ActivityProfileBinding
+import com.example.habit.ui.activity.ChatsActivity.ChatsActivity
 import com.example.habit.ui.activity.FollowFollowingActivity.FollowFollowingActivity
 import com.example.habit.ui.util.BitmapUtils
 import com.example.habit.ui.viewmodel.ProfileViewModel
@@ -131,6 +132,9 @@ class ProfileActivity : AppCompatActivity() {
             val intent = Intent(this@ProfileActivity,FollowFollowingActivity::class.java)
             intent.putExtra(FollowFollowingActivity.IS_FOLLOWERS,false)
             startActivity(intent)
+        }
+        binding.chats.setOnClickListener {
+            startActivity(Intent(this,ChatsActivity::class.java))
         }
         binding.back.setOnClickListener {
             onBackPressed()

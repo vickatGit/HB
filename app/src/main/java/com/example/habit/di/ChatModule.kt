@@ -25,7 +25,7 @@ class ChatModule {
     @Singleton
     @Provides
     fun getSocket(): Socket {
-        return IO.socket("http://192.168.43.53:8085")!!
+        return IO.socket("http://192.168.14.209:8085")!!
     }
 
     @Singleton
@@ -43,7 +43,7 @@ class ChatModule {
                 }
                 addInterceptor(ChuckerInterceptor(app))
             }.build())
-            baseUrl("http://192.168.43.53:8085/")
+            baseUrl("http://192.168.14.209:8085/")
             addConverterFactory(GsonConverterFactory.create())
         }.build().create(ChatApi::class.java)
     }

@@ -46,6 +46,47 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Arya Stark" />
 
+    <TextView
+        android:id="@+id/typer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Arya typing...."
+        android:textSize="11.5sp"
+        android:textColor="@color/grey_text"
+        app:layout_constraintEnd_toEndOf="@+id/header"
+        app:layout_constraintStart_toStartOf="@+id/header"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/online_status"
+        android:layout_width="7dp"
+        android:layout_height="7dp"
+        android:src="@color/green"
+        app:layout_constraintEnd_toEndOf="@id/header"
+        app:layout_constraintTop_toTopOf="@id/header"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="-13dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/offline_status"
+        android:layout_width="7dp"
+        android:layout_height="7dp"
+        android:src="@color/white"
+        app:civ_border_width="1.2dp"
+        app:civ_border_color="@color/green"
+        app:layout_constraintEnd_toEndOf="@id/header"
+        app:layout_constraintTop_toTopOf="@id/header"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="-13dp"/>
+
+    <ImageView
+        android:layout_width="27dp"
+        android:layout_height="27dp"
+        android:src="@drawable/setting_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/header"
+        app:layout_constraintEnd_toStartOf="@+id/end"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chats"
         android:layout_width="match_parent"
@@ -54,10 +95,11 @@
         android:overScrollMode="never"
         android:paddingTop="5dp"
         android:scrollbars="none"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/msg_input_cont"
         app:layout_constraintTop_toBottomOf="@id/header" />
 
     <LinearLayout
+        android:id="@+id/msg_input_cont"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
@@ -98,6 +140,18 @@
             app:tint="#B9BDBF" />
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        android:indeterminateTint="@color/orange"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

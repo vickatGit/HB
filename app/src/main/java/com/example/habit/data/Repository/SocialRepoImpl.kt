@@ -127,9 +127,14 @@ class SocialRepoImpl(
         }else{
             val json = readUiFromFile()
             json?.let {
-                val jsonElement = JsonParser.parseString(it)
-                val jsonObj: JsonObject = jsonElement.asJsonObject
-                data = HomeDataCreater(jsonObj?.getAsJsonObject("data"))
+                try {
+                    val jsonElement = JsonParser.parseString(it)
+                    val jsonObj: JsonObject = jsonElement.asJsonObject
+                    data = HomeDataCreater(jsonObj?.getAsJsonObject("data"))
+                }catch (e:Exception){
+                    return@let
+                }
+
             }
         }
 

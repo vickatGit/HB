@@ -4,14 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.example.habit.data.network.model.ChatModel.MessageModel
+import com.example.habit.data.network.model.ChatModel.ChatModel
 import com.example.habit.databinding.TheirChatItemBinding
 import com.example.habit.databinding.UrChatItemBinding
 import com.example.habit.ui.util.DpPxUtils
 
 class ChatAdapter(
     val userId:String,
-    val chats: MutableList<MessageModel>
+    val chats: MutableList<ChatModel>
 ) : RecyclerView.Adapter<ViewHolder>() {
 
     private var prevChatHolder: ViewHolder? = null

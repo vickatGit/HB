@@ -1,14 +1,22 @@
 package com.example.habit
 
+import android.app.Activity
 import android.app.Application
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
+import android.os.Bundle
 import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.multidex.MultiDex
 import androidx.work.Configuration
 import com.example.habit.data.NetworkChangeJob
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.domain.Repository.SocialRepo
 import com.google.android.material.color.DynamicColors
 import com.judemanutd.autostarter.AutoStartPermissionHelper
@@ -30,6 +38,9 @@ class HabitApp : Application(),Configuration.Provider {
     @Inject
     lateinit var socket:Socket
 
+    @Inject
+    lateinit var auth:AuthPref
+
 
 
     @Inject
@@ -37,7 +48,8 @@ class HabitApp : Application(),Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
-        MultiDex.install(this);
+        MultiDex.install(this)
+        socket.connect()
         try {
 
             socket.connect()
@@ -47,7 +59,6 @@ class HabitApp : Application(),Configuration.Provider {
                 Log.e("TAG", "provideSocket: socket connected", )
             else
                 Log.e("TAG", "provideSocket: socket failed to connect", )
-
 
         }catch (e:Exception){
             Log.e("TAG", "provideSocket: socket failed to connnect " )
@@ -85,5 +96,7 @@ class HabitApp : Application(),Configuration.Provider {
 //    override fun getWorkManagerConfiguration(): Configuration {
 //        return Configuration.Builder().setMinimumLoggingLevel(Log.INFO).setWorkerFactory(workerFactory).build()
 //    }
+
+
 
 }

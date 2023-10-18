@@ -9,6 +9,7 @@ class AuthPref(context:Context) {
     private val FCM_TOKEN: String="fcm_token_for_messaging"
     private val AUTH_KEY: String?="access_token"
     private val USER_ID: String?="user_id"
+    private val USER_NAME: String?="user_name"
     private lateinit var authPref: SharedPreferences
 
     init {
@@ -35,5 +36,12 @@ class AuthPref(context:Context) {
     }
     fun getFcmToken(): String {
         return authPref!!.getString(FCM_TOKEN,null)?:""
+    }
+
+    fun setUserName(userName: String) {
+        authPref.edit().putString(USER_NAME,userName).commit()
+    }
+    fun getUserName(): String {
+        return authPref!!.getString(USER_NAME,null)?:""
     }
 }

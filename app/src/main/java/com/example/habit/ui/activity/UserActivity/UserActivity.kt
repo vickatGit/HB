@@ -97,6 +97,8 @@ class UserActivity : AppCompatActivity() {
         binding.message.setOnClickListener {
             startActivity(Intent(this,ChatActivity::class.java).apply {
                 putExtra(ChatActivity.FRIEND_ID,friendId)
+                putExtra(ChatActivity.FRIEND_NAME,viewModel.user?.username)
+                putExtra(ChatActivity.IS_ROOM_PRIVATE,true)
             })
         }
         binding.back.setOnClickListener {

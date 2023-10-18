@@ -97,8 +97,8 @@ class HabitModule {
 //        val gson = gsonBuilder.create()
         return Retrofit.Builder().apply {
             client(httpClient)
-            baseUrl("http://192.168.43.53:8080/")
-//            baseUrl("https://hb-backend.onrender.com/")
+//            baseUrl("http://192.168.43.53:8080/")
+            baseUrl("https://hb-backend.onrender.com/")
             addConverterFactory(GsonConverterFactory.create())
         }.build()
     }
@@ -121,8 +121,6 @@ class HabitModule {
     fun provideHttpClient(app: Application,auth:AuthPref): OkHttpClient {
         return OkHttpClient.Builder().apply {
             connectTimeout(Duration.ofSeconds(10))
-            readTimeout(Duration.ofSeconds(10))
-            writeTimeout(Duration.ofSeconds(10))
             addInterceptor { chain ->
                 val request = chain.request()
                     .newBuilder()

@@ -30,6 +30,7 @@ class AuthRepoImpl(
                 response.body()?.let {
                     authPref.setToken(it.token)
                     authPref.setUserId(it.userId)
+                    authPref.setUserName(it.userName)
                     emit(loginMapper.toLoginResponse(response.body()!!))
                 }
 

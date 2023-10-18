@@ -1,6 +1,7 @@
 package com.example.habit.data.Repository
 
 import com.example.habit.data.network.ChatApi
+import com.example.habit.data.network.model.ChatModel.ChatModel
 import com.example.habit.data.network.model.RoomModel.Room
 import com.example.habit.domain.Repository.ChatRepo
 import kotlinx.coroutines.flow.Flow
@@ -19,5 +20,16 @@ class ChatRepoImpl(
             }
         }
 
+    }
+
+    override suspend fun getChats(roomId:String): Flow<List<ChatModel>> {
+        val response = chatApi.getChats(roomId)
+        return flow {
+            if(response.isSuccessful){
+                response.body()?.let {
+                    emit(it.chats)
+                }
+            }
+        }
     }
 }

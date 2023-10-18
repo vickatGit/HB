@@ -9,7 +9,7 @@ import com.example.habit.databinding.UserThumbItemLayoutBinding
 
 class RoomsAdapter(
     private val rooms:List<Room>,
-    val roomClick:(roomId:String) -> Unit
+    val roomClick:(roomId:String,roomName:String,roomType:String,member:List<String>) -> Unit
 ) : RecyclerView.Adapter<RoomsAdapter.RoomHolder>() {
 
     inner class RoomHolder(val binding : UserThumbItemLayoutBinding) : ViewHolder(binding.root)
@@ -27,9 +27,15 @@ class RoomsAdapter(
     }
 
     override fun onBindViewHolder(holder: RoomHolder, position: Int) {
-        holder.binding.userName.text = rooms[holder.absoluteAdapterPosition].roomName
+        val room =rooms[holder.absoluteAdapterPosition]
+        holder.binding.userName.text = room.roomName
         holder.binding.root.setOnClickListener {
-            roomClick(rooms[holder.absoluteAdapterPosition].id)
+            roomClick(
+                room.id,
+                room.roomName,
+                room.roomType,
+                room.members
+            )
         }
     }
 }

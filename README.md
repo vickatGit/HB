@@ -64,9 +64,9 @@
 
 ## Upcoming Features 🔮
 
-- Habit Reminder Notification with Habit Progress Graph ⏰📈
-- Support Android Dynamic UI 📲
-- Auth With Other Providers (Google, Facebook, Twitter) 🔐
-- Challenges, Rewards, and Scoreboard 🏆
-- Post Posting Like Twitter 📝
+- Habit Reminder Notifications with Habit Progress Graphs ⏰📈
+- Support for Android Dynamic UI 📲
+- Authentication with Other Providers (Google, Facebook, Twitter) 🔐
+- Challenges, Rewards, and Scoreboards 🏆
+- Post Posting like Twitter 📝
 

@@ -2,6 +2,8 @@
 
 💪 The Habit Builder app is your ultimate tool for building and maintaining healthy habits. 🚀 Create personalized habits, join group challenges with friends, and track each other's progress effortlessly. 💬 With integrated chat functionality, stay motivated and connected as you achieve your goals together. 🔥 Don't just build habits, build a better lifestyle! 🌱
 
+### The Dynamic, Offline-first app Home page is powered by Epoxy, Airbnb's server-driven UI library.
+
 
 <div>
   <img src="https://github.com/vickatGit/Openin-Assign/assets/96293449/d035d965-985b-4a54-a898-f2c0bf8a91c1"  width="300" alt="Image 1" style="float: left; margin-right: 50px;">

@@ -45,3 +45,28 @@
 - Socket.IO ⚙️
 - MPAndroidchart 📊
 
+
+## Features ✨
+
+- Server Driven UI Using Epoxy 🎨
+- Offline First App 📴
+- Auth 🔒
+- Personal Habit 🌟
+- Group Habit 👥
+- Invite Members to Group Habit 🤝
+- Group Habit Invitation Request 📨
+- Awesome UI Experience 🌈
+- Chat 💬
+- Follow and Following Feature 👥
+- Dark Theme Support 🌙
+- Habit Progress Visualization Methods 📈
+
+
+## Upcoming Features 🔮
+
+- Habit Reminder Notification with Habit Progress Graph ⏰📈
+- Support Android Dynamic UI 📲
+- Auth With Other Providers (Google, Facebook, Twitter) 🔐
+- Challenges, Rewards, and Scoreboard 🏆
+- Post Posting Like Twitter 📝
+

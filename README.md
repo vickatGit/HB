@@ -1,4 +1,7 @@
-# 📱 Habit Builder
+# Habit Builder App 🏋️‍♂️📈
+
+💪 The Habit Builder app is your ultimate tool for building and maintaining healthy habits. 🚀 Create personalized habits, join group challenges with friends, and track each other's progress effortlessly. 💬 With integrated chat functionality, stay motivated and connected as you achieve your goals together. 🔥 Don't just build habits, build a better lifestyle! 🌱
+
 
 <div>
   <img src="https://github.com/vickatGit/Openin-Assign/assets/96293449/d035d965-985b-4a54-a898-f2c0bf8a91c1"  width="300" alt="Image 1" style="float: left; margin-right: 50px;">
@@ -23,3 +26,22 @@
   <img src="https://github.com/vickatGit/Openin-Assign/assets/96293449/746fc5cc-6eb6-44c4-b7e9-4696be90bb0c"  width="300" alt="Image 2" style="float: left; margin-right: 50px;">
 
 </div>
+
+
+## Tech Stack 🛠️
+
+- Kotlin 🚀
+- XML 📄
+- MVVM - Clean Multi Modular Architecture 🏗️
+- Jetpack Libraries 📦
+- Coroutines 🔄
+- Flows 🌊
+- Retrofit 🌐
+- Dagger-Hilt ⚔️
+- Room 🏠
+- Epoxy 🖌️
+- Viewbinding 🔗
+- Coil 🌀
+- Socket.IO ⚙️
+- MPAndroidchart 📊
+

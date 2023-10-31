@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/card_color"
         app:strokeWidth="0dp"
         android:layout_height="wrap_content">
 

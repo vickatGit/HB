@@ -36,7 +36,6 @@ class HomeActivity : AppCompatActivity() {
                     navController.navigate(R.id.homeFragment)
                     true
                 }
-
                 R.id.my_habits -> {
                     navController.popBackStack(R.id.myHabitsFragment, true)
                     navController.navigate(R.id.myHabitsFragment)
@@ -58,34 +57,34 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
-//        navController.addOnDestinationChangedListener(NavController.OnDestinationChangedListener { controller, destination, arguments ->
-//            binding.bottomNavigationView.setOnItemSelectedListener(null)
-//            when (destination.id) {
-//                R.id.homeFragment -> {
-//                    binding.bottomNavigationView.menu[0].isChecked=true
-//                }
-//
-//                R.id.myHabitsFragment -> {
-//                    binding.bottomNavigationView.menu[1].isChecked=true
-//                }
-//
-//                R.id.menteesFragment -> {
-//                    binding.bottomNavigationView.menu[2].isChecked=true
-//                }
-//
-//                R.id.communityFragment -> {
-//                    binding.bottomNavigationView.menu[3].isChecked=true
-//                }
-//                else -> {
-//
-////                    for (i in 0 until binding.bottomNavigationView.menu.size()) {
-////                        val item = binding.bottomNavigationView.menu.getItem(i)
-////                        item.isChecked = false
-////                    }
-//                }
-//            }
-//            binding.bottomNavigationView.setOnItemSelectedListener(navListener)
-//        })
+        navController.addOnDestinationChangedListener(NavController.OnDestinationChangedListener { controller, destination, arguments ->
+            binding.bottomNavigationView.setOnItemSelectedListener(null)
+            when (destination.id) {
+                R.id.homeFragment -> {
+                    binding.bottomNavigationView.menu[0].isChecked=true
+                }
+
+                R.id.myHabitsFragment -> {
+                    binding.bottomNavigationView.menu[1].isChecked=true
+                }
+
+                R.id.menteesFragment -> {
+                    binding.bottomNavigationView.menu[2].isChecked=true
+                }
+
+                R.id.communityFragment -> {
+                    binding.bottomNavigationView.menu[3].isChecked=true
+                }
+                else -> {
+
+//                    for (i in 0 until binding.bottomNavigationView.menu.size()) {
+//                        val item = binding.bottomNavigationView.menu.getItem(i)
+//                        item.isChecked = false
+//                    }
+                }
+            }
+            binding.bottomNavigationView.setOnItemSelectedListener(navListener)
+        })
         binding.addHabitFab.setOnClickListener {
             navController.navigate(R.id.addHabitFragment)
         }

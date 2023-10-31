@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:paddingTop="20dp"
     android:fillViewport="true"
+    android:background="@color/white"
     android:overScrollMode="never"
     tools:context=".ui.fragment.AddHabit.AddHabitFragment">
 
@@ -38,6 +39,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:padding="0dp"
+            app:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/header"
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toTopOf="@+id/header"
@@ -61,8 +63,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:backgroundTint="@color/cardview_light_background"
-
             android:paddingHorizontal="20dp"
             android:paddingVertical="7dp"
             android:theme="@style/Habit"
@@ -71,6 +71,7 @@
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toBottomOf="@+id/header"
             app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/card_color"
             tools:layout_editor_absoluteX="20dp">
 
             <LinearLayout
@@ -120,7 +121,7 @@
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
-            android:backgroundTint="@color/white"
+            app:cardBackgroundColor="@color/card_color"
             app:boxStrokeWidth="0dp"
             app:endIconMode="dropdown_menu"
             app:hintEnabled="false"
@@ -136,6 +137,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="0dp"
+                android:backgroundTint="@color/card_color"
                 android:hint="Select Habit Type"
                 android:textSize="12sp"
                 android:layout_margin="0dp"
@@ -153,7 +155,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:backgroundTint="@color/cardview_light_background"
+            app:cardBackgroundColor="@color/card_color"
 
             android:theme="@style/Habit"
             app:cardElevation="5dp"
@@ -192,7 +194,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="0dp"
-                        app:boxBackgroundColor="@color/white"
+                        app:boxBackgroundColor="@color/card_color"
                         app:hintEnabled="false"
                         app:startIconDrawable="@drawable/calendar_icon"
                         app:startIconTint="@color/light_grey">
@@ -237,7 +239,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="0dp"
-                        app:boxBackgroundColor="@color/white"
+                        app:boxBackgroundColor="@color/card_color"
                         app:hintEnabled="false"
                         app:startIconDrawable="@drawable/calendar_icon"
                         app:startIconTint="@color/light_grey">
@@ -268,7 +270,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:backgroundTint="@color/cardview_light_background"
+            app:cardBackgroundColor="@color/card_color"
 
             android:paddingHorizontal="20dp"
             android:theme="@style/Habit"
@@ -369,7 +371,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:backgroundTint="@color/cardview_light_background"
+            app:cardBackgroundColor="@color/card_color"
             android:paddingHorizontal="20dp"
             android:theme="@style/Habit"
             app:cardElevation="5dp"

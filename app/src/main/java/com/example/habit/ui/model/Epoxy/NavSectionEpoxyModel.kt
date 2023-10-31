@@ -48,7 +48,7 @@ data class NavSectionEpoxyModel(
                     }
                     menu.setOnClickListener { click -> it.action?.let { action -> onClick(action) } }
 
-                    menu.setColorFilter(Color.parseColor(it.iconColor),PorterDuff.Mode.SRC_ATOP)
+//                    menu.setColorFilter(Color.parseColor(it.iconColor),PorterDuff.Mode.SRC_ATOP)
                     menu.requestLayout()
                 }
 
@@ -64,7 +64,7 @@ data class NavSectionEpoxyModel(
                         if(it.iconVerticalPosition.toLowerCase()=="bottom") gravityList.add(Gravity.BOTTOM)
                         gravity=gravityList.reduce { a, b -> a xor b } ?: Gravity.NO_GRAVITY
                     }
-                    notification.setColorFilter(Color.parseColor(it.iconColor),PorterDuff.Mode.SRC_ATOP)
+//                    notification.setColorFilter(Color.parseColor(it.iconColor),PorterDuff.Mode.SRC_ATOP)
                     notification.requestLayout()
                     notification.setOnClickListener { click -> it.action?.let { action -> onClick(action) } }
                 }

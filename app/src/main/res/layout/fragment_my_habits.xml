@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragment.MyHabitsFragment">
 
@@ -26,6 +27,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:padding="0dp"
+        app:tint="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/header"
         app:layout_constraintStart_toStartOf="@id/start"
         app:layout_constraintTop_toTopOf="@+id/header"
@@ -56,7 +58,7 @@
         app:cardElevation="5dp"
 
         app:cardCornerRadius="10dp"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/card_color"
         app:cardPreventCornerOverlap="true"
         android:layout_height="wrap_content">
 
@@ -97,7 +99,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_color"
             app:cardElevation="7dp"
             android:clickable="false"
             android:layout_marginEnd="20dp"
@@ -142,7 +144,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_color"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
 
@@ -187,7 +189,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_color"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
 
@@ -231,7 +233,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_color"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
 
@@ -278,7 +280,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_color"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
 

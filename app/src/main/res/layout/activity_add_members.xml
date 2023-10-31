@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.activity.AddMembersActivity.AddMembersActivity">
 
     <androidx.constraintlayout.widget.Guideline
@@ -55,7 +56,7 @@
         app:strokeWidth="0dp"
         app:cardElevation="5dp"
         app:cardCornerRadius="10dp"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/card_color"
         app:cardPreventCornerOverlap="true"
         android:layout_height="wrap_content">
 
@@ -111,6 +112,7 @@
         android:layout_marginTop="100dp"
         android:backgroundTint="@color/light_orange"
         android:text="Add Members"
+        android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@id/end"
         app:layout_constraintStart_toStartOf="@id/start"

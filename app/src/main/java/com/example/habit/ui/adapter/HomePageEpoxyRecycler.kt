@@ -21,7 +21,6 @@ class HomePageEpoxyRecycler(
     val totalHabits: Int,
     val completedHabits: Int,
     val habits: MutableList<ProgressSectionHabit>,
-    private val uiScope:CoroutineScope,
     val onClick:(action:Action) -> Unit
 ) : EpoxyController() {
      var homeSections:List<HomeElements> = emptyList()
@@ -47,7 +46,7 @@ class HomePageEpoxyRecycler(
                 is HomeElements.NavSectionItem -> {}
                 is HomeElements.QuoteCarousalSection -> {
                     Log.e("TAG", "buildModels: $it", )
-                    QuoteScrollerEpoxyModel(it,uiScope).id(it.id).addTo(this)
+                    QuoteScrollerEpoxyModel(it).id(it.id).addTo(this)
                 }
                 is HomeElements.UserProgressSection -> {
                     val progresss = it

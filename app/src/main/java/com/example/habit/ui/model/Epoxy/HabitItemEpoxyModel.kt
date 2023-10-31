@@ -78,7 +78,7 @@ data class HabitItemEpoxyModel(
         }
         Glide.with(habitCard.context).load(habit.habitThumbnail).into(habitThumb)
         habitName.text=habit.habitName
-        habitName.setTextColor(Color.parseColor(habitTitleProperties.textColor))
+        habitName.setTextColor(this.habitName.resources.getColor(R.color.text_color))
         habitName.textSize=habitTitleProperties.headerTextSize
         val userTextStyle=
             if(habitTitleProperties.headerTextStyle.toLowerCase()=="bold") Typeface.BOLD

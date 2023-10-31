@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.activity.NotificationActivity.NotificationActivity">
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/start"
@@ -25,6 +26,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:padding="0dp"
+        app:tint="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/header"
         app:layout_constraintStart_toStartOf="@id/start"
         app:layout_constraintTop_toTopOf="@+id/header"

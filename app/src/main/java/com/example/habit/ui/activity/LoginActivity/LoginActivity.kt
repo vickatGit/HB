@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
         _binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         getFcmToken()
-        if(authPref.getToken()!=null && !authPref.getToken().isBlank()){
+        if(authPref.getToken()!=null && authPref.getToken().isNotBlank()){
             startActivity(Intent(this@LoginActivity,HomeActivity::class.java))
             finish()
         }

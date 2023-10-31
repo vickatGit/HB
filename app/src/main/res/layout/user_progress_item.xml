@@ -27,6 +27,7 @@
         android:minWidth="100dp"
         android:text="Coffee"
         android:clickable="true"
+        android:textColor="@color/white"
         android:checked="true"
         app:chipBackgroundColor="@color/some_bg"
         android:textAlignment="center"

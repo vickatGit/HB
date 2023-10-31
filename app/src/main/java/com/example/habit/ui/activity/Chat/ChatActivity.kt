@@ -88,6 +88,9 @@ class ChatActivity : AppCompatActivity() {
         }else{
             bindEvents()
         }
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
 
 
 
@@ -250,6 +253,7 @@ class ChatActivity : AppCompatActivity() {
         socket.off("ONLINE_STATUS")
         socket.off("IS_FRIEND_ONLINE")
         socket.off("AM_I_ONLINE")
+        socket.disconnect()
 
     }
 }

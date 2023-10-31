@@ -38,7 +38,7 @@ data class UserInfoSectionEpoxyModel(
             when(it){
                 is HomeElements.Typography -> {
                     userName.text=it.headerText
-                    userName.setTextColor(Color.parseColor(it.textColor))
+//                    userName.setTextColor(Color.parseColor(it.textColor))
                     userName.textSize=it.headerTextSize
                     val userTextStyle=
                         if(it.headerTextStyle.toLowerCase()=="bold") Typeface.BOLD

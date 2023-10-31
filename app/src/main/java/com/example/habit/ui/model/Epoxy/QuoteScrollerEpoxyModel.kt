@@ -17,8 +17,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class QuoteScrollerEpoxyModel(
-    private val quoteSection: HomeElements.QuoteCarousalSection,
-    private val uiScopes:CoroutineScope
+    private val quoteSection: HomeElements.QuoteCarousalSection
 ):ViewBindingKotlinModel<QuoteScrollerSectionLayoutBinding>(R.layout.quote_scroller_section_layout) {
     override fun QuoteScrollerSectionLayoutBinding.bind() {
         Log.e("TAG", "bind: QuoteScrollerEpoxyModel", )

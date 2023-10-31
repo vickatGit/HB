@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bottom_sheet_bg"
     android:padding="20dp"
-    android:backgroundTint="@color/bg"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragment.Date.DateFragment">
 

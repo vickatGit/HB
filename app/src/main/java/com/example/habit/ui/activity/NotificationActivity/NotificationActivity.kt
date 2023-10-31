@@ -75,5 +75,8 @@ class NotificationActivity : AppCompatActivity() {
             }
         }
         viewModel.getNotifications()
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
     }
 }

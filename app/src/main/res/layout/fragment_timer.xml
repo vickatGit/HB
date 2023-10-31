@@ -6,7 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bottom_sheet_bg"
     android:padding="20dp"
-    android:backgroundTint="@color/bg"
     tools:context=".ui.fragment.time.TimerFragment">
 
     <include

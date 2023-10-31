@@ -22,4 +22,7 @@
     <color name="light_purple">#F5F1FF</color>
     <color name="progress_wave_bg">#FFCEC4</color>
     <color name="green">#32de84</color>
+    <color name="habit_add_fab_color">#FFFFFF</color>
+    <color name="card_color">#FFFFFF</color>
+    <color name="their_chat_color">#e5e5e5</color>
 </resources>

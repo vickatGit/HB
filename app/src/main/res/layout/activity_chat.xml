@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="20dp"
+    android:background="@color/white"
     tools:context=".ui.activity.Chat.ChatActivity">
 
 
@@ -28,6 +29,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:padding="0dp"
+        app:tint="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/header"
         app:layout_constraintStart_toStartOf="@id/start"
         app:layout_constraintTop_toTopOf="@+id/header"
@@ -40,6 +42,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/bold"
         android:textSize="16sp"
+        android:layout_marginTop="2dp"
         android:theme="@style/MaterialAlertDialog.Material3.Title.Text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,6 +86,7 @@
         android:layout_width="27dp"
         android:layout_height="27dp"
         android:src="@drawable/setting_icon"
+        app:tint="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/header"
         app:layout_constraintEnd_toStartOf="@+id/end"
         app:layout_constraintTop_toTopOf="parent" />
@@ -94,6 +98,7 @@
         android:layout_marginTop="30dp"
         android:overScrollMode="never"
         android:paddingTop="5dp"
+        tools:listitem="@layout/their_chat_item"
         android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/msg_input_cont"
         app:layout_constraintTop_toBottomOf="@id/header" />
@@ -104,15 +109,16 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="20dp"
-        android:gravity="center"
+         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-
+            app:boxStrokeColor="@color/card_color"
             app:boxCornerRadiusBottomEnd="40dp"
+            android:backgroundTint="@color/card_color"
 
             app:boxCornerRadiusBottomStart="40dp"
             app:boxCornerRadiusTopEnd="40dp"

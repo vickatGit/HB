@@ -37,7 +37,7 @@ data class HeaderSectionEpoxyModel(
         }
         header.requestLayout()
         header.text=headerSection.element.headerText
-        header.setTextColor(Color.parseColor(headerSection.element.textColor))
+        header.setTextColor(this.header.resources.getColor(R.color.text_color))
         header.textSize=headerSection.element.headerTextSize
         val userTextStyle=
             if(headerSection.element.headerTextStyle.toLowerCase()=="bold") Typeface.BOLD

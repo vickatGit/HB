@@ -8,6 +8,7 @@
     android:paddingTop="20dp"
     android:fillViewport="true"
     android:overScrollMode="never"
+    android:background="@color/white"
     tools:context=".ui.activity.ProfileActivity.ProfileActivity">
 
     >
@@ -41,6 +42,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:padding="0dp"
+            app:tint="@color/black"
             app:layout_constraintBottom_toBottomOf="@+id/header"
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toTopOf="@+id/header"
@@ -64,6 +66,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/edit_icon"
+            app:tint="@color/black"
             app:layout_constraintEnd_toEndOf="@id/end"
             app:layout_constraintTop_toTopOf="@id/header"
             app:layout_constraintBottom_toBottomOf="@id/header"/>
@@ -137,7 +140,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginBottom="20dp"
                 android:layout_weight="1"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/card_color"
                 app:cardElevation="10dp"
                 app:strokeWidth="0dp">
 
@@ -180,7 +183,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginBottom="20dp"
                 android:layout_weight="1"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/card_color"
                 app:cardElevation="10dp"
                 app:strokeWidth="0dp">
 
@@ -249,7 +252,7 @@
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintEnd_toEndOf="@id/end"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_color"
             app:strokeWidth="0dp"
             android:layout_marginTop="60dp"
             app:cardElevation="5dp"

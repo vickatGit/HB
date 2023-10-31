@@ -70,7 +70,7 @@ class HabitFragment : Fragment() {
     private var habitDurationReached: Long? = null
     private var totalHabitDuration: Long? = null
     private val viewModel: HabitViewModel by viewModels()
-    private var habitEntries: HashMap<LocalDate, EntryView>   = hashMapOf()
+    private var habitEntries: HashMap<LocalDate, EntryView> = hashMapOf()
 
 
     private var _binding: FragmentHabitBinding? = null
@@ -398,11 +398,13 @@ class HabitFragment : Fragment() {
 //            ylAxis.setLabelCount(3,true)
             xtAxis.setLabelCount(7,true)
             xtAxis.position=XAxis.XAxisPosition.BOTTOM
+            xtAxis.textColor = resources.getColor(R.color.text_color)
             xtAxis.labelRotationAngle=320f
             yrAxis.isEnabled=false
 
             ylAxis.setDrawAxisLine(false)
             xtAxis.setDrawGridLines(false)
+            ylAxis.textColor = resources.getColor(R.color.text_color)
             ylAxis.gridColor=resources.getColor(R.color.consistency_graph_grid_color)
             ylAxis.gridLineWidth=1.4f
 

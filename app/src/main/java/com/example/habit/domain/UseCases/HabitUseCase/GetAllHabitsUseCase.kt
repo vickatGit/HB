@@ -10,6 +10,6 @@ class GetAllHabitsUseCase @Inject constructor(
     private val habitRepo: HabitRepo
 ) {
     suspend operator fun invoke(coroutineScope: CoroutineScope): List<HabitThumb> {
-        return habitRepo.getHabitsForProgress(coroutineScope)
+        return habitRepo.getAllHabitsForProgress(coroutineScope)
     }
 }

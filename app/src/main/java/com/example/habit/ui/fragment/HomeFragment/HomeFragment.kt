@@ -54,12 +54,46 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.uiState.collectLatest {
-                    when (it) {
+                viewModel.uiState.collectLatest { homeState ->
+                    when (homeState) {
                         is HomeUiState.HomeData -> {
                             val habits = mutableListOf<ProgressSectionHabit>()
                             var totalHabits = 0
                             var completedHabits = 0
+//                            getAllHabitsUseCase.invoke(this).collectLatest {
+//                                it.forEach { habit ->
+//                                    if (habit.entries != null) {
+//                                        if (habit.entries!!.isEmpty()) {
+//                                            totalHabits++
+//                                            habits.add(ProgressSectionHabit(habit.title!!, false))
+//                                        }
+//                                        habit.entries?.forEach {
+//                                            if (it.key == LocalDate.now()) {
+//                                                totalHabits++
+//                                                if (it.value.completed) ++completedHabits
+//                                                habits.add(ProgressSectionHabit(habit.title!!, it.value.completed))
+//                                            }
+//                                        }
+//                                    } else {
+//                                        totalHabits++
+//                                    }
+//                                }
+//                                withContext(Dispatchers.Main) {
+//                                    Log.e("TAG", "onCreateView: collect mAin")
+//                                    val epoxyController = HomePageEpoxyRecycler(
+//                                        totalHabits,
+//                                        completedHabits,
+//                                        habits
+//                                    ) {
+//                                        handleEvents(it)
+//                                    }
+//                                    binding.homeRecycler.setController(epoxyController)
+//                                    homeState.homeUiData?.data?.sections?.let {
+//                                        epoxyController.homeSections = it
+//                                    }
+//                                    return@withContext
+//                                }
+//                            }
                             getAllHabitsUseCase(this).forEach { habit ->
                                 if (habit.entries != null) {
                                     if (habit.entries!!.isEmpty()) {
@@ -87,7 +121,7 @@ class HomeFragment : Fragment() {
                                     handleEvents(it)
                                 }
                                 binding.homeRecycler.setController(epoxyController)
-                                it.homeUiData?.data?.sections?.let {
+                                homeState.homeUiData?.data?.sections?.let {
                                     epoxyController.homeSections = it
                                 }
                                 return@withContext

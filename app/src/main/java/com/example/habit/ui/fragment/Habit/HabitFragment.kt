@@ -1,14 +1,20 @@
 package com.example.habit.ui.fragment.Habit
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -37,6 +43,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -239,6 +246,8 @@ class HabitFragment : Fragment() {
         val progress = (daysCompleted.toFloat() / totalHabitDuration!!.toFloat()) * 100f
         binding.habitProgress.progress = progress.roundToInt()
         binding?.progressPercentage?.text = "${DecimalFormat("#.#").format(progress)}%"
+
+
 //        "${DecimalFormat("#.#").format(progress)}%".also { binding.progressPercentage.text = it }
 //        "${DecimalFormat("#.#").format(progress)}% ${resources.getString(R.string.habit_post_completion_greet)}".also { binding.completionGreet.text = it }
     }
@@ -485,6 +494,7 @@ class HabitFragment : Fragment() {
         }
 
     }
+
 
 }
 

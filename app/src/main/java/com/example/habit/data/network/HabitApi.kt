@@ -23,8 +23,15 @@ interface HabitApi {
     @GET("/habit/get_habits")
     fun getHabits():Call<HabitsListModel>
 
+    @GET("/habit/get_habits")
+    suspend fun getHabitsR():Response<HabitsListModel>
+
+
     @GET("/habit/group/get_habits")
     fun getGroupHabits():Call<GroupHabitsModel>
+
+    @GET("/habit/group/get_habits")
+    suspend fun getGroupHabitsR():Response<GroupHabitsModel>
 
     @GET("/habit/group/get_habit/{groupHabitId}")
     suspend fun getGroupHabit(@Path("groupHabitId") groupHabitId: String):Response<GroupHabitDataModel>

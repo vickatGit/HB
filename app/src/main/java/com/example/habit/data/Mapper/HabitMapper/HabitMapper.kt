@@ -27,7 +27,9 @@ class HabitMapper @Inject constructor(private val entryMapper: EntryMapper) :
                 it.mapValues {
                     entryMapper.mapToEntry(it.value)
                 }.toMutableMap() as java.util.HashMap<LocalDate, Entry>?
-            }
+            },
+            type.reminderTime,
+            type.reminderQuestion
 
         )
     }

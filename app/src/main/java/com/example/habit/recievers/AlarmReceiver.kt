@@ -15,7 +15,7 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val habitId=intent?.getStringExtra("habitId")
         val habitServerId=intent?.getStringExtra("habitServerId")
-        Log.e("TAG", "onReceive: alarm triggered" )
+        Log.e("TAG", "onReceive: alarm triggered $habitId" )
         habitId?.let {
             notificationBuilder.sendNotification(context!!,habitId,habitServerId)
         }

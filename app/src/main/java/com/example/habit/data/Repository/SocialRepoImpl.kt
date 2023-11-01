@@ -3,14 +3,12 @@ package com.example.habit.data.Repository
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.example.habit.data.Mapper.NotificationMapper.NotificationMapper
+import android.widget.Toast
 import com.example.habit.data.Mapper.NotificationMapper.NotificationMapper.toHabitRequest
 import com.example.habit.data.Mapper.SocialMapper.FollowMapper.toFollow
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUser
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUserModel
-import com.example.habit.data.common.Connectivity
 import com.example.habit.data.network.SocialApi
-import com.example.habit.data.network.model.HabitRequestModel.HabitRequestModel
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.example.habit.data.network.model.UiModels.HomePageModels.Sections
@@ -28,7 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -38,7 +35,7 @@ class SocialRepoImpl(
     private val homeElementsFactory: HomeSectionsFactory
 ) : SocialRepo {
 
-
+    private var lastFetchTime:Long?=null
     override fun getUserProfile(userId: String):Flow<User?>{
         // if(!Connectivity.isInternetConnected(context)) throw UnknownHostException()
         return flow {
@@ -53,7 +50,6 @@ class SocialRepoImpl(
             }catch (e:Exception){
                 throw e
             }
-
         }
     }
     override suspend fun updateUserProfile(user: User): Flow<Boolean> {
@@ -117,15 +113,23 @@ class SocialRepoImpl(
     }
 
     override suspend fun getHomeData(): HomeData? {
-       var data:List<HomeElements>? = null
-        if(Connectivity.isInternetConnected(context)) {
+        var apiShouldBeCalled=false
+        var data:List<HomeElements>? = null
+        val json = readUiFromFile()
+//        Log.e("TAG", "getHomeData json : ${json!!.length}", )
+
+        if(json==null || json=="null") apiShouldBeCalled=true
+        else if(lastFetchTime!=null) apiShouldBeCalled = (System.currentTimeMillis() - lastFetchTime!!)>=(10 * 60 * 1000)
+
+        if(apiShouldBeCalled) {
+            Log.e("TAG", "getHomeData: api called", )
             val response = socialApi.getUserData()
             val json = response.body()
             data = HomeDataCreater(json?.asJsonObject?.getAsJsonObject("data"))
             Log.e("TAG", "getHomeData: ${Gson().toJson(json?.asJsonObject)}")
             writeUiToFile(json?.asJsonObject)
+            lastFetchTime=System.currentTimeMillis()
         }else{
-            val json = readUiFromFile()
             json?.let {
                 try {
                     val jsonElement = JsonParser.parseString(it)

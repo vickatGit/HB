@@ -57,24 +57,13 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
-        navController.addOnDestinationChangedListener(NavController.OnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
             binding.bottomNavigationView.setOnItemSelectedListener(null)
             when (destination.id) {
-                R.id.homeFragment -> {
-                    binding.bottomNavigationView.menu[0].isChecked=true
-                }
-
-                R.id.myHabitsFragment -> {
-                    binding.bottomNavigationView.menu[1].isChecked=true
-                }
-
-                R.id.menteesFragment -> {
-                    binding.bottomNavigationView.menu[2].isChecked=true
-                }
-
-                R.id.communityFragment -> {
-                    binding.bottomNavigationView.menu[3].isChecked=true
-                }
+                R.id.homeFragment -> { binding.bottomNavigationView.menu[0].isChecked = true }
+                R.id.myHabitsFragment -> { binding.bottomNavigationView.menu[1].isChecked = true }
+                R.id.menteesFragment -> { binding.bottomNavigationView.menu[2].isChecked = true }
+                R.id.communityFragment -> { binding.bottomNavigationView.menu[3].isChecked = true }
                 else -> {
 
 //                    for (i in 0 until binding.bottomNavigationView.menu.size()) {
@@ -84,7 +73,7 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
             binding.bottomNavigationView.setOnItemSelectedListener(navListener)
-        })
+        }
         binding.addHabitFab.setOnClickListener {
             navController.navigate(R.id.addHabitFragment)
         }

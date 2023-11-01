@@ -13,6 +13,7 @@
 
 
         <TextView
+            android:id="@+id/habit_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.9"
@@ -22,12 +23,20 @@
 
 
         <FrameLayout
+            android:id="@+id/pg"
             android:layout_width="wrap_content"
             android:layout_gravity="end"
             android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/progress_img"
+                android:layout_width="40dp"
+                android:scaleType="centerCrop"
+                android:layout_height="40dp"/>
             <ProgressBar
                 android:id="@+id/onboarding_activity_progress_bar"
                 android:layout_gravity="center"
+                android:visibility="gone"
                 android:padding="10dp"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -41,8 +50,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="80%"
+                android:elevation="10000dp"
                 android:textColor="@color/orange"
-                android:textSize="11sp"
+                android:textSize="9.5sp"
+                android:includeFontPadding="false"
                 android:layout_gravity="center"
                />
 
@@ -57,7 +68,7 @@
         android:layout_height="100dp"
         android:scaleType="fitXY"
         android:visibility="gone"
-        android:background="@drawable/consistency_chart_fg"
+        android:background="@drawable/notification_consistency_chart_fg"
         android:layout_marginTop="10dp" />
 
     <LinearLayout

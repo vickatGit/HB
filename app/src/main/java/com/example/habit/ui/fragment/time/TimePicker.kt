@@ -65,7 +65,7 @@ class TimePicker(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
             if (newVal == 0) selectedTime.set(
                 Calendar.AM_PM,
                 Calendar.AM
-            ) else selectedTime.set(Calendar.HOUR_OF_DAY, Calendar.PM)
+            ) else selectedTime.set(Calendar.AM_PM, Calendar.PM)
         }
     }
 

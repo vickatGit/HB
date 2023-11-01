@@ -59,8 +59,8 @@ class HabitModule {
             connectivityManager,
             GroupHabitMapper(HabitMapper(EntryMapper())),
             auth,
-            app
-
+            app,
+            ScheduleAlarmUseCase()
         )
     }
 

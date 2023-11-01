@@ -9,6 +9,7 @@
     tools:context=".ui.fragment.Habit.HabitFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root_child"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -34,7 +35,7 @@
             android:layout_height="20dp"
             android:layout_marginTop="10dp"
             android:padding="0dp"
-
+            app:tint="@color/black"
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearance="@style/Habit"
@@ -58,6 +59,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/edit_icon"
+            app:tint="@color/black"
             app:layout_constraintEnd_toEndOf="@id/end"
             app:layout_constraintTop_toTopOf="@id/header"
             app:layout_constraintBottom_toBottomOf="@id/header"/>
@@ -75,8 +77,6 @@
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="@+id/start"
             app:layout_constraintTop_toBottomOf="@+id/header" />
-
-
 
 
         <com.google.android.material.progressindicator.CircularProgressIndicator

@@ -11,12 +11,18 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ProgressBar
 import android.widget.RemoteViews
+import android.widget.Toast
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.example.habit.R
 import com.example.habit.recievers.UpdateHabitEntryBroadRecieve
 import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbUseCase
@@ -28,15 +34,19 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.notify
 import java.text.DecimalFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 class NotificationBuilder @Inject constructor(
     val getHabitThumbUseCase: GetHabitThumbUseCase,
@@ -51,81 +61,114 @@ class NotificationBuilder @Inject constructor(
 
         CoroutineScope(Dispatchers.Default).launch {
             val habit = habitMapper.mapToHabit(getHabitThumbUseCase(habitId))
-            withContext(Dispatchers.Main) {
-                val collapsedView =
-                    RemoteViews(app.packageName, R.layout.collapsed_notification_layout)
-                collapsedView.setTextViewText(R.id.title, habit.title)
-                habit.entries?.let {
-                    if (it.size > 3) {
-                        val chartImage =
-                            buildLineChartAndExportBitmap(app.applicationContext, habit.entries)
-                        collapsedView.setImageViewBitmap(R.id.consistency, chartImage)
-                        collapsedView.setViewVisibility(R.id.consistency, View.VISIBLE)
+            Log.e("TAG", "sendNotification: habit retrieved $habit" )
+            Log.e("TAG", "sendNotification: alarm  ${compareLocalDateTime(habit.reminderTime!!,LocalDateTime.now())}" )
+            if(compareLocalDateTime(habit.reminderTime!!,LocalDateTime.now())) {
+                withContext(Dispatchers.Main) {
+                    val collapsedView =
+                        RemoteViews(app.packageName, R.layout.collapsed_notification_layout)
+                    collapsedView.setTextViewText(R.id.title, habit.title)
+                    habit.entries?.let {
+                        if (it.size > 3) {
+                            val chartImage =
+                                buildLineChartAndExportBitmap(app.applicationContext, habit.entries)
+                            collapsedView.setImageViewBitmap(R.id.consistency, chartImage)
+                            collapsedView.setViewVisibility(R.id.consistency, View.VISIBLE)
+                        }
+
                     }
-
-                }
-                val progress = initialiseProgress(habit.startDate!!, habit.endDate!!, habit.entries)
-                collapsedView.setTextViewText(R.id.progress_percentage, formatProgress(progress))
-                collapsedView.setProgressBar(R.id.progress, 100, progress.roundToInt(), false)
-
-                val completeIntent = Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
-                    putExtra("isUpgrade", true)
-                    putExtra("habitId", habit.id)
-                    putExtra("habitServerId", habit.serverId)
-                    putExtra("todayDate", LocalDate.now().toString())
-                }
-                val incompleteIntent = Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
-                    putExtra("isUpgrade", false)
-                    putExtra("habitId", habit.id)
-                    putExtra("habitServerId", habit.serverId)
-                    putExtra("todayDate", LocalDate.now().toString())
-                }
-
-                val completePendingIntent = PendingIntent.getBroadcast(
-                    app,
-                    0,
-                    completeIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
-                val incompletePendingIntent = PendingIntent.getBroadcast(
-                    app,
-                    1,
-                    incompleteIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
-                collapsedView.setOnClickPendingIntent(R.id.completed, completePendingIntent)
-                collapsedView.setOnClickPendingIntent(R.id.not_completed, incompletePendingIntent)
-
-
-                val notificationBuilder = NotificationCompat.Builder(app).apply {
-                    setSmallIcon(R.drawable.habits_icon)
-                    setAutoCancel(true)
-                    setStyle(NotificationCompat.DecoratedCustomViewStyle())
-                    setCustomContentView(collapsedView)
-                }
-                val notificationManager =
-                    app.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val notificationChannel = NotificationChannel(
-                        HABIT_UPDATE_NOTI_CHAN_ID,
-                        HABIT_UPDATE_NOTI_CHAN_NAME,
-                        NotificationManager.IMPORTANCE_DEFAULT
+                    val progress =
+                        initialiseProgress(habit.startDate!!, habit.endDate!!, habit.entries)
+                    collapsedView.setTextViewText(
+                        R.id.progress_percentage,
+                        formatProgress(progress)
                     )
-                    notificationBuilder.setChannelId(HABIT_UPDATE_NOTI_CHAN_ID)
-                    notificationManager.createNotificationChannel(notificationChannel)
-                }
-                val habitId=5
-                notificationManager.notify(habitId, notificationBuilder.build())
-                if (habit.isReminderOn!!) {
+                    collapsedView.setTextViewText(R.id.habit_title, habit.title)
+//                val progressIndicator = getProgressView(progress.roundToInt(),app.applicationContext)
+//                val progressBitmap = createBitmapFromView(app.applicationContext,progressIndicator)
+//                collapsedView.setImageViewBitmap(R.id.progress_img, progressBitmap)
+
+
+                    val completeIntent =
+                        Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
+                            putExtra("isUpgrade", true)
+                            putExtra("habitId", habit.id)
+                            putExtra("habitServerId", habit.serverId)
+                            putExtra("todayDate", LocalDate.now().toString())
+                        }
+                    val incompleteIntent =
+                        Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
+                            putExtra("isUpgrade", false)
+                            putExtra("habitId", habit.id)
+                            putExtra("habitServerId", habit.serverId)
+                            putExtra("todayDate", LocalDate.now().toString())
+                        }
+
+                    val completePendingIntent = PendingIntent.getBroadcast(
+                        app,
+                        0,
+                        completeIntent,
+                        PendingIntent.FLAG_MUTABLE
+                    )
+                    val incompletePendingIntent = PendingIntent.getBroadcast(
+                        app,
+                        1,
+                        incompleteIntent,
+                        PendingIntent.FLAG_MUTABLE
+                    )
+                    collapsedView.setOnClickPendingIntent(R.id.completed, completePendingIntent)
+                    collapsedView.setOnClickPendingIntent(
+                        R.id.not_completed,
+                        incompletePendingIntent
+                    )
+
+
+                    val notificationBuilder = NotificationCompat.Builder(app).apply {
+                        setSmallIcon(R.drawable.habits_icon)
+                        setAutoCancel(true)
+                        setStyle(NotificationCompat.DecoratedCustomViewStyle())
+                        setCustomContentView(collapsedView)
+                    }
+                    val notificationManager =
+                        app.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val notificationChannel = NotificationChannel(
+                            HABIT_UPDATE_NOTI_CHAN_ID,
+                            HABIT_UPDATE_NOTI_CHAN_NAME,
+                            NotificationManager.IMPORTANCE_DEFAULT
+                        )
+                        notificationBuilder.setChannelId(HABIT_UPDATE_NOTI_CHAN_ID)
+                        notificationManager.createNotificationChannel(notificationChannel)
+                    }
+                    val habitId = Random(10).nextInt()
+                    notificationManager.notify(habitId, notificationBuilder.build())
+
+                    Log.e("TAG", "sendNotification: send",)
+                    if (habit.isReminderOn!!) {
 //                    scheduleAlarmUseCase(
 //                        habitId,
 //                        habit.reminderTime!!.plusDays(1),
 //                        app
 //                    )
-                }
+                    }
 
+                }
             }
         }
+    }
+
+    private fun getProgressView(progress: Int, context: Context): ProgressBar {
+        val progressIndicator = ProgressBar(context)
+        val layoutParams = FrameLayout.LayoutParams(50,50)
+        layoutParams.setMargins(0, 0, 0, 0)
+        progressIndicator.layoutParams = layoutParams
+        progressIndicator.setPadding(0, 0, 0, 0)
+        progressIndicator.rotation=-90f
+        progressIndicator.setProgress(progress,false)
+        progressIndicator.progressDrawable=context.resources.getDrawable(R.drawable.progress_draw)
+//        progressIndicator.indeterminateDrawable=context.resources.getDrawable(R.drawable.progress_draw)
+        progressIndicator.isIndeterminate=false
+        return progressIndicator
     }
 
     private fun buildLineChartAndExportBitmap(
@@ -207,14 +250,12 @@ class NotificationBuilder @Inject constructor(
         endDate: LocalDate,
         habitEntries: HashMap<LocalDate, EntryView>?
     ): Float {
-        val totalHabitDuration = ChronoUnit.DAYS.between(startDate, endDate)
+        val totalHabitDuration = ChronoUnit.DAYS.between(startDate, endDate)+1
         var daysCompleted = 0
         habitEntries?.mapValues {
-//            if (it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())) {
-                if (it.value.completed) ++daysCompleted
-//            }
+            if (it.value.completed) ++daysCompleted
         }
-        return (totalHabitDuration!! / 100f) * daysCompleted!!
+        return (daysCompleted.toFloat() / totalHabitDuration.toFloat()) * 100f
 
     }
 
@@ -243,13 +284,24 @@ class NotificationBuilder @Inject constructor(
         if (background != null) {
             background.draw(canvas)
         } else {
-            canvas.drawColor(Color.WHITE) // Default background color if no background set
+            canvas.drawColor(context.resources.getColor(R.color.transparent)) // Default background color if no background set
         }
 
         view.layout(0, 0, width, heightInPixels)
         view.draw(canvas)
 
         return bitmap
+    }
+
+    fun compareLocalDateTime(dateTime1: LocalDateTime, dateTime2: LocalDateTime): Boolean {
+        val differenceInMinutes = ChronoUnit.MINUTES.between(dateTime1, dateTime2)
+
+        return when {
+            differenceInMinutes == 0L -> true // If both dates are equal
+            differenceInMinutes < 1 -> true // If the first date is before the second date by less than one minute
+            differenceInMinutes > 1 -> false // If the first date is after the second date by more than one minute
+            else -> false
+        }
     }
 
 

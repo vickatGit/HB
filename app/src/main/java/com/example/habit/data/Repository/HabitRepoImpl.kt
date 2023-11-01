@@ -21,6 +21,7 @@ import com.example.habit.data.network.model.UserIdsModel.UserIdsModel
 import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
+import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
 import com.example.habit.domain.models.Entry
 import com.example.habit.domain.models.GroupHabit
 import com.example.habit.domain.models.GroupHabitWithHabits
@@ -49,14 +50,17 @@ class HabitRepoImpl(
     private val connectivityManager: ConnectivityManager,
     private val groupHabitMapper: GroupHabitMapper,
     private val authPref: AuthPref,
-    private val context: Context
+    private val context: Context,
+    private val scheduleAlarmUseCase: ScheduleAlarmUseCase
 ) : HabitRepo {
+    private var isAnyHabitModified: Boolean = true;
     override suspend fun addHabit(habit: Habit) {
         habitDao.addHabit(listOf(habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)))
         if (Connectivity.isInternetConnected(context))
             addOrUpdateHabitToRemote(
                 habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit)
             ).collectLatest { Log.e("TAG", "addHabit: Added to server successfully $it") }
+        isAnyHabitModified = true
     }
 
     override suspend fun addGroupHabit(habit: GroupHabit) {
@@ -93,6 +97,7 @@ class HabitRepoImpl(
                 )
             )
         }
+        isAnyHabitModified = true
     }
 
 
@@ -102,10 +107,12 @@ class HabitRepoImpl(
         habitDao.updateHabit(habitEntity)
         if (Connectivity.isInternetConnected(context))
             updateHabitToRemote(habitMapper.mapToHabitEntity(habit, HabitRecordSyncType.AddHabit))
+        isAnyHabitModified = true
     }
 
     override suspend fun updateGroupHabit(habit: GroupHabit) {
-        val groupHabit = groupHabitMapper.fromGroupHabit(habit, HabitGroupRecordSyncType.UpdateHabit)
+        val groupHabit =
+            groupHabitMapper.fromGroupHabit(habit, HabitGroupRecordSyncType.UpdateHabit)
         habitDao.updateGroupHabit(
             groupHabit.localId,
             groupHabit.title!!,
@@ -119,6 +126,7 @@ class HabitRepoImpl(
         if (Connectivity.isInternetConnected(context)) {
             updateGroupHabitToRemote(groupHabit)
         }
+        isAnyHabitModified = true
     }
 
 
@@ -129,15 +137,17 @@ class HabitRepoImpl(
             deleteFromRemote(habitId, habitServerId)
         }
         return res
+        isAnyHabitModified = true
     }
 
     override suspend fun removeGroupHabit(groupHabitServerId: String?, groupHabitId: String?): Int {
         val res = habitDao.updateGroupHabitDeleteStatus(groupHabitId!!)
-        Log.e("TAG", "removeHabit: $groupHabitId", )
+        Log.e("TAG", "removeHabit: $groupHabitId")
         if (Connectivity.isInternetConnected(context)) {
             deleteGroupHabitFromRemote(groupHabitId, groupHabitServerId)
         }
         return res
+        isAnyHabitModified = true
     }
 
     override fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>> {
@@ -174,12 +184,42 @@ class HabitRepoImpl(
         }
     }
 
-    override suspend fun getHabitsForProgress(coroutineScope: CoroutineScope): List<HabitThumb> {
+    override suspend fun getHabitsForProgress(coroutineScope: CoroutineScope) {
+        if (Connectivity.isInternetConnected(context)) {
+            val response = habitApi.getHabitsR()
+            if (response.isSuccessful) {
+                Log.e("TAG", "onResponse: getHabits")
+                val habitList = response.body()
+                val habits = habitList!!.data.map { habit ->
+                    habitMapper.mapToHabitEntityFromHabitModel(habit)
+                }
+                Log.e("TAG", "onResponse: habits get $habits")
+                habitDao.deleteAllHabits()
+                habitDao.addHabit(habits)
+            }
+        }
+    }
+
+
+    override suspend fun getAllHabitsForProgress(coroutineScope: CoroutineScope): List<HabitThumb> {
+
         val habits = mutableListOf<HabitThumb>()
+        if (isAnyHabitModified) {
+            getHabitsForProgress(coroutineScope)
+            getGroupHabitsForProgres(coroutineScope)
+            isAnyHabitModified = false
+        }
         habitDao.getHabitsForProgress(userId = authPref.getUserId()).forEach {
             habits.add(habitMapper.mapFromHabitEntity(it))
         }
+        habits.forEach { habit ->
+            habit.reminderTime?.let {
+                scheduleAlarmUseCase(habit.id, it, context)
+            }
+        }
         return habits
+
+
     }
 
 
@@ -188,7 +228,7 @@ class HabitRepoImpl(
 
         if (Connectivity.isInternetConnected(context)) {
             habitDao.deleteAllGroupHabits()
-            getHabits(coroutineScope)
+            getHabits(coroutineScope).collectLatest { }
             habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
                 override fun onResponse(
                     call: Call<GroupHabitsModel>,
@@ -237,6 +277,42 @@ class HabitRepoImpl(
 
     }
 
+    override suspend fun getGroupHabitsForProgres(coroutineScope: CoroutineScope) {
+
+
+        if (Connectivity.isInternetConnected(context)) {
+            habitDao.deleteAllGroupHabits()
+            val response = habitApi.getGroupHabitsR()
+            Log.e("TAG", "getHabitsForProgress: ${response}")
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    var habitsList: List<HabitEntity> = listOf()
+                    val groupHabits = response.body()?.let {
+                        it.data?.map { groupHabits ->
+                            groupHabits.let { groupHabit ->
+                                val habits = groupHabit!!.habits
+                                habitsList = habits!!.map {
+                                    it?.startDate = groupHabit.startDate
+                                    it?.endDate = groupHabit.endDate
+                                    it?.description = groupHabit.description
+                                    it?.title = groupHabit.title
+                                    it?.habitGroupId = groupHabit.id
+                                    it?.habitGroupLoacalId = groupHabit.localId
+                                    habitMapper.mapToHabitEntityFromHabitModel(it!!)
+                                }
+                                groupHabitMapper.toGroupHabitModel(groupHabit!!)
+                            }
+                        }
+                    }
+                    habitDao.deleteAllGroupHabits()
+                    groupHabits?.let { habitDao.addGroupHabit(groupHabits) }
+                    habitDao.addHabit(habitsList)
+                }
+            }
+        }
+
+    }
+
     override suspend fun getHabit(habitId: String): Habit {
         return habitDao.getHabit(habitId).let {
             habitMapper.mapToHabit(habitDao.getHabit(habitId))
@@ -245,7 +321,7 @@ class HabitRepoImpl(
 
     override suspend fun getGroupHabit(groupId: String): GroupHabitWithHabits? {
         val res = habitDao.getGroupHabit(groupId)
-        Log.e("TAG", "getGroupHabit: repo $res", )
+        Log.e("TAG", "getGroupHabit: repo $res")
         return res?.let { groupHabitMapper.toGroupHabitWithHabits(res) }
     }
 
@@ -324,7 +400,10 @@ class HabitRepoImpl(
                 override fun onResponse(call: Call<Any>, response: Response<Any>) {
                     if (response.code() == 200) {
                         CoroutineScope(Dispatchers.IO).launch {
-                            habitDao.updateGroupHabitDeleteStatus(habitId = habitGroupId, shouldDelete = HabitGroupRecordSyncType.DeletedHabit)
+                            habitDao.updateGroupHabitDeleteStatus(
+                                habitId = habitGroupId,
+                                shouldDelete = HabitGroupRecordSyncType.DeletedHabit
+                            )
                             deleteGroupHabitFromLocal(habitGroupId)
                         }
                     }
@@ -358,21 +437,25 @@ class HabitRepoImpl(
 
         //here is the bug
         CoroutineScope(Dispatchers.IO).launch {
-        val groupHabit = getGroupAdminHabit(habitEntity.admin, habitEntity.localId)
-        addOrUpdateHabitToRemote(groupHabit).collect {
-            it?.let {
-                habitApi.addGroupHabit(groupHabitMapper.toGroupHabitEntity(habitEntity), it.habitId)
-                    .enqueue(object : Callback<Any> {
-                        override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                            if(response.isSuccessful)
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    getGroupHabits(this)
-                                }
-                        }
-                        override fun onFailure(call: Call<Any>, t: Throwable) {}
-                    })
+            val groupHabit = getGroupAdminHabit(habitEntity.admin, habitEntity.localId)
+            addOrUpdateHabitToRemote(groupHabit).collect {
+                it?.let {
+                    habitApi.addGroupHabit(
+                        groupHabitMapper.toGroupHabitEntity(habitEntity),
+                        it.habitId
+                    )
+                        .enqueue(object : Callback<Any> {
+                            override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                                if (response.isSuccessful)
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        getGroupHabits(this)
+                                    }
+                            }
+
+                            override fun onFailure(call: Call<Any>, t: Throwable) {}
+                        })
+                }
             }
-        }
         }
     }
 
@@ -402,8 +485,10 @@ class HabitRepoImpl(
         entryList: Map<LocalDate, EntryEntity>?
     ) {
         habitServerId?.let {
-            val response = habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map { entryMapper.mapToEntryModel(it) }), it)
-            if(response.isSuccessful)
+            val response = habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map {
+                entryMapper.mapToEntryModel(it)
+            }), it)
+            if (response.isSuccessful)
                 Log.e("TAG", "onResponse: updateHabitEntriesToRemote $response")
             else
                 Log.e("TAG", "onFailure: updateHabitEntriesToRemote")
@@ -477,10 +562,16 @@ class HabitRepoImpl(
             habitApi.removeMemberFromGroup(groupHabitId, UserIdsModel(userIds))
                 .enqueue(object : Callback<Any> {
                     override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                        if (response.isSuccessful) { Log.e("TAG", "onResponse: ${response.body()}") }
+                        if (response.isSuccessful) {
+                            Log.e("TAG", "onResponse: ${response.body()}")
+                        }
                     }
+
                     override fun onFailure(call: Call<Any>, t: Throwable) {
-                        Log.e("TAG", "onFailure: removedMembersFromGroupHabitFromRemote ${t.printStackTrace()}",)
+                        Log.e(
+                            "TAG",
+                            "onFailure: removedMembersFromGroupHabitFromRemote ${t.printStackTrace()}",
+                        )
                     }
                 })
         }
@@ -501,7 +592,13 @@ class HabitRepoImpl(
                         val getHabitResponse = habitApi.getGroupHabit(groupHabitServerId)
                         if (getHabitResponse.isSuccessful) {
                             val groupHabit = getHabitResponse.body()?.data
-                            habitDao.addGroupHabit(listOf(groupHabitMapper.toGroupHabitModel(getHabitResponse.body()?.data!!)))
+                            habitDao.addGroupHabit(
+                                listOf(
+                                    groupHabitMapper.toGroupHabitModel(
+                                        getHabitResponse.body()?.data!!
+                                    )
+                                )
+                            )
                             var habits = mutableListOf<HabitEntity>()
                             getHabitResponse.body()?.data?.habits?.map {
                                 it?.let { habit ->
@@ -531,11 +628,14 @@ class HabitRepoImpl(
 
     override suspend fun updateGroupHabitToRemote(groupHabit: GroupHabitsEntity) {
         if (groupHabit.serverId != null) {
-            val response = habitApi.updateGroupHabit( groupHabitMapper.toGroupHabitEntity(groupHabit), groupHabit.serverId!!)
-            if(response.isSuccessful)
-                CoroutineScope(Dispatchers.IO).launch { getGroupHabits(this).collectLatest {  } }
+            val response = habitApi.updateGroupHabit(
+                groupHabitMapper.toGroupHabitEntity(groupHabit),
+                groupHabit.serverId!!
+            )
+            if (response.isSuccessful)
+                CoroutineScope(Dispatchers.IO).launch { getGroupHabits(this).collectLatest { } }
             else
-                Log.e("TAG", "updateGroupHabitToRemote: ${Gson().toJson(response.errorBody())}", )
+                Log.e("TAG", "updateGroupHabitToRemote: ${Gson().toJson(response.errorBody())}")
         } else {
             //In case of GroupHabit is Added and updated without internet access (GroupHabit is not added to server due no internet)
             addGroupHabitToRemote(groupHabit)
@@ -564,7 +664,6 @@ class HabitRepoImpl(
             updateHabitEntriesToRemote(habitServerId, mappedEntries)
         return res
     }
-
 
 
 }

@@ -19,7 +19,7 @@ class AuthModule {
 
     @Provides
     @Singleton
-    fun provideAuthApiClient(retrofit: Retrofit): AuthApi {
+    fun provideAuthApiClient(@HabitModule.MainRetrofit retrofit: Retrofit): AuthApi {
         return retrofit.create(AuthApi::class.java)
     }
 

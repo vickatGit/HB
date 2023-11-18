@@ -7,4 +7,5 @@ data class UserView(
     var userBio:String? = null,
     val followers:String? = null,
     val followings:String? = null,
+    val avatarUrl:String? = null
 )

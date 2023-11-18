@@ -86,7 +86,6 @@
             android:id="@+id/camera_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:visibility="gone"
             android:layout_marginBottom="17dp"
             android:src="@drawable/camera_icon"
             app:layout_constraintBottom_toBottomOf="@+id/user_profile_image"

@@ -25,10 +25,16 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Response
+import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Duration
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 
@@ -38,6 +44,15 @@ class HabitModule {
     companion object{
         private const val API="api"
     }
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class WithoutAuthRetrofit
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class MainRetrofit
+
 
     @Provides
     @Singleton
@@ -90,6 +105,7 @@ class HabitModule {
     }
 
     @Provides
+    @MainRetrofit
     @Singleton
     fun provideRetrofit(app: Application, httpClient: OkHttpClient ): Retrofit {
 //        val gsonBuilder = GsonBuilder()
@@ -104,8 +120,18 @@ class HabitModule {
     }
 
     @Provides
+    @WithoutAuthRetrofit
     @Singleton
-    fun provideHabitApiClient(retrofit: Retrofit): HabitApi {
+    fun provideWithOutAuthRetrofit(): Retrofit {
+        return Retrofit.Builder().apply {
+            baseUrl("https://hb-backend.onrender.com/")
+            addConverterFactory(GsonConverterFactory.create())
+        }.build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHabitApiClient(@MainRetrofit retrofit: Retrofit): HabitApi {
         return retrofit.create(HabitApi::class.java)
     }
 
@@ -128,7 +154,17 @@ class HabitModule {
                     .build()
 
                 Log.i(API, "intercept: ${request.url} ${auth.getToken()}")
-                chain.proceed(request)
+                try {
+                    chain.proceed(request)
+                }catch (e:Exception){
+                    Response.Builder()
+                        .code(500) // Internal Server Error
+                        .message("Socket timeout occurred")
+                        .protocol(Protocol.HTTP_1_1)
+                        .request(chain.request())
+                        .body(ResponseBody.create("application/json".toMediaType(), "Custom error body"))
+                        .build()
+                }
             }
             addInterceptor(ChuckerInterceptor(app))
         }.build()

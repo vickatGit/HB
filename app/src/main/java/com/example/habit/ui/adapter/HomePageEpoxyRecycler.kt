@@ -21,7 +21,7 @@ class HomePageEpoxyRecycler(
     val totalHabits: Int,
     val completedHabits: Int,
     val habits: MutableList<ProgressSectionHabit>,
-    val onClick:(action:Action) -> Unit
+    val onClick:(action:Action,avatarUrl:String?) -> Unit
 ) : EpoxyController() {
      var homeSections:List<HomeElements> = emptyList()
         set(value){
@@ -34,10 +34,13 @@ class HomePageEpoxyRecycler(
 //            Log.e("TAG", "buildModels: type ${it.sectionType} ", )
             when(it){
                 is HomeElements.NavSection -> {
-                    NavSectionEpoxyModel(it){ onClick(it) }.id(it.id).addTo(this)
+                    NavSectionEpoxyModel(it){ onClick(it,null) }.id(it.id).addTo(this)
                 }
                 is HomeElements.UserInfoSection -> {
-                    UserInfoSectionEpoxyModel(it){ onClick(it) }.id(it.id).addTo(this)
+                    UserInfoSectionEpoxyModel(it){it,avatarUrl ->
+                        onClick(it,avatarUrl)
+                    }.id(it.id).addTo(this)
+
                 }
 
                 is HomeElements.HeaderSection -> {
@@ -89,7 +92,7 @@ class HomePageEpoxyRecycler(
                                 override val screenType: String
                                     get() = "add_habit"
 
-                            })
+                            },null)
                         }.id(habit.habitName)
                     }
                     val carousal = CarouselModel_()
@@ -106,6 +109,8 @@ class HomePageEpoxyRecycler(
             }
         }
     }
+
+
 
     private fun buildUserProgressSection(
         progresss: HomeElements.UserProgressSection,

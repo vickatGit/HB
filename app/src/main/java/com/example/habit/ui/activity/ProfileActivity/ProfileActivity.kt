@@ -17,6 +17,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.bumptech.glide.Glide
 import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.ActivityProfileBinding
 import com.example.habit.ui.activity.ChatsActivity.ChatsActivity
@@ -36,6 +37,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProfileActivity : AppCompatActivity() {
 
+    private var avatarUrl: String? = null
     private val viewModel:ProfileViewModel by viewModels()
 
     private var _binding: ActivityProfileBinding? = null
@@ -45,43 +47,39 @@ class ProfileActivity : AppCompatActivity() {
     @Inject
     lateinit var authPref: AuthPref
 
-    var photoGetter = registerForActivityResult<Intent, ActivityResult>(
-        ActivityResultContracts.StartActivityForResult(),
-        object : ActivityResultCallback<ActivityResult?> {
-            override fun onActivityResult(result: ActivityResult?) {
-                if (result?.resultCode == RESULT_OK) {
-                    try {
-                        val data = result.data
-                        if (data != null && data.data != null) {
-                            val contentType = contentResolver.getType(data.data!!)
-                            if (contentType!!.startsWith("image/")) {
-                                val selectedImageUri = data.data
-                                val selectedImageBitmap: Bitmap
-                                try {
-                                    selectedImageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri)
-                                    val file: File? = BitmapUtils.saveBitmapToFile(this@ProfileActivity, selectedImageBitmap, "soem")
-                                     file?.let {
-                                         val requestBody =RequestBody.create("image/jpeg".toMediaTypeOrNull(), it)
-                                        val multiBody= MultipartBody.Part.createFormData("file", file.name, requestBody)
-                                    }
-
-                                } catch (e: IOException) { e.printStackTrace() }
-                            } else {
-                                Toast.makeText(this@ProfileActivity, "Not an Image", Toast.LENGTH_SHORT).show()
+    private var photoGetter = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result?.resultCode == RESULT_OK) {
+            try {
+                val data = result.data
+                if (data != null && data.data != null) {
+                    val contentType = contentResolver.getType(data.data!!)
+                    if (contentType!!.startsWith("image/")) {
+                        val selectedImageUri = data.data
+                        val selectedImageBitmap: Bitmap
+                        try {
+                            selectedImageBitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri)
+                            val file: File? = BitmapUtils.saveBitmapToFile(this@ProfileActivity, selectedImageBitmap, "soem")
+                            file?.let {
+                                val requestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), it)
+                                viewModel.uploadProfileImage(requestBody)
                             }
-                        }
-                    } catch (e: Exception) {
-                        Toast.makeText(this@ProfileActivity, "" + e, Toast.LENGTH_SHORT).show()
-                    }
+                        } catch (e: IOException) { e.printStackTrace() }
+                    } else Toast.makeText(this@ProfileActivity, "Not an Image", Toast.LENGTH_SHORT).show()
+
                 }
+            } catch (e: Exception) {
+                Toast.makeText(this@ProfileActivity, "" + e, Toast.LENGTH_SHORT).show()
             }
         }
-    )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        avatarUrl = intent.getStringExtra(AVATAR_URL)
         bioBackground=binding.userBio.background
         isProfileEditable(false)
         lifecycleScope.launch {
@@ -110,9 +108,15 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         }
+        avatarUrl?.let {
+            Glide.with(this@ProfileActivity).load(avatarUrl).into(binding.userProfileImage)
+        }
         binding.edit.setOnClickListener {
             isProfileEditable(true)
         }
+//        binding.cameraIcon.setOnClickListener {
+//            checkPermissionAndGetImage()
+//        }
 //        binding.userBio.addTextChangedListener {
 //            viewModel.user?.userBio=it.toString()
 //        }
@@ -147,6 +151,7 @@ class ProfileActivity : AppCompatActivity() {
             binding.userName.text=it.username
             binding.followersCnt.text = it.followers
             binding.followingCnt.text = it.followings
+            Glide.with(this@ProfileActivity).load(it.avatarUrl).into(binding.userProfileImage)
         }
     }
 
@@ -164,7 +169,7 @@ class ProfileActivity : AppCompatActivity() {
         binding.edit.isVisible=!isEditable
         binding.userBio.isEnabled=isEditable
         binding.updateProfile.isVisible=isEditable
-        binding.cameraIcon.isVisible=isEditable
+//        binding.cameraIcon.isVisible=isEditable
     }
     private fun getImage() {
 
@@ -174,9 +179,9 @@ class ProfileActivity : AppCompatActivity() {
             photoGetter.launch(intent)
         } else {
             val imageIntent = Intent()
-            imageIntent.setType("image/*")
-            imageIntent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf<String>("image/*"))
-            imageIntent.setAction(Intent.ACTION_GET_CONTENT)
+            imageIntent.type = "image/*"
+            imageIntent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
+            imageIntent.action = Intent.ACTION_GET_CONTENT
             photoGetter.launch(imageIntent)
         }
     }
@@ -185,9 +190,22 @@ class ProfileActivity : AppCompatActivity() {
         if(!binding.edit.isVisible) {
             isProfileEditable(false)
             bindProfileData()
-        }
-        else
-            super.onBackPressed()
+        } else super.onBackPressed()
+    }
 
+    private fun checkPermissionAndGetImage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val intent = Intent(Intent.ACTION_PICK)
+            photoGetter.launch(intent)
+        } else {
+            val imageIntent = Intent(Intent.ACTION_GET_CONTENT)
+            imageIntent.type = "image/*"
+            imageIntent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
+            photoGetter.launch(imageIntent)
+        }
+    }
+
+    companion object {
+        val AVATAR_URL: String = "avatar_url"
     }
 }

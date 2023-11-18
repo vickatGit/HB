@@ -43,6 +43,7 @@ import okhttp3.internal.notify
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -71,7 +72,7 @@ class NotificationBuilder @Inject constructor(
                     habit.entries?.let {
                         if (it.size > 3) {
                             val chartImage =
-                                buildLineChartAndExportBitmap(app.applicationContext, habit.entries)
+                                buildLineChartAndExportBitmap(app.applicationContext, habit.entries,habit.startDate!!)
                             collapsedView.setImageViewBitmap(R.id.consistency, chartImage)
                             collapsedView.setViewVisibility(R.id.consistency, View.VISIBLE)
                         }
@@ -173,7 +174,8 @@ class NotificationBuilder @Inject constructor(
 
     private fun buildLineChartAndExportBitmap(
         context: Context,
-        mapEntries: HashMap<LocalDate, EntryView>?
+        mapEntries: HashMap<LocalDate, EntryView>?,
+        startDate:LocalDate
     ): Bitmap {
 
         //values for single line chart on the graph
@@ -181,15 +183,12 @@ class NotificationBuilder @Inject constructor(
         val layoutParams = ViewGroup.LayoutParams(200, 100)
         lineChart.layoutParams = layoutParams
         val entries: MutableList<Entry> = mutableListOf()
-        mapEntries?.mapValues {
-            entries.add(
-                Entry(
-                    it.value.timestamp?.dayOfMonth!!.toFloat(),
-                    it.value.score!!.toFloat()
-                )
-            )
+        mapEntries?.forEach {
+            if(it.key.isBefore(LocalDate.now()) || it.key.isEqual(LocalDate.now()))
+                entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
         }
-        if (entries.size > 0) {
+        entries.sortBy { it.x }
+        if (LocalDate.now().compareTo(startDate)>3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
             val startColor = context.resources.getColor(R.color.orange)

@@ -133,7 +133,7 @@ class HabitFragment : Fragment() {
                         }
 
                         is HabitUiState.Error -> {
-                            Toast.makeText(requireContext(), it.error, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), it.error+"", Toast.LENGTH_SHORT).show()
                             binding.progress.isVisible = false
                         }
 
@@ -324,9 +324,9 @@ class HabitFragment : Fragment() {
                 return DayHolder(DayBinding.bind(view), object : DateClick {
                     override fun dateClick(date: LocalDate?) {
                         date?.let {
-                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())) ) {
+//                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())) ) {
                                 selectDate(date)
-                            }
+//                            }
                         }
                     }
                 })
@@ -360,7 +360,7 @@ class HabitFragment : Fragment() {
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
 
-        habitList.forEachIndexed {index,it ->
+        habitList.forEachIndexed { index,it ->
             if (index>0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
                 var score=habitList.get(if(index!=0) index-1 else index).score
                 habitList[index].score=if (isUpgrade) score!!+1 else it.score!!-1
@@ -373,14 +373,21 @@ class HabitFragment : Fragment() {
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
         //values for single line chart on the graph
         val entries:MutableList<Entry> = mutableListOf()
-        mapEntries?.mapValues {
-            if(it.value.score!!>maxScored) maxScored=it.value.score!!
-            Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))}", )
-            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+        mapEntries?.forEach {
+           if(it.key.isBefore(LocalDate.now()) || it.key.isEqual(LocalDate.now()))
+               entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
         }
-        if(entries.size>3) {
+        entries.sortBy { it.x }
+//        mapEntries?.mapValues {
+////            if(it.value.score!!>maxScored) maxScored=it.value.score!!
+//            Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))}", )
+//            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+//        }
+//        if(LocalDate.now().compareTo(habit.startDate)>3) {
+        if(LocalDate.now().compareTo(habit.startDate)>3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
+            Log.e("TAG", "initialiseConsistencyGraph: date set ${dataset}", )
             val startColor =resources.getColor(R.color.orange_op_20)
             val midColor = resources.getColor(R.color.orange_op_20)
             val endColor = resources.getColor(R.color.transparent)
@@ -397,7 +404,6 @@ class HabitFragment : Fragment() {
             dataset.setDrawCircles(false)
             dataset.setDrawValues(false)
             dataset.mode= LineDataSet.Mode.CUBIC_BEZIER
-
 
 
             val xtAxis=binding.consistency.xAxis
@@ -439,6 +445,7 @@ class HabitFragment : Fragment() {
             binding.consistency.animateX(1000)
 
             binding.consistency.data = chartLineData
+            Log.e("TAG", "initialiseConsistencyGraph: chart ${Gson().toJson(entries)}", )
             binding.consistency.invalidate()
         }else{
             binding.consistency.isVisible=false
@@ -486,6 +493,7 @@ class HabitFragment : Fragment() {
         private val dateFormatter = SimpleDateFormat("d MMM", Locale.getDefault())
         override fun getFormattedValue(value: Float, axis: AxisBase?): String {
             val date = Date(value.toLong())
+            Log.e("TAG", "getFormattedValue: ${date.toString()} ${dateFormatter.format(date)}", )
             return dateFormatter.format(date)
         }
 

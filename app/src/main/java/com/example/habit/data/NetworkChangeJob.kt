@@ -38,7 +38,7 @@ class NetworkChangeJob : JobService() {
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.e("TAG", "onStartJob: invoked again NetworkChangeJob")
-        showNotification(this,"smaple","sample")
+//        showNotification(this,"smaple","sample")
         CoroutineScope(Dispatchers.IO).launch {
             val removableMembersFromGroupHabitIds = mutableListOf<String>()
             habitRepo.getUnSyncedHabits().forEach{ habit ->

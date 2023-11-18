@@ -35,6 +35,7 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
         return  habits.size
     }
 
+
     override fun onBindViewHolder(holder: HabitHolder, position: Int) {
         val habit= habits[holder.absoluteAdapterPosition]
         holder.binding?.let {
@@ -66,9 +67,11 @@ class HabitsAdapter(val habits: MutableList<HabitThumbView>, val habitClick: Hab
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?, binding:HabitItemLayoutBinding) {
         //values for single line chart on the graph
         val entries:MutableList<Entry> = mutableListOf()
-        mapEntries?.mapValues {
-            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+        mapEntries?.forEach {
+            if(it.key.isBefore(LocalDate.now()) || it.key.isEqual(LocalDate.now()))
+                entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
         }
+        entries.sortBy { it.x }
         if(entries.size>3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")

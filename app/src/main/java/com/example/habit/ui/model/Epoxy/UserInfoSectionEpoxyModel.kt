@@ -15,7 +15,7 @@ import com.example.habit.ui.util.DpPxUtils
 
 data class UserInfoSectionEpoxyModel(
     private val navSection: HomeElements.UserInfoSection,
-    val onClick:(action:Action) -> Unit
+    val onClick:(action:Action, avatarUrl:String?) -> Unit
 ) : ViewBindingKotlinModel<UserSecctionLayoutBinding>(R.layout.user_secction_layout) {
     override fun UserSecctionLayoutBinding.bind() {
         userCont.layoutParams.apply {
@@ -62,7 +62,8 @@ data class UserInfoSectionEpoxyModel(
                     when(it.shape.toLowerCase()) {
                         "circle" -> {
                             userCircleAvatar.isVisible=true
-                            Glide.with(userCircleAvatar).load(it.url).into(userCircleAvatar)
+                            if(!it.url.isNullOrBlank())
+                                Glide.with(userCircleAvatar).load(it.url).into(userCircleAvatar)
                             userCircleAvatar.layoutParams.apply {
                                 this as LinearLayout.LayoutParams
                                 width=DpPxUtils.dpToPX(it.sizeIndDp,userCircleAvatar.context)
@@ -75,12 +76,13 @@ data class UserInfoSectionEpoxyModel(
                                 gravity=gravityList.reduce { a, b -> a xor b } ?: Gravity.NO_GRAVITY
                             }
                             userCircleAvatar.requestLayout()
-                            userCircleAvatar.setOnClickListener { click -> it.action?.let { action -> onClick(action) } }
+                            userCircleAvatar.setOnClickListener { click -> it.action?.let { action -> onClick(action,it.url) } }
                         }
                         "square" -> {
                             userSquareAvatarCont.isVisible=true
                             userSquareAvatarCont.radius=it.cornerRadius
-                            Glide.with(userSquareAvatar).load(it.url).into(userSquareAvatar)
+                            if(!it.url.isNullOrBlank())
+                                Glide.with(userSquareAvatar).load(it.url).into(userSquareAvatar)
                             userSquareAvatarCont.layoutParams.apply {
                                 this as LinearLayout.LayoutParams
                                 width=DpPxUtils.dpToPX(it.sizeIndDp,userSquareAvatar.context)
@@ -93,7 +95,7 @@ data class UserInfoSectionEpoxyModel(
                                 gravity=gravityList.reduce { a, b -> a xor b } ?: Gravity.NO_GRAVITY
                             }
                             userSquareAvatarCont.requestLayout()
-                            userSquareAvatar.setOnClickListener { click -> it.action?.let { action -> onClick(action) } }
+                            userSquareAvatar.setOnClickListener { click -> it.action?.let { action -> onClick(action,it.url) } }
                         }
                     }
                 }

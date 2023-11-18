@@ -9,6 +9,7 @@ import com.example.habit.domain.models.notification.HabitRequest
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
+import okhttp3.RequestBody
 import retrofit2.Response
 
 interface SocialRepo {
@@ -33,4 +34,5 @@ interface SocialRepo {
 
     fun acceptHabitRequest(habitGroupId:String):Flow<Boolean>
     fun rejectHabitRequest(habitGroupId:String):Flow<Boolean>
+    suspend fun uploadUserAvatar(requestBody: RequestBody): Flow<Boolean>
 }

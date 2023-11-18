@@ -15,4 +15,5 @@ class UpdateHabitEntryBroadRecieve : BroadcastReceiver() {
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancel(intent.getIntExtra("habitId",Int.MAX_VALUE))
     }
+
 }

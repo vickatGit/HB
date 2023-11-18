@@ -15,10 +15,13 @@ data class UserModel(
 	val followers:String? = null,
 	val followings:String? = null,
 	val v: Int? = null,
+	var avatarUrl:String? = null
 
 )
 
 data class ProfileModel(
-	val data: UserModel? = null
+	val data: UserModel? = null,
+	val avatarUrl:String? = null
+
 )
 

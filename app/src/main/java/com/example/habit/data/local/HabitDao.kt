@@ -86,6 +86,9 @@ interface HabitDao {
     @Query("UPDATE HabitEntity SET habitSyncType=:shouldDelete WHERE id = :habitId")
     suspend fun updateDeleteStatus(habitId: String,shouldDelete:HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Int
 
+    @Query("UPDATE HabitEntity SET habitSyncType=:habitEntriesSyncType WHERE serverId=:habitServerId")
+    suspend fun updateHabitEntriesState(habitServerId:String,habitEntriesSyncType:HabitRecordSyncType)
+
     @Query("UPDATE GroupHabitsEntity SET habitSyncType=:shouldDelete WHERE localId = :habitId")
     suspend fun updateGroupHabitDeleteStatus(habitId: String,shouldDelete:HabitGroupRecordSyncType=HabitGroupRecordSyncType.DeleteHabit):Int
 

@@ -3,16 +3,17 @@ package com.example.habit.data.Repository
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import com.example.habit.data.Mapper.NotificationMapper.NotificationMapper.toHabitRequest
 import com.example.habit.data.Mapper.SocialMapper.FollowMapper.toFollow
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUser
 import com.example.habit.data.Mapper.SocialMapper.UserMapper.toUserModel
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.data.network.SocialApi
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
 import com.example.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.example.habit.data.network.model.UiModels.HomePageModels.Sections
 import com.example.habit.data.network.model.UiModels.HomePageModels.factories.HomeSectionsFactory
+import com.example.habit.di.HabitModule
 import com.example.habit.domain.Repository.SocialRepo
 import com.example.habit.domain.models.Follow.Follow
 import com.example.habit.domain.models.User.User
@@ -26,13 +27,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import okhttp3.RequestBody
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class SocialRepoImpl(
-    private val socialApi: SocialApi,
+    @HabitModule.MainRetrofit private val socialApi: SocialApi,
+    @HabitModule.WithoutAuthRetrofit private val noAuthSocialApi: SocialApi,
     private val context:Context,
-    private val homeElementsFactory: HomeSectionsFactory
+    private val homeElementsFactory: HomeSectionsFactory,
+    private val authPref: AuthPref
 ) : SocialRepo {
 
     private var lastFetchTime:Long?=null
@@ -43,7 +47,9 @@ class SocialRepoImpl(
                 val res = socialApi.getProfile(userId)
                 if(res.isSuccessful) {
                     Log.e("TAG", "getUserProfile: ${res.body()}", )
-                    emit(res.body()?.data?.toUser())
+                    val user = res.body()?.data
+                    user?.avatarUrl = res.body()?.avatarUrl
+                    emit(user?.toUser())
                 }else{
                     emit(null)
                 }
@@ -113,13 +119,13 @@ class SocialRepoImpl(
     }
 
     override suspend fun getHomeData(): HomeData? {
-        var apiShouldBeCalled=false
+        var apiShouldBeCalled=authPref.getApiShouldBeCalled()
         var data:List<HomeElements>? = null
         val json = readUiFromFile()
 //        Log.e("TAG", "getHomeData json : ${json!!.length}", )
 
         if(json==null || json=="null") apiShouldBeCalled=true
-        else if(lastFetchTime!=null) apiShouldBeCalled = (System.currentTimeMillis() - lastFetchTime!!)>=(10 * 60 * 1000)
+//        else if(lastFetchTime!=null) apiShouldBeCalled = (System.currentTimeMillis() - lastFetchTime!!)>=(10 * 60 * 1000)
 
         if(apiShouldBeCalled) {
             Log.e("TAG", "getHomeData: api called", )
@@ -129,6 +135,7 @@ class SocialRepoImpl(
             Log.e("TAG", "getHomeData: ${Gson().toJson(json?.asJsonObject)}")
             writeUiToFile(json?.asJsonObject)
             lastFetchTime=System.currentTimeMillis()
+            authPref.putApiShouldBeCalled(false)
         }else{
             json?.let {
                 try {
@@ -219,6 +226,28 @@ class SocialRepoImpl(
         }
     }
 
+    override suspend fun uploadUserAvatar(requestBody: RequestBody): Flow<Boolean> {
+        return flow{
+            val getPreSignedUrlResponse = socialApi.getAvatarUploadUrl()
+            if(getPreSignedUrlResponse.isSuccessful){
+                getPreSignedUrlResponse.body()?.let {
+                    Log.e("TAG", "uploadUserAvatar: ${it}", )
+                    val uploadAvatarResponse = noAuthSocialApi.uploadAvatar(it.url,requestBody)
+                    Log.e("TAG", "uploadUserAvatar response : ${uploadAvatarResponse}", )
+                    if(uploadAvatarResponse.isSuccessful){
+                        authPref.putApiShouldBeCalled(true)
+                        emit(true)
+                    }
+                }
+                if(getPreSignedUrlResponse.body()==null)  throw Exception("Failed to Upload Profile Image")
+
+            }else{
+                throw Exception("Failed to Upload Profile Image")
+            }
+        }
+
+    }
+
 
     override fun getUsersByUsername(username: String): Flow<List<User>> {
 //        // if(!Connectivity.isInternetConnected(context)) throw UnknownHostException()
@@ -258,6 +287,7 @@ class SocialRepoImpl(
         // if(!Connectivity.isInternetConnected(context)) throw UnknownHostException()
             return flow {  socialApi.unfollowUser(friendId) }
     }
+
 
 
 }

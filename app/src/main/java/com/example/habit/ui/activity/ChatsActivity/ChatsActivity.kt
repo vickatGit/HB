@@ -75,6 +75,9 @@ class ChatsActivity : AppCompatActivity() {
                 }
             }
         }
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
         viewModel.getChatRooms()
     }
 }

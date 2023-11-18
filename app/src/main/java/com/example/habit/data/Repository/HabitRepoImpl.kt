@@ -150,6 +150,8 @@ class HabitRepoImpl(
         isAnyHabitModified = true
     }
 
+
+
     override fun getHabits(coroutineScope: CoroutineScope): Flow<List<HabitThumb>> {
         if (Connectivity.isInternetConnected(context)) {
             habitApi.getHabits().enqueue(object : Callback<HabitsListModel> {
@@ -228,7 +230,7 @@ class HabitRepoImpl(
 
         if (Connectivity.isInternetConnected(context)) {
             habitDao.deleteAllGroupHabits()
-            getHabits(coroutineScope).collectLatest { }
+//            getHabits(coroutineScope).collectLatest { }
             habitApi.getGroupHabits().enqueue(object : Callback<GroupHabitsModel> {
                 override fun onResponse(
                     call: Call<GroupHabitsModel>,
@@ -488,8 +490,10 @@ class HabitRepoImpl(
             val response = habitApi.updateHabitEntries(EntriesModel(entryList!!.values.map {
                 entryMapper.mapToEntryModel(it)
             }), it)
-            if (response.isSuccessful)
+            if (response.isSuccessful) {
                 Log.e("TAG", "onResponse: updateHabitEntriesToRemote $response")
+                habitDao.updateHabitEntriesState(habitServerId,HabitRecordSyncType.SyncedHabit)
+            }
             else
                 Log.e("TAG", "onFailure: updateHabitEntriesToRemote")
         }

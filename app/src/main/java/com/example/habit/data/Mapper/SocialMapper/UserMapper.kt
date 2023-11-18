@@ -12,7 +12,8 @@ object UserMapper {
             username = this.username,
             userBio = this.userBio,
             followers = this.followers,
-            followings = this.followings
+            followings = this.followings,
+            avatarUrl = this.avatarUrl
         )
     }
     fun User.toUserModel():UserModel{

@@ -18,6 +18,8 @@ import androidx.work.Configuration
 import com.example.habit.data.NetworkChangeJob
 import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.domain.Repository.SocialRepo
+import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmForHabitsEntriesUseCase
+import com.example.habit.domain.UseCases.HabitUseCase.ScheduleAlarmUseCase
 import com.google.android.material.color.DynamicColors
 import com.judemanutd.autostarter.AutoStartPermissionHelper
 import dagger.hilt.android.HiltAndroidApp
@@ -26,6 +28,8 @@ import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 
@@ -43,6 +47,8 @@ class HabitApp : Application(),Configuration.Provider {
 
 
 
+
+
     @Inject
     lateinit var socialRepo: SocialRepo
     override fun onCreate() {
@@ -51,7 +57,6 @@ class HabitApp : Application(),Configuration.Provider {
         MultiDex.install(this)
         socket.connect()
         try {
-
             socket.connect()
             Log.e("TAG", "provideSocket: socket"+socket.id() )
             socket.emit("msg","from client")
@@ -83,7 +88,10 @@ class HabitApp : Application(),Configuration.Provider {
             socialRepo.getHomeData()
         }
 
+
     }
+
+
 
     override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder()

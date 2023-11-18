@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -17,20 +16,15 @@ import com.example.habit.R
 import com.example.habit.data.network.model.UiModels.HomePageModels.Action
 import com.example.habit.databinding.FragmentHomeBinding
 import com.example.habit.domain.UseCases.HabitUseCase.GetAllHabitsUseCase
-import com.example.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
 import com.example.habit.ui.activity.NotificationActivity.NotificationActivity
 import com.example.habit.ui.activity.ProfileActivity.ProfileActivity
 import com.example.habit.ui.adapter.HomePageEpoxyRecycler
 import com.example.habit.ui.model.Epoxy.ProgressSectionHabit
 import com.example.habit.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
@@ -117,8 +111,8 @@ class HomeFragment : Fragment() {
                                     totalHabits,
                                     completedHabits,
                                     habits
-                                ) {
-                                    handleEvents(it)
+                                ) {it,avatarUrl ->
+                                    handleEvents(it,avatarUrl)
                                 }
                                 binding.homeRecycler.setController(epoxyController)
                                 homeState.homeUiData?.data?.sections?.let {
@@ -149,18 +143,20 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    private fun handleEvents(it: Action) {
+    private fun handleEvents(it: Action, avatarUrl: String?) {
         when (it.actionType) {
             "open_screen" -> {
-                handleServerNavigation(it.screenType, it.resId)
+                handleServerNavigation(it.screenType, it.resId,avatarUrl)
             }
         }
     }
 
-    private fun handleServerNavigation(screenType: String, resId: String?) {
+    private fun handleServerNavigation(screenType: String, resId: String?, avatarUrl: String?) {
         when (screenType) {
             "profile" -> {
-                startActivity(Intent(requireContext(), ProfileActivity::class.java))
+                val intent = Intent(requireContext(), ProfileActivity::class.java)
+                intent.putExtra(ProfileActivity.AVATAR_URL,avatarUrl)
+                startActivity(intent)
             }
 
             "add_habit" -> {

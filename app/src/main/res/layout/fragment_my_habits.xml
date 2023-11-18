@@ -283,7 +283,7 @@
             app:cardBackgroundColor="@color/card_color"
             app:cardElevation="7dp"
             android:layout_columnWeight="1"
-
+            android:visibility="invisible"
             android:layout_rowWeight="1"
             app:strokeWidth="0dp"
             android:layout_marginTop="20dp"

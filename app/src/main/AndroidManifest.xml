@@ -75,6 +75,7 @@
             android:exported="true" />
 
         <receiver android:name=".recievers.AlarmReceiver" />
+<!--        <receiver android:name=".recievers.HabitEntriesConsistencyBroadReceiver" />-->
 
         <service
             android:name=".ui.services.UpdateHabitEntriesService"

@@ -3,7 +3,6 @@ package com.example.habit.ui.fragment.GroupHabit
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,11 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -109,7 +104,7 @@ class GroupFragment : Fragment() {
     private val AddMembersResultLauncher = registerForActivityResult(AddMembersContract()) {
         it?.let {
 //            findNavController().popBackStack()
-            Log.e("add", "AddMembersResultLauncher:$it ", )
+            Log.e("add", "AddMembersResultLauncher:$it ")
             if (it) viewModel.groupId?.let { groupHabitId -> viewModel.getGroupHabit(groupHabitId) }
         }
     }
@@ -129,23 +124,30 @@ class GroupFragment : Fragment() {
                     when (it) {
                         is GroupHabitUiState.GroupHabit -> {
                             groupHabit = it.groupHabit
-                            Log.e("TAG", "onCreateView: $groupHabit", )
+                            Log.e("TAG", "onCreateView: $groupHabit")
                             bindData()
                             hideProgress()
                         }
+
                         is GroupHabitUiState.Error -> {
-                            Toast.makeText(requireContext(),it.error,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), it.error, Toast.LENGTH_SHORT).show()
                             hideProgress()
                         }
+
                         is GroupHabitUiState.Success -> {
-                            Toast.makeText(requireContext(),it.msg,Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
                             hideProgress()
                             requireActivity().onBackPressed()
                         }
+
                         GroupHabitUiState.Loading -> {
                             showProgress()
                         }
-                        GroupHabitUiState.Nothing -> {hideProgress()}
+
+                        GroupHabitUiState.Nothing -> {
+                            hideProgress()
+                        }
+
                         else -> {}
                     }
                 }
@@ -165,16 +167,17 @@ class GroupFragment : Fragment() {
         }
 
         binding.delete.setOnClickListener {
-            viewModel.deleteGroupHabit(groupHabit.habitGroup.id,groupHabit.habitGroup.serverId)
+            viewModel.deleteGroupHabit(groupHabit.habitGroup.id, groupHabit.habitGroup.serverId)
         }
         binding.leaveHabitGroupCard.setOnClickListener {
-            viewModel.removeMembersFromGroupHabit(groupHabit.habitGroup.serverId,groupHabit.habitGroup.id,
+            viewModel.removeMembersFromGroupHabit(
+                groupHabit.habitGroup.serverId, groupHabit.habitGroup.id,
                 listOf(users.get(viewModel.getHabitStatePos()).member.userId!!)
             )
         }
         binding.addMembers.setOnClickListener {
-            val intent = Intent(requireContext(),AddMembersActivity::class.java)
-            intent.putExtra(AddMembersActivity.HABIT_GROUP,groupHabit.habitGroup)
+            val intent = Intent(requireContext(), AddMembersActivity::class.java)
+            intent.putExtra(AddMembersActivity.HABIT_GROUP, groupHabit.habitGroup)
             AddMembersResultLauncher.launch(intent)
         }
         binding.back.setOnClickListener {
@@ -190,13 +193,14 @@ class GroupFragment : Fragment() {
         binding.edit.isVisible = isAdmin
         binding.delete.isVisible = isAdmin
         binding.addMembers.isVisible = isAdmin
-        binding.leaveHabitGroupCard.isVisible= !isAdmin
+        binding.leaveHabitGroupCard.isVisible = !isAdmin
         setupRecyclerView()
     }
+
     private fun setupRecyclerView() {
 
         users = mutableListOf()
-        var members = groupHabit.habitGroup.members?: emptyList()
+        var members = groupHabit.habitGroup.members ?: emptyList()
 
 
         //don't know the reason of error that's why added Try-Catch
@@ -212,15 +216,15 @@ class GroupFragment : Fragment() {
                 )
 
             }
-            val userIndex = users.indexOfFirst { it.member.userId==authPref.getUserId() }
+            val userIndex = users.indexOfFirst { it.member.userId == authPref.getUserId() }
             val user = users.get(userIndex)
-            user.member.username="Me"
+            user.member.username = "Me"
             users.removeAt(userIndex)
-            users.add(0,user)
+            users.add(0, user)
 
 
-        }catch (e:Exception){
-            Log.e("TAG", "setupRecyclerView: ${e}", )
+        } catch (e: Exception) {
+            Log.e("TAG", "setupRecyclerView: ${e}")
         }
 
         binding.userHabitsPercentage.layoutManager =
@@ -239,7 +243,7 @@ class GroupFragment : Fragment() {
     }
 
     private fun bindUserHabitData(habit: HabitView) {
-        binding.streakEditSwitch.isVisible= authPref.getUserId() == habit.userId
+        binding.streakEditSwitch.isVisible = authPref.getUserId() == habit.userId
 
 
 
@@ -253,14 +257,17 @@ class GroupFragment : Fragment() {
 
         bindStreakInfo(habit)
         initialiseCalendar(habit.startDate!!, habit.endDate!!, habit)
-        initialiseConsistencyGraph(habit.entries)
+        initialiseConsistencyGraph(habit.entries, habit.startDate!!)
         binding.streakEditSwitch.setOnCheckedChangeListener { _, isChecked ->
             isCalendarEditable = isChecked
             bindDays(habit)
         }
     }
 
-    private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
+    private fun initialiseConsistencyGraph(
+        mapEntries: HashMap<LocalDate, EntryView>?,
+        startDate: LocalDate
+    ) {
         //values for single line chart on the graph
         val entries: MutableList<Entry> = mutableListOf()
         mapEntries?.mapValues {
@@ -277,15 +284,24 @@ class GroupFragment : Fragment() {
                     )
                 }",
             )
-            entries.add(
-                Entry(
-                    it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
-                        .toFloat(), it.value.score!!.toFloat()
+            if (it.key.isBefore(LocalDate.now()) || it.key.isEqual(LocalDate.now()))
+                entries.add(
+                    Entry(
+                        it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+                            .toFloat(), it.value.score!!.toFloat()
+                    )
                 )
-            )
+//            entries.add(
+//                Entry(
+//                    it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+//                        .toFloat(), it.value.score!!.toFloat()
+//                )
+//            )
         }
-        if (entries.size > 3) {
-            binding.consistency.isVisible=true
+
+        entries.sortBy { it.x }
+        if (LocalDate.now().compareTo(startDate) > 3) {
+            binding.consistency.isVisible = true
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
             val startColor = resources.getColor(R.color.orange_op_20)
@@ -311,17 +327,17 @@ class GroupFragment : Fragment() {
             val yrAxis = binding.consistency.axisRight
 
 //            ylAxis.setLabelCount(3,true)
-            xtAxis.setLabelCount(7,true)
-            xtAxis.position=XAxis.XAxisPosition.BOTTOM
+            xtAxis.setLabelCount(7, true)
+            xtAxis.position = XAxis.XAxisPosition.BOTTOM
             xtAxis.textColor = resources.getColor(R.color.text_color)
-            xtAxis.labelRotationAngle=320f
-            yrAxis.isEnabled=false
+            xtAxis.labelRotationAngle = 320f
+            yrAxis.isEnabled = false
 
             ylAxis.setDrawAxisLine(false)
             xtAxis.setDrawGridLines(false)
             ylAxis.textColor = resources.getColor(R.color.text_color)
-            ylAxis.gridColor=resources.getColor(R.color.consistency_graph_grid_color)
-            ylAxis.gridLineWidth=1.4f
+            ylAxis.gridColor = resources.getColor(R.color.consistency_graph_grid_color)
+            ylAxis.gridLineWidth = 1.4f
 
             xtAxis.valueFormatter = XAxisFormatter()
 //            ylAxis.valueFormatter=YAxisFormatter()
@@ -433,7 +449,10 @@ class GroupFragment : Fragment() {
                 return DayHolder(DayBinding.bind(view), object : DateClick {
                     override fun dateClick(date: LocalDate?) {
                         date?.let {
-                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now()))) {
+                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(
+                                    LocalDate.now()
+                                ) || date.isEqual(LocalDate.now()))
+                            ) {
                                 selectDate(date, habit)
                             }
                         }
@@ -535,10 +554,15 @@ class GroupFragment : Fragment() {
 
     }
 
-    private fun showProgress(){ binding.progress.isVisible=true }
-    private fun hideProgress(){ binding.progress.isVisible=false }
+    private fun showProgress() {
+        binding.progress.isVisible = true
+    }
 
-    private class AddMembersContract : ActivityResultContract<Intent, Boolean>(){
+    private fun hideProgress() {
+        binding.progress.isVisible = false
+    }
+
+    private class AddMembersContract : ActivityResultContract<Intent, Boolean>() {
 
 
         override fun createIntent(context: Context, input: Intent): Intent {
@@ -546,7 +570,7 @@ class GroupFragment : Fragment() {
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
-                return intent?.getBooleanExtra(IS_MEMBERS_ARE_ADDED,false)?:false
+            return intent?.getBooleanExtra(IS_MEMBERS_ARE_ADDED, false) ?: false
         }
 
     }

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.habit.R
 import com.example.habit.domain.UseCases.SocialUseCase.GetProfileUseCase
 import com.example.habit.domain.UseCases.SocialUseCase.UpdateProfileUseCase
+import com.example.habit.domain.UseCases.SocialUseCase.UploadAvatarUseCase
 import com.example.habit.ui.activity.AddMembersActivity.AddMemberUiState
 import com.example.habit.ui.activity.ProfileActivity.ProfileUiState
 
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.RequestBody
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -28,7 +30,8 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
-    private val context:Application
+    private val context:Application,
+    private val uploadAvatarUseCase: UploadAvatarUseCase
 ): ViewModel() {
     var user: UserView? = null
     private var _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Nothing)
@@ -67,6 +70,28 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+    fun uploadProfileImage(requestBody:RequestBody){
+        try {
+            _uiState.update { ProfileUiState.Loading }
+            viewModelScope.launch {
+                uploadAvatarUseCase(requestBody).catch {throwable ->
+                    throwable.printStackTrace()
+                    Log.e("TAG", "uploadProfileImage: ${throwable.printStackTrace().toString()}", )
+                    _uiState.update { ProfileUiState.Error(throwable.message.toString()) }
+                }.collect{
+                    if(it) {
+                        _uiState.update { ProfileUiState.Success("Profile Image Uploaded Successfully") }
+                        user?.id?.let { id -> getProfile(id) }
+                    }
+                    else
+                        _uiState.update { ProfileUiState.Error("Failed to Upload Profile Image") }
+                }
+            }
+        }catch (e:Exception){
+            Log.e("TAG", "uploadProfileImage: ${e.printStackTrace()}", )
+            _uiState.update { ProfileUiState.Error(e.message.toString()) }
+        }
+    }
 
     private fun handleExceptions(e:Exception){
         when(e.cause){
@@ -81,4 +106,6 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+
 }

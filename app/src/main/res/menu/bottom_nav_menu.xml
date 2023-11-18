@@ -18,8 +18,8 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/mentees"
-        android:icon="@drawable/nav_mentees_icon"
-        android:title="Mentees"
+        android:icon="@drawable/chat_icon"
+        android:title="Chats"
         app:showAsAction="always"/>
     <item
         android:id="@+id/community"

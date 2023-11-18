@@ -8,13 +8,17 @@ import com.example.habit.data.network.model.UiModels.HomePageModels.HomeData
 import com.example.habit.data.network.model.UsersModel.ProfileModel
 import com.example.habit.data.network.model.UsersModel.UserModel
 import com.example.habit.data.network.model.UsersModel.UsersModel
+import com.example.habit.domain.models.User.AvatarUpload
 import com.google.gson.JsonElement
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
+import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Url
 
 interface SocialApi {
 
@@ -56,6 +60,12 @@ interface SocialApi {
 
     @GET("social/reject_habit_request/{habitGroupId}")
     suspend fun rejectHabitRequest(@Path("habitGroupId") habitGroupId : String ):Response<Any>
+
+    @GET("social/avatar_upload_url")
+    suspend fun getAvatarUploadUrl():Response<AvatarUpload>
+
+    @PUT
+    suspend fun uploadAvatar(@Url s3PreSignedUrl:String,@Body body:RequestBody):Response<Void>
 
 
 }

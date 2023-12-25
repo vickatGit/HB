@@ -244,10 +244,6 @@ class GroupFragment : Fragment() {
 
     private fun bindUserHabitData(habit: HabitView) {
         binding.streakEditSwitch.isVisible = authPref.getUserId() == habit.userId
-
-
-
-
         habit.entries?.let {
             habitEntries = it
             habitEntries?.map {
@@ -291,16 +287,10 @@ class GroupFragment : Fragment() {
                             .toFloat(), it.value.score!!.toFloat()
                     )
                 )
-//            entries.add(
-//                Entry(
-//                    it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
-//                        .toFloat(), it.value.score!!.toFloat()
-//                )
-//            )
         }
 
         entries.sortBy { it.x }
-        if (LocalDate.now().compareTo(startDate) > 3) {
+        if ((startDate!!.diff(LocalDate.now()))>3) {
             binding.consistency.isVisible = true
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
@@ -573,6 +563,9 @@ class GroupFragment : Fragment() {
             return intent?.getBooleanExtra(IS_MEMBERS_ARE_ADDED, false) ?: false
         }
 
+    }
+    fun LocalDate.diff(other: LocalDate): Long {
+        return ChronoUnit.DAYS.between(this, other)
     }
 
 

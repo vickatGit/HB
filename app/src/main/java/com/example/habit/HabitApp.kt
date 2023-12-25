@@ -49,8 +49,7 @@ class HabitApp : Application(),Configuration.Provider {
 
 
 
-    @Inject
-    lateinit var socialRepo: SocialRepo
+
     override fun onCreate() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
@@ -83,9 +82,6 @@ class HabitApp : Application(),Configuration.Provider {
             AutoStartPermissionHelper.getInstance().getAutoStartPermission(this, true, true)
         }else{
             Log.e("TAG", "onCreate: its not working on this device", )
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            socialRepo.getHomeData()
         }
 
 

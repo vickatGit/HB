@@ -19,3 +19,32 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+-keep class com.example.habit.data.local.** { *; }
+-keep class com.example.habit.data.network.model.** { *; }
+-keep class com.example.habit.domain.models.* { *; }
+-keep class com.example.habit.domain.models.** { *; }
+-keep class com.example.habit.ui.model.** { *; }
+-keep class com.example.habit.ui.model.* { *; }
+-keep class com.example.habit.databinding.* { *; }
+ # Keep generic signature of Call, Response (R8 full mode strips signatures from non-kept items).
+ -keep,allowobfuscation,allowshrinking interface retrofit2.Call
+ -keep,allowobfuscation,allowshrinking class retrofit2.Response
+
+ # With R8 full mode generic signatures are stripped for classes that are not
+ # kept. Suspend functions are wrapped in continuations where the type argument
+ # is used.
+ -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
+
+
+ # Gson uses generic type information stored in a class file when working with
+ # fields. Proguard removes such information by default, keep it.
+ -keepattributes Signature
+
+ # This is also needed for R8 in compat mode since multiple
+ # optimizations will remove the generic signature such as class
+ # merging and argument removal. See:
+ # https://r8.googlesource.com/r8/+/refs/heads/main/compatibility-faq.md#troubleshooting-gson-gson
+ -keep class com.google.gson.reflect.TypeToken { *; }
+ -keep class * extends com.google.gson.reflect.TypeToken

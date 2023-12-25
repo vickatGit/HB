@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.habit.R
 import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.databinding.FragmentGroupsBinding
@@ -49,8 +50,7 @@ class GroupsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentGroupsBinding.inflate(inflater, container, false)
-        binding.ongoingHabits.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.ongoingHabits.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {

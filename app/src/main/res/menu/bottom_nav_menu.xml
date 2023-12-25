@@ -14,7 +14,6 @@
         app:showAsAction="always"/>
     <item
         android:title=""
-        android:enabled="false"
         app:showAsAction="always"/>
     <item
         android:id="@+id/mentees"

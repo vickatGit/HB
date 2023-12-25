@@ -183,6 +183,7 @@ class CompletedHabitFragment : Fragment() {
         initialiseCalendar(habit.startDate!!, habit.endDate!!)
         initialiseConsistencyGraph(habit.entries)
 
+
     }
 
     private fun bindStreakInfo() {
@@ -303,17 +304,23 @@ class CompletedHabitFragment : Fragment() {
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
         //values for single line chart on the graph
         val entries:MutableList<Entry> = mutableListOf()
-        mapEntries?.mapValues {
-            if(it.value.score!!>maxScored) maxScored=it.value.score!!
-            Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(
-                Entry(it.value.timestamp!!.atStartOfDay(
-                    ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat())
-            )}", )
-            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+        mapEntries?.forEach {
+            if(it.key.isBefore(LocalDate.now()) || it.key.isEqual(LocalDate.now()))
+                entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
         }
-        if(entries.size>3) {
+        entries.sortBy { it.x }
+//        mapEntries?.mapValues {
+////            if(it.value.score!!>maxScored) maxScored=it.value.score!!
+//            Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))}", )
+//            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+//        }
+//        if(LocalDate.now().compareTo(habit.startDate)>3) {
+//        Log.e("TAG", "initialiseConsistencyGraph: start date ${habit.startDate} \n todays date : ${LocalDate.now()} \n diff " +
+//                "${(LocalDate.now().diff(habit.startDate!!))} ", )
+        if((habit.startDate!!.diff(LocalDate.now()))>3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
+            Log.e("TAG", "initialiseConsistencyGraph: date set ${dataset}", )
             val startColor =resources.getColor(R.color.orange_op_20)
             val midColor = resources.getColor(R.color.orange_op_20)
             val endColor = resources.getColor(R.color.transparent)
@@ -332,19 +339,20 @@ class CompletedHabitFragment : Fragment() {
             dataset.mode= LineDataSet.Mode.CUBIC_BEZIER
 
 
-
             val xtAxis=binding.consistency.xAxis
             val ylAxis=binding.consistency.axisLeft
             val yrAxis=binding.consistency.axisRight
 
 //            ylAxis.setLabelCount(3,true)
             xtAxis.setLabelCount(7,true)
-            xtAxis.position= XAxis.XAxisPosition.BOTTOM
+            xtAxis.position=XAxis.XAxisPosition.BOTTOM
+            xtAxis.textColor = resources.getColor(R.color.text_color)
             xtAxis.labelRotationAngle=320f
             yrAxis.isEnabled=false
 
             ylAxis.setDrawAxisLine(false)
             xtAxis.setDrawGridLines(false)
+            ylAxis.textColor = resources.getColor(R.color.text_color)
             ylAxis.gridColor=resources.getColor(R.color.consistency_graph_grid_color)
             ylAxis.gridLineWidth=1.4f
 
@@ -370,6 +378,7 @@ class CompletedHabitFragment : Fragment() {
             binding.consistency.animateX(1000)
 
             binding.consistency.data = chartLineData
+            Log.e("TAG", "initialiseConsistencyGraph: chart ${Gson().toJson(entries)}", )
             binding.consistency.invalidate()
         }else{
             binding.consistency.isVisible=false
@@ -409,6 +418,10 @@ class CompletedHabitFragment : Fragment() {
             return -1
         }
 
+    }
+
+    fun LocalDate.diff(other: LocalDate): Long {
+        return ChronoUnit.DAYS.between(this, other)
     }
 
 

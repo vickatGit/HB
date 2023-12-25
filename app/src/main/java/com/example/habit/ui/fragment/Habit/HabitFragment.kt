@@ -1,20 +1,14 @@
 package com.example.habit.ui.fragment.Habit
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -43,7 +37,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
@@ -185,6 +178,8 @@ class HabitFragment : Fragment() {
         }
         habitId?.let { viewModel.getHabit(it, getString(R.string.habit_not_found_error)) }
 
+
+
         return binding.root
     }
 
@@ -245,7 +240,9 @@ class HabitFragment : Fragment() {
 //        habitDurationReached = ChronoUnit.DAYS.between(habit.startDate,LocalDate.now())
         val progress = (daysCompleted.toFloat() / totalHabitDuration!!.toFloat()) * 100f
         binding.habitProgress.progress = progress.roundToInt()
-        binding?.progressPercentage?.text = "${DecimalFormat("#.#").format(progress)}%"
+        val formattedProgress = DecimalFormat("#.#").format(progress)
+        binding?.progressPercentage?.text = "${formattedProgress}%"
+        binding?.completionGreet?.text = "${formattedProgress}% of your goal is achieved"
 
 
 //        "${DecimalFormat("#.#").format(progress)}%".also { binding.progressPercentage.text = it }
@@ -324,9 +321,9 @@ class HabitFragment : Fragment() {
                 return DayHolder(DayBinding.bind(view), object : DateClick {
                     override fun dateClick(date: LocalDate?) {
                         date?.let {
-//                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())) ) {
+                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())) ) {
                                 selectDate(date)
-//                            }
+                            }
                         }
                     }
                 })
@@ -362,8 +359,9 @@ class HabitFragment : Fragment() {
 
         habitList.forEachIndexed { index,it ->
             if (index>0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
-                var score=habitList.get(if(index!=0) index-1 else index).score
+                var score= habitList[if(index!=0) index-1 else index].score
                 habitList[index].score=if (isUpgrade) score!!+1 else it.score!!-1
+                if(!it.completed)  habitList[index].score = if(it.score!!-1<0) 0 else it.score!!-1
             }
         }
         habitEntries.putAll(habitList.associateBy { it.timestamp!! })
@@ -378,13 +376,21 @@ class HabitFragment : Fragment() {
                entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
         }
         entries.sortBy { it.x }
+//        Toast.makeText(requireContext(),"Entries Size ${entries.size}",Toast.LENGTH_SHORT).show()
 //        mapEntries?.mapValues {
 ////            if(it.value.score!!>maxScored) maxScored=it.value.score!!
 //            Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))}", )
 //            entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
 //        }
 //        if(LocalDate.now().compareTo(habit.startDate)>3) {
-        if(LocalDate.now().compareTo(habit.startDate)>3) {
+//        Log.e("TAG", "initialiseConsistencyGraph: start date ${habit.startDate} \n todays date : ${LocalDate.now()} \n diff " +
+//                "${(LocalDate.now().diff(habit.startDate!!))} ", )
+//        (habit.startDate!!.diff(LocalDate.now()))>3
+//        Log.e(TAG, "initialiseConsistencyGraph: ", )
+
+        Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(mapEntries)}" )
+
+        if((habit.startDate!!.diff(LocalDate.now()))>3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
             Log.e("TAG", "initialiseConsistencyGraph: date set ${dataset}", )
@@ -501,6 +507,11 @@ class HabitFragment : Fragment() {
             return -1
         }
 
+
+
+    }
+    fun LocalDate.diff(other: LocalDate): Long {
+        return ChronoUnit.DAYS.between(this, other)
     }
 
 

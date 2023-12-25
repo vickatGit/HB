@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.habit.data.network.model.SignupModel.SignupView
 import com.example.habit.databinding.ActivitySignupBinding
-import com.example.habit.ui.activity.LoginActivity.LoginActivity
+import com.example.habit.ui.activity.LoginActivity.LoginActivity2
 import com.example.habit.ui.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -42,7 +42,7 @@ class SignupActivity : AppCompatActivity() {
                         is SignupUiState.Success -> {
                             Toast.makeText(this@SignupActivity,it.message, Toast.LENGTH_SHORT).show()
                             hideProgress()
-                            startActivity(Intent(this@SignupActivity,LoginActivity::class.java))
+                            startActivity(Intent(this@SignupActivity,LoginActivity2::class.java))
                         }
                     }
                 }
@@ -66,7 +66,7 @@ class SignupActivity : AppCompatActivity() {
             }
         }
         binding.navLogin.setOnClickListener {
-            startActivity(Intent(this@SignupActivity,LoginActivity::class.java))
+            startActivity(Intent(this@SignupActivity, LoginActivity2::class.java))
         }
     }
 

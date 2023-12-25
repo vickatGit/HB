@@ -14,6 +14,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.OneTimeWorkRequest
+import com.example.habit.data.local.Pref.AuthPref
 import com.example.habit.data.util.HabitGroupRecordSyncType
 import com.example.habit.data.util.HabitRecordSyncType
 import com.example.habit.domain.Repository.HabitRepo
@@ -35,30 +36,39 @@ class NetworkChangeJob : JobService() {
     @Inject
     lateinit var syncRequest: OneTimeWorkRequest
 
+    @Inject
+    lateinit var authPref: AuthPref
+
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.e("TAG", "onStartJob: invoked again NetworkChangeJob")
 //        showNotification(this,"smaple","sample")
-        CoroutineScope(Dispatchers.IO).launch {
-            val removableMembersFromGroupHabitIds = mutableListOf<String>()
-            habitRepo.getUnSyncedHabits().forEach{ habit ->
+        if(authPref.getHabitsModified()) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val removableMembersFromGroupHabitIds = mutableListOf<String>()
+                habitRepo.getUnSyncedHabits().forEach { habit ->
 
-                    when(habit.habitSyncType){
+                    when (habit.habitSyncType) {
                         HabitRecordSyncType.AddHabit -> {
-                            habitRepo.addOrUpdateHabitToRemote(habit).collectLatest {  }
+                            habitRepo.addOrUpdateHabitToRemote(habit).collectLatest { }
                         }
+
                         HabitRecordSyncType.UpdateHabit -> {
                             habitRepo.updateHabitToRemote(habit)
                         }
+
                         HabitRecordSyncType.UpdateHabitEntries -> {
-                            habitRepo.updateHabitEntriesToRemote(habit.serverId,habit.entryList)
+                            habitRepo.updateHabitEntriesToRemote(habit.serverId, habit.entryList)
                         }
+
                         HabitRecordSyncType.DeleteHabit -> {
                             habitRepo.deleteFromRemote(habit.id, habit.serverId)
                         }
+
                         HabitRecordSyncType.DeletedHabit -> {
                             habitRepo.deleteFromLocal(habit.id)
                         }
+
                         HabitRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT -> {
                             val groupHabit = habitRepo.getGroupHabit(habit.habitGroupLocalId!!)
                             groupHabit?.let {
@@ -68,6 +78,7 @@ class NetworkChangeJob : JobService() {
                                 )
                             }
                         }
+
                         HabitRecordSyncType.ADD_MEMBER_HABIT -> {
                             val groupHabit = habitRepo.getGroupHabit(habit.habitGroupId!!)
                             groupHabit?.let {
@@ -75,9 +86,10 @@ class NetworkChangeJob : JobService() {
                                 habitRepo.addMembersToGroupHabitFromRemote(
                                     groupHabit = groupHabit.habitGroup.serverId,
                                     listOf(habit.userId!!)
-                                ).collectLatest {  }
+                                ).collectLatest { }
                             }
                         }
+
                         HabitRecordSyncType.ADD_ADMIN_MEMBER_HABIT -> {
 //                            habitRepo.addAdminHabitToRemote(habit)
                         }
@@ -85,23 +97,34 @@ class NetworkChangeJob : JobService() {
                         HabitRecordSyncType.SyncedHabit -> {}
                     }
 
-            }
+                }
 
+            }
         }
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.e("TAG", "onStartJob: invoked again NetworkChangeJob 2")
-            habitRepo.getGroupUnSyncedHabits().forEach{ it ->
+        if(authPref.getGroupHabitsModified()) {
+            CoroutineScope(Dispatchers.IO).launch {
+                Log.e("TAG", "onStartJob: invoked again NetworkChangeJob 2")
+                habitRepo.getGroupUnSyncedHabits().forEach { it ->
 //                Log.e("TAG", "onStartJob: ${Gson().toJson(habits)}", )
 //                habits.forEach {
-                    when(it.habitSyncType) {
+                    when (it.habitSyncType) {
                         HabitGroupRecordSyncType.AddHabit -> {
                             habitRepo.addGroupHabitToRemote(it)
                         }
+
                         HabitGroupRecordSyncType.SyncedHabit -> {}
                         HabitGroupRecordSyncType.DeleteHabit -> {
                             val groupHabit = habitRepo.getGroupHabit(it.localId)
-                            groupHabit.let { it?.habitGroup?.let { habitRepo.deleteGroupHabitFromRemote(it.id,it.serverId) } }
+                            groupHabit.let {
+                                it?.habitGroup?.let {
+                                    habitRepo.deleteGroupHabitFromRemote(
+                                        it.id,
+                                        it.serverId
+                                    )
+                                }
+                            }
                         }
+
                         HabitGroupRecordSyncType.DeletedHabit -> {}
                         HabitGroupRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT -> {}
                         HabitGroupRecordSyncType.UpdateHabit -> {
@@ -110,6 +133,7 @@ class NetworkChangeJob : JobService() {
 
                     }
 //                }
+                }
             }
         }
         return true

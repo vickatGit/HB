@@ -25,4 +25,5 @@
     <color name="habit_add_fab_color">#FFFFFF</color>
     <color name="card_color">#FFFFFF</color>
     <color name="their_chat_color">#e5e5e5</color>
+    <color name="bottom_nav_shadow_color">#F1F1F1</color>
 </resources>

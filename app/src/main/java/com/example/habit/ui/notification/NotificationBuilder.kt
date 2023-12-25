@@ -45,6 +45,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
+import java.util.Date
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -90,10 +91,12 @@ class NotificationBuilder @Inject constructor(
 //                collapsedView.setImageViewBitmap(R.id.progress_img, progressBitmap)
 
 
+
                     val completeIntent =
                         Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
                             putExtra("isUpgrade", true)
                             putExtra("habitId", habit.id)
+                            putExtra("notificationId", habit.id.onlyIntegers())
                             putExtra("habitServerId", habit.serverId)
                             putExtra("todayDate", LocalDate.now().toString())
                         }
@@ -101,6 +104,7 @@ class NotificationBuilder @Inject constructor(
                         Intent(app, UpdateHabitEntryBroadRecieve::class.java).apply {
                             putExtra("isUpgrade", false)
                             putExtra("habitId", habit.id)
+                            putExtra("notificationId", habit.id.onlyIntegers())
                             putExtra("habitServerId", habit.serverId)
                             putExtra("todayDate", LocalDate.now().toString())
                         }
@@ -126,7 +130,7 @@ class NotificationBuilder @Inject constructor(
 
                     val notificationBuilder = NotificationCompat.Builder(app).apply {
                         setSmallIcon(R.drawable.habits_icon)
-                        setAutoCancel(true)
+                        setAutoCancel(false)
                         setStyle(NotificationCompat.DecoratedCustomViewStyle())
                         setCustomContentView(collapsedView)
                     }
@@ -136,15 +140,15 @@ class NotificationBuilder @Inject constructor(
                         val notificationChannel = NotificationChannel(
                             HABIT_UPDATE_NOTI_CHAN_ID,
                             HABIT_UPDATE_NOTI_CHAN_NAME,
-                            NotificationManager.IMPORTANCE_DEFAULT
+                            NotificationManager.IMPORTANCE_HIGH
                         )
                         notificationBuilder.setChannelId(HABIT_UPDATE_NOTI_CHAN_ID)
                         notificationManager.createNotificationChannel(notificationChannel)
                     }
-                    val habitId = Random(10).nextInt()
-                    notificationManager.notify(habitId, notificationBuilder.build())
 
-                    Log.e("TAG", "sendNotification: send",)
+                    notificationManager.notify(habit.id.onlyIntegers(), notificationBuilder.build())
+
+                    Log.e("TAG", "sendNotification: send notificationId ${habit.id.onlyIntegers()}")
                     if (habit.isReminderOn!!) {
 //                    scheduleAlarmUseCase(
 //                        habitId,
@@ -304,4 +308,10 @@ class NotificationBuilder @Inject constructor(
     }
 
 
+}
+
+private fun String.onlyIntegers(): Int {
+    val regex = Regex("\\d")
+    val digits = regex.findAll(this).map { it.value.toIntOrNull() ?: 0 }
+    return digits.sum()
 }

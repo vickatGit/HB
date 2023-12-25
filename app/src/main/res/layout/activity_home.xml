@@ -9,33 +9,34 @@
     tools:context=".ui.activity.HomeActivity">
 
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/white"
-        app:backgroundTint="@color/habit_add_fab_color"
-        app:itemActiveIndicatorStyle="@null"
-        app:itemIconTint="@color/bottom_nav_item_bg"
-        app:itemPaddingBottom="10dp"
-        app:itemTextColor="@color/bottom_nav_item_bg"
-        app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/bottomNavigationView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+<!--        android:background="@android:color/white"-->
+<!--        app:backgroundTint="@color/habit_add_fab_color"-->
+<!--        app:itemActiveIndicatorStyle="@null"-->
+<!--        android:visibility="gone"-->
+<!--        app:itemIconTint="@color/bottom_nav_item_bg"-->
+<!--        app:itemPaddingBottom="10dp"-->
+<!--        app:itemTextColor="@color/bottom_nav_item_bg"-->
+<!--        app:labelVisibilityMode="labeled"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:menu="@menu/bottom_nav_menu" />-->
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_habit_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/habit_add_fab_color"
-        android:src="@drawable/add_icon"
-        app:layout_anchorGravity="top|center"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/bottomNavigationView"
-        app:tint="@color/orange" />
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/add_habit_fab"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:backgroundTint="@color/habit_add_fab_color"-->
+<!--        android:src="@drawable/add_icon"-->
+<!--        app:layout_anchorGravity="top|center"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/bottomNavigationView"-->
+<!--        app:tint="@color/orange" />-->
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView2"
@@ -43,10 +44,24 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:navGraph="@navigation/home_nav" />
+
+    <com.etebarian.meowbottomnavigation.MeowBottomNavigation
+        android:id="@+id/meow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="10dp"
+        android:layout_marginBottom="-13dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:mbn_backgroundBottomColor="@color/card_color"
+        app:mbn_circleColor="@color/card_color"
+        app:mbn_selectedIconColor="@color/orange"
+        app:mbn_shadowColor="@color/bottom_nav_shadow_color" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

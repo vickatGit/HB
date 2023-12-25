@@ -2,10 +2,13 @@ package com.example.habit.data.local.Pref
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.widget.Toast
 
-class AuthPref(context:Context) {
+class AuthPref(val context:Context) {
 
 
+    private val IS_ANY_HABIT_MODIFIED: String = "is_any_habit_modified"
+    private val IS_ANY_GROUP_HABIT_MODIFIED: String = "is_any_group_habit_modified"
     private val FCM_TOKEN: String="fcm_token_for_messaging"
     private val AUTH_KEY: String?="access_token"
     private val USER_ID: String?="user_id"
@@ -18,6 +21,7 @@ class AuthPref(context:Context) {
     }
 
     fun setToken(token:String){
+        Toast.makeText(context.applicationContext,"token set : $token",Toast.LENGTH_SHORT).show()
         authPref.edit().putString(AUTH_KEY,token).commit()
 
     }
@@ -51,5 +55,20 @@ class AuthPref(context:Context) {
     }
     fun getApiShouldBeCalled(): Boolean {
         return authPref!!.getBoolean(API_SHOULD_BE_CALLED,false)
+    }
+
+    fun setHabitsModified(modified: Boolean) {
+        authPref.edit().putBoolean(IS_ANY_HABIT_MODIFIED,modified).commit()
+    }
+    fun getHabitsModified(): Boolean {
+        return authPref!!.getBoolean(IS_ANY_HABIT_MODIFIED,false)
+    }
+
+    fun setGroupHabitsModified(modified: Boolean) {
+        authPref.edit().putBoolean(IS_ANY_GROUP_HABIT_MODIFIED,modified).commit()
+    }
+
+    fun getGroupHabitsModified(): Boolean {
+        return authPref!!.getBoolean(IS_ANY_GROUP_HABIT_MODIFIED,false)
     }
 }

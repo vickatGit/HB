@@ -13,7 +13,14 @@ class UpdateHabitEntryBroadRecieve : BroadcastReceiver() {
         Log.e("TAG", "onReceive: update ${intent!!.getBooleanExtra("isUpgrade",false)}", )
         UpdateHabitEntriesService.enqueueWork(context!!,intent!!)
         val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.cancel(intent.getIntExtra("habitId",Int.MAX_VALUE))
+        Log.e("TAG", "onReceive: notificationId ${intent.getStringExtra("habitId")?.onlyIntegers()}", )
+        notificationManager.cancel(intent.getStringExtra("habitId")?.onlyIntegers()?:0)
+    }
+
+    private fun String.onlyIntegers(): Int {
+        val regex = Regex("\\d")
+        val digits = regex.findAll(this).map { it.value.toIntOrNull() ?: 0 }
+        return digits.sum()
     }
 
 }

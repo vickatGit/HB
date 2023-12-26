@@ -38,6 +38,7 @@ class UpdateHabitEntriesService : JobIntentService() {
         fun enqueueWork(context: Context, intent: Intent) {
             enqueueWork(context, UpdateHabitEntriesService::class.java, 123, intent)
         }
+
     }
 
     override fun onHandleWork(intent: Intent) {

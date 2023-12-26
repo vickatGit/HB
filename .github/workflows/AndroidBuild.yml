@@ -1,0 +1,56 @@
+name: HabitBuild
+on:
+  push :
+    branches : [ main ]
+  pull_request :
+      branches : [ main ]
+
+jobs :
+  build :
+    runs-on : ubuntu-latest
+    steps :
+      - name : Checkout
+        uses : actions/checkout@v4.1.1
+
+      - name : Setup Java JDK
+        uses : actions/setup-java@v4.0.0
+        with :
+          - java-version : '17'
+          - Java distribution : 'adopt'
+
+      - name : Build with Gradle
+        id : build
+        run : ./gradlew build
+
+      - name : Build Release AAB
+        id : buildRelease
+        run : ./gradlew bundleRelease
+
+      - name : Sign AAB
+        id : sign
+        uses : r0adkll/sign-android-release@v1
+        with :
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name : Upload AAB
+        id : uploadArtifact
+        uses : actions/upload-artifact@v4.0.0
+        with :
+          name  : HabitApp
+          path : app/build/outputs/bundle/release/app-release.aab
+
+      - name : Create service_account.json
+        id : createServiceAccount
+        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+
+      - name :  Deploy to Play Store (BETA)
+        uses : r0adkll/upload-google-play@v1
+        with :
+          serviceAccountJson: service_account.json
+          packageName : com.example.habit
+          releaseFile: app/build/outputs/bundle/release/app-release.aab
+          track: beta

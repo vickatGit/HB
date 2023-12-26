@@ -21,7 +21,7 @@ class AuthPref(val context:Context) {
     }
 
     fun setToken(token:String){
-        Toast.makeText(context.applicationContext,"token set : $token",Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context.applicationContext,"token set : $token",Toast.LENGTH_SHORT).show()
         authPref.edit().putString(AUTH_KEY,token).commit()
 
     }

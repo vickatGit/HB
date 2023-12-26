@@ -294,6 +294,8 @@ class HabitFragment : Fragment() {
                 container.dayBinding.calendarDayText.text =
                     calendarDay.date.dayOfMonth.toString() + ""
 
+
+
                 if (calendarDay.position == DayPosition.MonthDate) {
                     container.dayBinding.calendarDayText.isVisible = true
                     if (habitEntries.containsKey(calendarDay.date) && habitEntries[calendarDay.date]!!.completed) {

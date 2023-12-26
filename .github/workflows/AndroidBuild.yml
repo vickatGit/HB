@@ -1,9 +1,9 @@
 name: HabitBuild
 on:
   push :
-    branches : [ main ]
+    branches : [ vikas ]
   pull_request :
-      branches : [ main ]
+      branches : [ vikas ]
 
 jobs :
   build :

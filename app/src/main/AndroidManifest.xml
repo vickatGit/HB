@@ -72,6 +72,7 @@
         </activity>
         <activity
             android:name=".ui.activity.HomeActivity"
+            android:windowSoftInputMode="adjustNothing"
             android:exported="true" />
         <activity
             android:name=".ui.activity.MainActivity"

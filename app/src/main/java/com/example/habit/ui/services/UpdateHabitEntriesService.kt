@@ -42,8 +42,8 @@ class UpdateHabitEntriesService : JobIntentService() {
 
     override fun onHandleWork(intent: Intent) {
         val isUpgrade = intent.getBooleanExtra("isUpgrade", false)
-        Log.e("TAG", "onHandleWork: $isUpgrade")
         val habitId = intent.getStringExtra("habitId")
+        Log.e("TAG", "onHandleWork: isUpgrade $isUpgrade")
         val habitServerId = intent.getStringExtra("habitServerId")
         val todayDate = intent.getStringExtra("todayDate")
         Log.e("TAG", "onHandleWork: ")

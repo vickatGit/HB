@@ -39,7 +39,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:padding="0dp"
-            app:tint="@color/white"
+            app:tint="@color/black"
             app:layout_constraintBottom_toBottomOf="@+id/header"
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toTopOf="@+id/header"

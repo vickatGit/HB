@@ -65,11 +65,25 @@ class HomeActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.meow.setOnClickMenuListener{  }
             when (destination.id) {
-                R.id.homeFragment -> { binding.meow.show(1,true) }
-                R.id.myHabitsFragment -> { binding.meow.show(2,true) }
-                R.id.addHabitFragment -> { binding.meow.show(3,true) }
-                R.id.menteesFragment -> {
-                    binding.meow.show(prevDestinationId,true)
+                R.id.homeFragment -> { prevDestinationId =1
+                    binding.meow.show(1,true) }
+                R.id.myHabitsFragment -> { prevDestinationId =2
+                    binding.meow.show(2,true) }
+                R.id.habitsFragment -> { prevDestinationId =2
+                    binding.meow.show(2,true) }
+                R.id.habitFragment -> { prevDestinationId =2
+                    binding.meow.show(2,true) }
+                R.id.groupsFragment -> { prevDestinationId =2
+                    binding.meow.show(2,true) }
+                R.id.groupFragment -> { prevDestinationId =2
+                    binding.meow.show(2,true) }
+                R.id.completedHabitFragment -> { prevDestinationId =2
+                    binding.meow.show(2,true) }
+                R.id.myHabitsFragment -> { prevDestinationId =2
+                    binding.meow.show(2,true) }
+                R.id.addHabitFragment -> { prevDestinationId =3
+                    binding.meow.show(3,true) }
+                R.id.menteesFragment -> {  binding.meow.show(prevDestinationId,true)
                 }
                 R.id.communityFragment -> { binding.meow.show(prevDestinationId,true) }
                 else -> {}

@@ -13,7 +13,7 @@ class UpdateHabitEntryBroadRecieve : BroadcastReceiver() {
         Log.e("TAG", "onReceive: update ${intent!!.getBooleanExtra("isUpgrade",false)}", )
         UpdateHabitEntriesService.enqueueWork(context!!,intent!!)
         val notificationManager = NotificationManagerCompat.from(context)
-        Log.e("TAG", "onReceive: notificationId ${intent.getStringExtra("habitId")?.onlyIntegers()}", )
+        Log.e("TAG", "onReceive: notificationId ${intent.getStringExtra("habitId")}", )
         notificationManager.cancel(intent.getStringExtra("habitId")?.onlyIntegers()?:0)
     }
 

@@ -60,7 +60,7 @@
             android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="com.example.habit.HANDLE_AUTHORIZATION_RESPONSE" />
+                <action android:name="com.habitude.habit.HANDLE_AUTHORIZATION_RESPONSE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -108,7 +108,7 @@
 
                 <data
                     android:path="/oauth2redirect"
-                    android:scheme="com.example.habit" />
+                    android:scheme="com.habitude.habit" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -118,7 +118,7 @@
 
                 <data
                     android:path="/logout"
-                    android:scheme="com.example.habit" />
+                    android:scheme="com.habitude.habit" />
             </intent-filter>
         </activity>
 

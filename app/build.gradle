@@ -10,15 +10,15 @@ plugins {
 }
 
 android {
-    namespace 'com.example.habit'
+    namespace 'com.habitude.habit'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.habit"
+        applicationId "com.habitude.habit"
         minSdk 24
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
 
         multiDexEnabled true
 

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/addHabitFragment"
-        android:name="com.example.habit.ui.fragment.AddHabit.AddHabitFragment"
+        android:name="com.habitude.habit.ui.fragment.AddHabit.AddHabitFragment"
         android:label="fragment_add_habit"
         tools:layout="@layout/fragment_add_habit" >
         <action
@@ -22,7 +22,7 @@
             android:defaultValue="false" />
         <argument
             android:name="habit"
-            app:argType="com.example.habit.ui.model.HabitView"
+            app:argType="com.habitude.habit.ui.model.HabitView"
             app:nullable="true"
             android:defaultValue="@null" />
         <argument
@@ -31,7 +31,7 @@
             android:defaultValue="false" />
         <argument
             android:name="groupHabit"
-            app:argType="com.example.habit.ui.model.GroupHabitView"
+            app:argType="com.habitude.habit.ui.model.GroupHabitView"
             app:nullable="true"
             android:defaultValue="@null" />
         <argument
@@ -45,12 +45,12 @@
     </fragment>
     <dialog
         android:id="@+id/dateFragment"
-        android:name="com.example.habit.ui.fragment.Date.DateFragment"
+        android:name="com.habitude.habit.ui.fragment.Date.DateFragment"
         android:label="fragment_date"
         tools:layout="@layout/fragment_date" />
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.habit.ui.fragment.HomeFragment.HomeFragment"
+        android:name="com.habitude.habit.ui.fragment.HomeFragment.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -64,12 +64,12 @@
     </fragment>
     <fragment
         android:id="@+id/communityFragment"
-        android:name="com.example.habit.ui.fragment.CommunityFragment"
+        android:name="com.habitude.habit.ui.fragment.CommunityFragment"
         android:label="fragment_community"
         tools:layout="@layout/fragment_community" />
     <fragment
         android:id="@+id/habitsFragment"
-        android:name="com.example.habit.ui.fragment.Habits.HabitsFragment"
+        android:name="com.habitude.habit.ui.fragment.Habits.HabitsFragment"
         android:label="fragment_habits"
         tools:layout="@layout/fragment_habits" >
         <action
@@ -85,7 +85,7 @@
     </fragment>
     <fragment
         android:id="@+id/menteesFragment"
-        android:name="com.example.habit.ui.fragment.MenteesFragment"
+        android:name="com.habitude.habit.ui.fragment.MenteesFragment"
         android:label="fragment_mentees"
         tools:layout="@layout/fragment_mentees" />
     <action
@@ -94,7 +94,7 @@
         app:launchSingleTop="true" />
     <fragment
         android:id="@+id/myHabitsFragment"
-        android:name="com.example.habit.ui.fragment.MyHabitsFragment"
+        android:name="com.habitude.habit.ui.fragment.MyHabitsFragment"
         android:label="fragment_my_habits"
         tools:layout="@layout/fragment_my_habits" >
         <action
@@ -109,12 +109,12 @@
     </fragment>
     <dialog
         android:id="@+id/timerFragment"
-        android:name="com.example.habit.ui.fragment.time.TimerFragment"
+        android:name="com.habitude.habit.ui.fragment.time.TimerFragment"
         android:label="fragment_timer"
         tools:layout="@layout/fragment_timer" />
     <fragment
         android:id="@+id/habitFragment"
-        android:name="com.example.habit.ui.fragment.Habit.HabitFragment"
+        android:name="com.habitude.habit.ui.fragment.Habit.HabitFragment"
         android:label="fragment_habit"
         tools:layout="@layout/fragment_habit" >
         <argument
@@ -127,12 +127,12 @@
     </fragment>
     <fragment
         android:id="@+id/completedHabitFragment"
-        android:name="com.example.habit.ui.fragment.CompletedHabitFragment.CompletedHabitFragment"
+        android:name="com.habitude.habit.ui.fragment.CompletedHabitFragment.CompletedHabitFragment"
         android:label="fragment_completed_habit"
         tools:layout="@layout/fragment_completed_habit" />
     <fragment
         android:id="@+id/groupsFragment"
-        android:name="com.example.habit.ui.fragment.GroupHabits.GroupsFragment"
+        android:name="com.habitude.habit.ui.fragment.GroupHabits.GroupsFragment"
         android:label="GroupsFragment" >
         <action
             android:id="@+id/action_groupsFragment_to_groupFragment"
@@ -140,7 +140,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupFragment"
-        android:name="com.example.habit.ui.fragment.GroupHabit.GroupFragment"
+        android:name="com.habitude.habit.ui.fragment.GroupHabit.GroupFragment"
         android:label="GroupFragment" >
         <argument
             android:name="group_habit_id"

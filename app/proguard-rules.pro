@@ -21,13 +21,13 @@
 #-renamesourcefileattribute SourceFile
 
 
--keep class com.example.habit.data.local.** { *; }
--keep class com.example.habit.data.network.model.** { *; }
--keep class com.example.habit.domain.models.* { *; }
--keep class com.example.habit.domain.models.** { *; }
--keep class com.example.habit.ui.model.** { *; }
--keep class com.example.habit.ui.model.* { *; }
--keep class com.example.habit.databinding.* { *; }
+-keep class com.habitude.habit.data.local.** { *; }
+-keep class com.habitude.habit.data.network.model.** { *; }
+-keep class com.habitude.habit.domain.models.* { *; }
+-keep class com.habitude.habit.domain.models.** { *; }
+-keep class com.habitude.habit.ui.model.** { *; }
+-keep class com.habitude.habit.ui.model.* { *; }
+-keep class com.habitude.habit.databinding.* { *; }
  # Keep generic signature of Call, Response (R8 full mode strips signatures from non-kept items).
  -keep,allowobfuscation,allowshrinking interface retrofit2.Call
  -keep,allowobfuscation,allowshrinking class retrofit2.Response

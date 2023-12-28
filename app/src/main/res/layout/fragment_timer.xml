@@ -50,7 +50,7 @@
 
 
 
-        <com.example.habit.ui.fragment.time.TimePicker
+        <com.habitude.habit.ui.fragment.time.TimePicker
             android:id="@+id/timer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

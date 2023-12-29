@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.bumptech.glide.Glide
 import com.habitude.habit.R
 import com.habitude.habit.data.local.Pref.AuthPref
 import com.habitude.habit.databinding.ActivityUserBinding
@@ -111,6 +112,10 @@ class UserActivity : AppCompatActivity() {
         viewModel.user?.let {
             binding.userBio.text=it.userBio
             binding.userName.text=it.username
+            Glide.with(this@UserActivity).load(it.avatarUrl)
+                .placeholder(R.drawable.user)
+                .error(Glide.with(this@UserActivity).load(R.drawable.user))
+                .into(binding.userProfileImage)
         }
     }
 

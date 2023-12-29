@@ -10,7 +10,7 @@ object FollowMapper {
     fun FollowerModel.toFollow(): Follow {
         val users  = mutableListOf<User>()
         this.users?.map {
-            it?.follows?.let {
+            it?.let {
                 users.add(it.toUser())
             }
         }
@@ -20,7 +20,7 @@ object FollowMapper {
     fun FollowingModel.toFollow(): Follow {
         val users  = mutableListOf<User>()
         this.users?.map {
-            it?.to?.let {
+            it?.let {
                 users.add(it.toUser())
             }
         }

@@ -31,6 +31,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatActivity : AppCompatActivity() {
+    private var adminImageUrl: String? = null
+    private var friendImageUrl: String? = null
     private var userName: String? = null
     private var isRoomPrivate: Boolean=true
     private var roomName: String? =null
@@ -70,12 +72,14 @@ class ChatActivity : AppCompatActivity() {
         friendId = intent.getStringExtra(FRIEND_ID)
         roomName = intent.getStringExtra(FRIEND_NAME)
         roomId = intent.getStringExtra(ROOM_ID)
+        friendImageUrl = intent.getStringExtra(FRIEND_IMAGE_URL)
+        adminImageUrl = intent.getStringExtra(ADMIN_IMAGE_URL)
         isRoomPrivate = intent.getBooleanExtra(IS_ROOM_PRIVATE,true)
         socket.emit("ONLINE_STATUS_REGISTRATION",userId)
 
 
         binding.chats.layoutManager = LinearLayoutManager(this)
-        chatController = ChatAdapter(userId =userId!!,chats)
+        chatController = ChatAdapter(userId =userId!!,chats,friendImageUrl,adminImageUrl,this@ChatActivity)
         binding.chats.adapter = chatController
         socket.connect()
         if(roomId==null) {
@@ -239,6 +243,8 @@ class ChatActivity : AppCompatActivity() {
 
 
     companion object{
+        const val ADMIN_IMAGE_URL: String = "admin_image_url"
+        const val FRIEND_IMAGE_URL: String = "friend_image_url"
         const val IS_ROOM_PRIVATE: String  = "is_room_private"
         const val FRIEND_NAME: String = "friend_name"
         const val ROOM_ID="room_id"

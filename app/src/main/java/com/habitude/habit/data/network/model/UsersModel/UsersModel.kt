@@ -15,6 +15,7 @@ data class UserModel(
 	val followers:String? = null,
 	val followings:String? = null,
 	val v: Int? = null,
+	@SerializedName("userAvatar")
 	var avatarUrl:String? = null
 
 )

@@ -38,14 +38,12 @@ class UserSearchActivity : AppCompatActivity() {
         _binding = ActivityUserSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.usersRecycler.layoutManager = LinearLayoutManager(this@UserSearchActivity)
-        usersAdapter = UserListAdapter(users, object : OnUserClick {
+        usersAdapter = UserListAdapter(users, this@UserSearchActivity,object : OnUserClick {
             override fun onUserClick(userId: String) {
                 val userIntent = Intent(this@UserSearchActivity,UserActivity::class.java)
                 userIntent.putExtra(UserActivity.USER_ID,userId)
                 startActivity(userIntent)
-
             }
-
         })
         binding.usersRecycler.adapter = usersAdapter
         lifecycleScope.launch {

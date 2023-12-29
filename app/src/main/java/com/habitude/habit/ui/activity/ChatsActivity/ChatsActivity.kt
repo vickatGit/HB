@@ -42,7 +42,7 @@ class ChatsActivity : AppCompatActivity() {
                     when(it){
                         is ChatsUIState.ChatRooms -> {
                             binding.usersRecycler.layoutManager = LinearLayoutManager(this@ChatsActivity)
-                            roomsAdapter = RoomsAdapter(it.chatRooms){room_id,roomName,roomType,members ->
+                            roomsAdapter = RoomsAdapter(it.chatRooms,this@ChatsActivity){room_id,roomName,roomType,members,friendImageUrl,adminImageUrl ->
                                 val intent = Intent(this@ChatsActivity,ChatActivity::class.java).apply {
                                     putExtra(ChatActivity.ROOM_ID,room_id)
                                     putExtra(ChatActivity.FRIEND_NAME,roomName)
@@ -53,6 +53,8 @@ class ChatsActivity : AppCompatActivity() {
                                             }
                                         }
                                     }
+                                    putExtra(ChatActivity.FRIEND_IMAGE_URL,friendImageUrl)
+                                    putExtra(ChatActivity.ADMIN_IMAGE_URL,adminImageUrl)
                                     putExtra(ChatActivity.IS_ROOM_PRIVATE, roomType=="Personal")
                                 }
                                 startActivity(intent)

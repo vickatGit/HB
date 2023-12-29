@@ -65,7 +65,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="40dp"
-            android:src="@drawable/dummy_user_image"
+            tools:src="@drawable/dummy_user_image"
             app:layout_constraintEnd_toStartOf="@+id/end"
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toBottomOf="@+id/back" />
@@ -96,7 +96,7 @@
             android:textAlignment="center"
             android:textSize="13sp"
             android:lineSpacingExtra="10dp"
-            android:text="I’m a travel enthusiast and a fitness freak"
+            tools:text="I’m a travel enthusiast and a fitness freak"
             app:layout_constraintEnd_toStartOf="@+id/end"
             app:layout_constraintStart_toStartOf="@+id/start"
             app:layout_constraintTop_toBottomOf="@+id/user_name" />
@@ -115,7 +115,7 @@
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="0dp"
             android:layout_height="55dp"
-            android:text="Follow"
+            tools:text="Follow"
             android:layout_weight="1"
             android:layout_marginEnd="15dp"
             android:textAlignment="center"

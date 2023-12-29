@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class FollowerModel(
     @SerializedName("data")
-    val users: List<UserFollowsModel?>? = null
+    val users: List<UserModel?>? = null
 )
 
 data class UserFollowsModel(

@@ -62,6 +62,7 @@ class LoginActivity2 : AppCompatActivity() {
                         }
                         is LoginUiState.Success -> {
                             Toast.makeText(this@LoginActivity2,it.message, Toast.LENGTH_SHORT).show()
+                            finishAffinity()
                             startActivity(Intent(this@LoginActivity2, HomeActivity::class.java))
                             hideProgress()
                         }

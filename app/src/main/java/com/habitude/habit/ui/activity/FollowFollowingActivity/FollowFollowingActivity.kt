@@ -44,7 +44,7 @@ class FollowFollowingActivity : AppCompatActivity() {
         setContentView(binding.root)
         shouldShowFollowers=intent.getBooleanExtra(IS_FOLLOWERS,false)
         binding.usersRecycler.layoutManager = LinearLayoutManager(this@FollowFollowingActivity)
-        usersAdapter = UserListAdapter(users, object : OnUserClick {
+        usersAdapter = UserListAdapter(users, this@FollowFollowingActivity,object : OnUserClick {
             override fun onUserClick(userId: String) {
                 val userIntent = Intent(this@FollowFollowingActivity, UserActivity::class.java)
                 userIntent.putExtra(UserActivity.USER_ID,userId)

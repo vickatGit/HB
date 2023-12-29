@@ -1,14 +1,17 @@
 package com.habitude.habit.ui.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
+import com.habitude.habit.R
 import com.habitude.habit.databinding.UserThumbItemLayoutBinding
 import com.habitude.habit.ui.callback.OnUserClick
 import com.habitude.habit.ui.model.User.UserView
 
-class UserListAdapter(private val users: MutableList<UserView>, private val onUserClick: OnUserClick) : RecyclerView.Adapter<UserListAdapter.UserHolder>() {
+class UserListAdapter(private val users: MutableList<UserView>,val context:Context, private val onUserClick: OnUserClick) : RecyclerView.Adapter<UserListAdapter.UserHolder>() {
 
 
     inner class UserHolder(val binding: UserThumbItemLayoutBinding): ViewHolder(binding.root)
@@ -30,5 +33,9 @@ class UserListAdapter(private val users: MutableList<UserView>, private val onUs
         binding.root.setOnClickListener {
             onUserClick.onUserClick(user.id!!)
         }
+        Glide.with(context).load(user.avatarUrl)
+            .placeholder(R.drawable.user)
+            .error(Glide.with(context).load(R.drawable.user))
+            .into(holder.binding.userImage)
     }
 }

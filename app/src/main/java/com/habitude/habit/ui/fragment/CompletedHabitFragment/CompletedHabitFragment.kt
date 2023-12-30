@@ -115,6 +115,7 @@ class CompletedHabitFragment : Fragment() {
                         is HabitUiState.HabitData -> {
                             habit = it.habit
                             bindHabitPageData(it.habit)
+                            Log.e("TAG", "onCreateView: habit data ${it.habit}", )
                         }
 
                         is HabitUiState.Error -> {
@@ -196,7 +197,7 @@ class CompletedHabitFragment : Fragment() {
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
         habitEntries.toSortedMap().mapValues {
-            Log.e("TAG", "bindStreakInfo: ${it.value.completed}", )
+            Log.e("TAG", "bindStreakInfo: ${it.value}", )
             if(it.value.completed){
                 ++daysCompleted
                 ++currentStreak
@@ -214,11 +215,13 @@ class CompletedHabitFragment : Fragment() {
     }
 
     private fun initialiseProgress(daysCompleted: Int) {
-        totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)
-        val progress = (totalHabitDuration!! / 100f) * daysCompleted!!
+        totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)+1
+        val progress = (daysCompleted.toFloat() / totalHabitDuration!!.toFloat()) * 100f
         binding.habitProgress.progress = progress.roundToInt()
-        "${DecimalFormat("#.#").format(progress)}%".also { binding.progressPercentage.text = it }
-        "${DecimalFormat("#.#").format(progress)}% ${resources.getString(R.string.habit_post_completion_greet)}".also { binding.completionGreet.text = it }
+        val formattedProgress = DecimalFormat("#.#").format(progress)
+        binding.progressPercentage.text = "${formattedProgress}%"
+         binding.completionGreet.text = "${formattedProgress}% ${resources.getString(R.string.habit_post_completion_greet)}"
+
     }
 
     private fun initialiseCalendar(startDate: LocalDate, endDate: LocalDate) {
@@ -231,12 +234,22 @@ class CompletedHabitFragment : Fragment() {
             viewModel.setCurrentViewingMonth(calendarMonth.yearMonth)
         }
 
-
         val startMonth = YearMonth.of(startDate.year, startDate.month)
         val endMonth = YearMonth.of(endDate.year, endDate.month)
+        calendarBinding.month.text = getMonthYearString(startMonth)
 
         calendarBinding.calendarView.setup(startMonth, endMonth, firstDayOfWeekFromLocale())
         calendarBinding.calendarView.scrollToMonth(viewModel.getCurrentViewingMonth()?:startMonth)
+        calendarBinding.nextMonth.setOnClickListener {
+            try {
+                calendarBinding.calendarView.smoothScrollToMonth(viewModel.getCurrentViewingMonth()!!.plusMonths(1))
+            } catch (e: Exception) { }
+        }
+        calendarBinding.prevMonth.setOnClickListener {
+            try {
+                calendarBinding.calendarView.smoothScrollToMonth(viewModel.getCurrentViewingMonth()!!.minusMonths(1))
+            } catch (e: Exception) { }
+        }
 
     }
 
@@ -398,6 +411,10 @@ class CompletedHabitFragment : Fragment() {
     private fun getMonthYearString(calendarMonth: CalendarMonth): String? {
         val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
         return calendarMonth.yearMonth.format(formatter)
+    }
+    private fun getMonthYearString(yearMonth: YearMonth): String? {
+        val formatter = DateTimeFormatter.ofPattern("MMMM yyyy")
+        return yearMonth.format(formatter)
     }
 
     override fun onDestroyView() {

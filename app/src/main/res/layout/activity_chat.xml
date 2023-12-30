@@ -87,6 +87,7 @@
         android:layout_height="27dp"
         android:src="@drawable/setting_icon"
         app:tint="@color/black"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/header"
         app:layout_constraintEnd_toStartOf="@+id/end"
         app:layout_constraintTop_toTopOf="parent" />
@@ -113,16 +114,18 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/msg_cont"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:boxStrokeColor="@color/card_color"
             app:boxCornerRadiusBottomEnd="40dp"
             android:backgroundTint="@color/card_color"
-
+            app:boxStrokeWidth="1dp"
             app:boxCornerRadiusBottomStart="40dp"
             app:boxCornerRadiusTopEnd="40dp"
             app:boxCornerRadiusTopStart="40dp"
+            android:focusedByDefault="true"
             app:hintEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -130,6 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Type Your Message"
+                android:focusedByDefault="true"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp" />
 

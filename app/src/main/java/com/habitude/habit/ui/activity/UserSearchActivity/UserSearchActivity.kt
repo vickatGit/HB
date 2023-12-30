@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.habitude.habit.databinding.ActivityUserSearchBinding
 import com.habitude.habit.ui.activity.UserActivity.UserActivity
 import com.habitude.habit.ui.adapter.UserListAdapter
+import com.habitude.habit.ui.adapter.UserSearchAdapter
 import com.habitude.habit.ui.callback.OnUserClick
 import com.habitude.habit.ui.model.User.UserView
 import com.habitude.habit.ui.viewmodel.UserSearchViewModel
@@ -31,14 +32,15 @@ class UserSearchActivity : AppCompatActivity() {
 
     private var users = mutableListOf<UserView>()
     private val viewModel: UserSearchViewModel by viewModels()
-    private lateinit var usersAdapter: UserListAdapter
+    private lateinit var usersAdapter: UserSearchAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityUserSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         binding.usersRecycler.layoutManager = LinearLayoutManager(this@UserSearchActivity)
-        usersAdapter = UserListAdapter(users, this@UserSearchActivity,object : OnUserClick {
+        usersAdapter = UserSearchAdapter(users, this@UserSearchActivity,object : OnUserClick {
             override fun onUserClick(userId: String) {
                 val userIntent = Intent(this@UserSearchActivity,UserActivity::class.java)
                 userIntent.putExtra(UserActivity.USER_ID,userId)

@@ -15,10 +15,10 @@ import retrofit2.Response
 interface SocialRepo {
     fun getUsersByUsername(username:String): Flow<List<User>>
 
-    fun isUserFollowing(friendId:String):Flow<Boolean>
+    fun isUserFollowing(friendId:String): Flow<Boolean?>
 
-    suspend fun followUser(friendId:String): Flow<Any>
-    suspend fun unfollowUser(friendId:String): Flow<Any>
+    suspend fun followUser(friendId:String): Flow<Boolean>
+    suspend fun unfollowUser(friendId:String): Flow<Boolean>
     fun getUserProfile(userId: String): Flow<User?>
     suspend fun updateUserProfile(user: User): Flow<Boolean>
     suspend fun getFollowers(): Flow<Follow?>

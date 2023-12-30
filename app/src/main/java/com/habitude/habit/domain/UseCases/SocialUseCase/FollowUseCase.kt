@@ -7,7 +7,7 @@ import javax.inject.Inject
 class FollowUseCase @Inject constructor(
     private val socialRepo: SocialRepo
 ) {
-    suspend operator fun invoke(friendId:String): Flow<Any> {
+    suspend operator fun invoke(friendId:String): Flow<Boolean> {
         return socialRepo.followUser(friendId)
     }
 }

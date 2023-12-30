@@ -1,6 +1,7 @@
 package com.habitude.habit.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -62,13 +63,17 @@ class UserViewModel @Inject constructor(
             _uiState.update { UserActivityUiState.Loading }
             viewModelScope.launch {
                 followUseCase(friendId).catch {
+                    Log.e("TAG", "followUser: $it", )
                     handleExceptions(java.lang.Exception(it))
-                }.collect {
-                    _uiState.update { UserActivityUiState.Success("Followed") }
+                }.collect { res ->
+                    Log.e("TAG", "followUser: user followed", )
+//                    _uiState.update { UserActivityUiState.Success("Followed") }
+                    _uiState.update { if(res) UserActivityUiState.Success("Followed") else UserActivityUiState.Success("Unable to follow user") }
                 }
             }
         }catch (e:Exception){
             handleExceptions(e)
+            Log.e("TAG", "followUser: $e", )
         }
     }
 
@@ -78,8 +83,8 @@ class UserViewModel @Inject constructor(
             viewModelScope.launch {
                 unfollowUseCase(friendId).catch {
                     handleExceptions(java.lang.Exception(it))
-                }.collect {
-                    _uiState.update { UserActivityUiState.Success("Unfollowed") }
+                }.collect { res ->
+                    _uiState.update { if(res) UserActivityUiState.Success("Unfollowed") else UserActivityUiState.Success("Unable to unfollow user") }
                 }
             }
         }catch (e:Exception){

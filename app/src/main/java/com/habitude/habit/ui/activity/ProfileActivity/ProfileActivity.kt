@@ -22,6 +22,7 @@ import com.habitude.habit.data.local.Pref.AuthPref
 import com.habitude.habit.databinding.ActivityProfileBinding
 import com.habitude.habit.ui.activity.ChatsActivity.ChatsActivity
 import com.habitude.habit.ui.activity.FollowFollowingActivity.FollowFollowingActivity
+import com.habitude.habit.ui.activity.UserActivity.UserActivity
 import com.habitude.habit.ui.util.BitmapUtils
 import com.habitude.habit.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -130,12 +131,13 @@ class ProfileActivity : AppCompatActivity() {
         binding.followerCont.setOnClickListener {
             val intent = Intent(this@ProfileActivity,FollowFollowingActivity::class.java)
             intent.putExtra(FollowFollowingActivity.IS_FOLLOWERS,true)
-            startActivity(intent)
+            startActivityForResult(intent,568)
         }
         binding.followingCont.setOnClickListener {
             val intent = Intent(this@ProfileActivity,FollowFollowingActivity::class.java)
             intent.putExtra(FollowFollowingActivity.IS_FOLLOWERS,false)
-            startActivity(intent)
+            startActivityForResult(intent,568)
+
         }
         binding.chats.setOnClickListener {
             startActivity(Intent(this,ChatsActivity::class.java))
@@ -207,5 +209,14 @@ class ProfileActivity : AppCompatActivity() {
 
     companion object {
         val AVATAR_URL: String = "avatar_url"
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        data?.let {
+            if(it.getBooleanExtra(UserActivity.FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED,false)){
+                viewModel.getProfile(authPref.getUserId())
+            }
+        }
     }
 }

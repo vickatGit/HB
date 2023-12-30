@@ -3,6 +3,7 @@ package com.habitude.habit.ui.activity.UserActivity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
@@ -23,6 +24,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class UserActivity : AppCompatActivity() {
+    private lateinit var resultIntent: Intent
     private var shouldCallFollowApi: Boolean = false
     private var friendId: String? = null
     private var _binding: ActivityUserBinding? = null
@@ -32,6 +34,7 @@ class UserActivity : AppCompatActivity() {
     private val viewModel:UserViewModel  by viewModels()
 
     companion object {
+        const val FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED: String = "FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED"
         const val USER_ID: String = "user_id"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +42,10 @@ class UserActivity : AppCompatActivity() {
         _binding = ActivityUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
         friendId = intent.getStringExtra(USER_ID)
+        resultIntent = Intent()
+        resultIntent.putExtra(FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED,false)
+        setResult(RESULT_OK,resultIntent)
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.uiState.collectLatest {
@@ -57,11 +64,16 @@ class UserActivity : AppCompatActivity() {
                             showProgress()
                         }
                         is UserActivityUiState.UserFollowStatus -> {
-                            binding.followStatus.text = if(it.isFollows) "Following" else "Follow"
-                            shouldCallFollowApi = false
-                            viewModel.followStatus=it.isFollows
-                            binding.followStatus.isChecked = it.isFollows
-                            shouldCallFollowApi = true
+                            if(it.isFollows!=null) {
+                                binding.followStatus.isVisible=true
+                                binding.followStatus.text = if (it.isFollows) "Following" else "Follow"
+                                shouldCallFollowApi = false
+                                viewModel.followStatus = it.isFollows
+                                binding.followStatus.isChecked = it.isFollows
+                                shouldCallFollowApi = true
+                            }else{
+                              binding.followStatus.isVisible=false
+                            }
                             hideProgress()
                         }
                         UserActivityUiState.Nothing -> {}
@@ -78,19 +90,26 @@ class UserActivity : AppCompatActivity() {
 
         friendId?.let {friendId ->
             viewModel.isUserFollowing(friendId)
-
         }
         friendId?.let { viewModel.getProfile(it) }
 
         binding.followStatus.setOnCheckedChangeListener { btnView, isChecked ->
             binding.followStatus.text = if(isChecked) "Following" else "Follow"
             if(isChecked) {
-                if(shouldCallFollowApi) viewModel.followUser(friendId!!)
+                if(shouldCallFollowApi) {
+                    viewModel.followUser(friendId!!)
+                    resultIntent.putExtra(FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED,true);
+                    setResult(RESULT_OK,resultIntent)
+                }
                 binding.followStatus.setChipBackgroundColorResource(R.color.white)
                 binding.followStatus.setTextColor(resources.getColor(R.color.text_color))
             }
             else {
-                if(shouldCallFollowApi) binding.followStatus.setChipBackgroundColorResource(R.color.orange)
+                if(shouldCallFollowApi) {
+                    binding.followStatus.setChipBackgroundColorResource(R.color.orange)
+                    resultIntent.putExtra(FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED,true);
+                    setResult(RESULT_OK,resultIntent)
+                }
                 binding.followStatus.setTextColor(resources.getColor(R.color.white))
                 viewModel.unfollowUser(friendId!!)
             }

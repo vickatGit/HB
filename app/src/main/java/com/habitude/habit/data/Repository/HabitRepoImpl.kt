@@ -180,6 +180,10 @@ class HabitRepoImpl(
             })
         }
         return habitDao.getHabits().map {
+            it.filter { habit ->
+                (LocalDate.now().isBefore(habit.endDate!!) || habit.endDate!!.isEqual(LocalDate.now()))
+            }
+        }.map {
             it.map {
                 habitMapper.mapFromHabitEntity(it)
             }
@@ -271,6 +275,10 @@ class HabitRepoImpl(
             })
         }
         return habitDao.getGroupHabits().map { groupHabits ->
+            groupHabits.filter { groupHabit ->
+                LocalDate.now().isBefore(groupHabit.habitGroup.endDate) || LocalDate.now().isEqual(groupHabit.habitGroup.endDate)
+            }
+        }.map { groupHabits ->
             groupHabits.map { groupHabit ->
                 val userHabit = groupHabit.habits.find { it.userId == authPref.getUserId() }
                 userHabit?.let { groupHabit.habits = listOf(userHabit) }
@@ -355,7 +363,11 @@ class HabitRepoImpl(
     }
 
     override fun getCompletedHabits(): Flow<List<HabitThumb>> {
-        return habitDao.getCompletedHabits(LocalDate.now()).map {
+        return habitDao.getCompletedHabits().map {
+            it.filter {
+                LocalDate.now().isAfter(it.endDate)
+            }
+        }.map {
             it.map {
                 habitMapper.mapFromHabitEntity(it)
             }

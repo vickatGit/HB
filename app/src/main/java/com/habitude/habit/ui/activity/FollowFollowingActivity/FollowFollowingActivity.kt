@@ -3,6 +3,8 @@ package com.habitude.habit.ui.activity.FollowFollowingActivity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
@@ -20,11 +22,13 @@ import com.habitude.habit.ui.callback.OnUserClick
 import com.habitude.habit.ui.model.User.UserView
 import com.habitude.habit.ui.viewmodel.UserSearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FollowFollowingActivity : AppCompatActivity() {
+    private lateinit var resultIntent: Intent
     private var _binding: ActivityFollowFollowingBinding? = null
     private val binding get() = _binding!!
 
@@ -42,13 +46,17 @@ class FollowFollowingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityFollowFollowingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        resultIntent = Intent()
+        resultIntent.putExtra(UserActivity.FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED,false)
+        setResult(RESULT_OK,resultIntent)
+
         shouldShowFollowers=intent.getBooleanExtra(IS_FOLLOWERS,false)
         binding.usersRecycler.layoutManager = LinearLayoutManager(this@FollowFollowingActivity)
         usersAdapter = UserListAdapter(users, this@FollowFollowingActivity,object : OnUserClick {
             override fun onUserClick(userId: String) {
                 val userIntent = Intent(this@FollowFollowingActivity, UserActivity::class.java)
                 userIntent.putExtra(UserActivity.USER_ID,userId)
-                startActivity(userIntent)
+                startActivityForResult(userIntent,123)
 
             }
 
@@ -62,6 +70,7 @@ class FollowFollowingActivity : AppCompatActivity() {
                             users.clear()
                             users.addAll(it.users)
                             usersAdapter.notifyDataSetChanged()
+                            usersAdapter.filter.filter("")
                             binding.progress.isVisible=false
                         }
                         is UserSearchUiState.Error -> {
@@ -77,11 +86,53 @@ class FollowFollowingActivity : AppCompatActivity() {
                 }
             }
         }
-        if(shouldShowFollowers) viewModel.getFollowers() else viewModel.getFollowings()
+        if(shouldShowFollowers) {
+            viewModel.getFollowers()
+            binding.header.text = "Followers"
+        } else {
+            viewModel.getFollowings()
+            binding.header.text = "Followings"
+        }
+        binding.query.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                usersAdapter.filter.filter(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
         binding.back.setOnClickListener {
             onBackPressed()
         }
 
 
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        data?.let {
+            if(it.getBooleanExtra(UserActivity.FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED,false)){
+                resultIntent.putExtra(UserActivity.FOLLOW_FOLLOWING_API_SHOULD_BE_CALLED,true)
+                setResult(RESULT_OK,resultIntent)
+                if(shouldShowFollowers) {
+                    viewModel.getFollowers()
+                    binding.header.text = "Followers"
+                } else {
+                    viewModel.getFollowings()
+                    binding.header.text = "Followings"
+                }
+            }
+        }
     }
 }

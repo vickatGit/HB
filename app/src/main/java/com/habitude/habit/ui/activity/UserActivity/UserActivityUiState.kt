@@ -7,6 +7,6 @@ sealed class UserActivityUiState{
     object Nothing : UserActivityUiState()
     data class Error(val error:String) : UserActivityUiState()
     data class Success(val msg:String) : UserActivityUiState()
-    data class UserFollowStatus(val isFollows:Boolean):UserActivityUiState()
+    data class UserFollowStatus(val isFollows:Boolean?):UserActivityUiState()
     data class Profile(val user: UserView?):UserActivityUiState()
 }

@@ -384,6 +384,17 @@ class GroupFragment : Fragment() {
         calendarBinding.calendarView.setup(startMonth, endMonth, firstDayOfWeekFromLocale())
         calendarBinding.calendarView.scrollToMonth(viewModel.getCurrentViewingMonth() ?: startMonth)
 
+        calendarBinding.nextMonth.setOnClickListener {
+            try {
+                calendarBinding.calendarView.smoothScrollToMonth(viewModel.getCurrentViewingMonth()!!.plusMonths(1))
+            } catch (e: Exception) { }
+        }
+        calendarBinding.prevMonth.setOnClickListener {
+            try {
+                calendarBinding.calendarView.smoothScrollToMonth(viewModel.getCurrentViewingMonth()!!.minusMonths(1))
+            } catch (e: Exception) { }
+        }
+
     }
 
     private fun bindDays(habit: HabitView) {

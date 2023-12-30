@@ -65,7 +65,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginTop="40dp"
-            tools:src="@drawable/dummy_user_image"
+            android:src="@drawable/user"
             app:layout_constraintEnd_toStartOf="@+id/end"
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toBottomOf="@+id/back" />
@@ -109,6 +109,7 @@
             app:layout_constraintStart_toStartOf="@+id/user_bio"
             app:layout_constraintTop_toBottomOf="@+id/user_bio"
             android:layout_marginTop="30dp">
+
 
         <com.google.android.material.chip.Chip
             android:id="@+id/follow_status"

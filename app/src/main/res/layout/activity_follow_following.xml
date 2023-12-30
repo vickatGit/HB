@@ -31,6 +31,7 @@
         app:layout_constraintStart_toStartOf="@id/start"
         app:layout_constraintTop_toTopOf="@+id/header"
         app:shapeAppearance="@style/Habit"
+        app:tint="@color/black"
         app:srcCompat="@drawable/arrow_icon" />
 
     <TextView
@@ -40,6 +41,7 @@
         android:fontFamily="@font/bold"
         tools:text="Followers"
         android:textSize="25sp"
+        android:textColor="@color/black"
         android:theme="@style/MaterialAlertDialog.Material3.Title.Text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,6 +75,7 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/search_icon"/>
             <EditText
+                android:id="@+id/query"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="0dp"

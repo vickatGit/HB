@@ -17,6 +17,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.google.gson.Gson
 import com.habitude.habit.R
 import com.habitude.habit.databinding.CalendarDayLegendContainerBinding
 import com.habitude.habit.databinding.CalendarLayoutBinding
@@ -30,14 +38,6 @@ import com.habitude.habit.ui.model.EntryView
 import com.habitude.habit.ui.model.HabitView
 import com.habitude.habit.ui.notification.NotificationBuilder
 import com.habitude.habit.ui.viewmodel.HabitViewModel
-import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IAxisValueFormatter
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import com.google.gson.Gson
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.CalendarMonth
 import com.kizitonwose.calendar.core.DayPosition
@@ -65,7 +65,7 @@ class HabitFragment : Fragment() {
         const val HABIT_ID: String = "habit_id_key"
     }
 
-    private var maxScored: Int=0
+    private var maxScored: Int = 0
     private lateinit var habit: HabitView
     private var habitDurationReached: Long? = null
     private var totalHabitDuration: Long? = null
@@ -83,14 +83,13 @@ class HabitFragment : Fragment() {
     private val weekDayBinding get() = _weekDaysBinding!!
 
     @Inject
-    lateinit var notificationBuilder:NotificationBuilder
+    lateinit var notificationBuilder: NotificationBuilder
 
     @Inject
     lateinit var habitMapper: HabitMapper
 
     @Inject
     lateinit var getHabitThumbUseCase: GetHabitThumbUseCase
-
 
 
     var weekdays = arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
@@ -105,8 +104,8 @@ class HabitFragment : Fragment() {
         habitId = arguments?.getString(HABIT_ID)
 
 
-
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -121,12 +120,13 @@ class HabitFragment : Fragment() {
                 viewModel.habitUiState.collectLatest {
                     when (it) {
                         is HabitUiState.HabitData -> {
-                            habit=it.habit
+                            habit = it.habit
                             bindHabitPageData(it.habit)
                         }
 
                         is HabitUiState.Error -> {
-                            Toast.makeText(requireContext(), it.error+"", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), it.error + "", Toast.LENGTH_SHORT)
+                                .show()
                             binding.progress.isVisible = false
                         }
 
@@ -144,8 +144,9 @@ class HabitFragment : Fragment() {
                             bindDays()
                             binding.progress.isVisible = false
                         }
+
                         is HabitUiState.HabitDeleted -> {
-                            binding.progress.isVisible=false
+                            binding.progress.isVisible = false
                             Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
                             findNavController().popBackStack()
                         }
@@ -169,8 +170,14 @@ class HabitFragment : Fragment() {
         }
         binding.delete.setOnClickListener {
             habit?.let {
-                viewModel.deleteHabit(habitServerId = it.serverId,habitId = it.id,getString(R.string.habit_deletion_success_msg),getString(
-                                    R.string.habit_deletion_failed_msg))
+                viewModel.deleteHabit(
+                    habitServerId = it.serverId,
+                    habitId = it.id,
+                    getString(R.string.habit_deletion_success_msg),
+                    getString(
+                        R.string.habit_deletion_failed_msg
+                    )
+                )
             }
         }
         binding.back.setOnClickListener {
@@ -203,12 +210,12 @@ class HabitFragment : Fragment() {
     }
 
     private fun bindStreakInfo() {
-        var daysMissed=0
-        var daysCompleted=0
-        var highestStreak=0
-        var currentStreak=0
+        var daysMissed = 0
+        var daysCompleted = 0
+        var highestStreak = 0
+        var currentStreak = 0
 
-        val habitList= mutableListOf<EntryView>()
+        val habitList = mutableListOf<EntryView>()
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
 
@@ -216,27 +223,33 @@ class HabitFragment : Fragment() {
 
         habitEntries.toSortedMap().mapValues {
 //            if(it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())){
-            Log.e("TAG", "bindStreakInfo: ${it.value.completed}", )
-                if(it.value.completed){
-                    ++daysCompleted
-                    ++currentStreak
-                    if( highestStreak < currentStreak ) highestStreak = currentStreak else {}
-                }else{
-                    if( highestStreak < currentStreak ) highestStreak = currentStreak
-                    currentStreak=0
-                    ++daysMissed
+            Log.e("TAG", "bindStreakInfo: ${it.value.completed}")
+            if (it.value.completed) {
+                ++daysCompleted
+                ++currentStreak
+                if (highestStreak < currentStreak) highestStreak = currentStreak else {
                 }
+            } else {
+                if (highestStreak < currentStreak) highestStreak = currentStreak
+                currentStreak = 0
+                ++daysMissed
+            }
 //            }
         }
-        binding.currentStreak.text=currentStreak.toString()
-        binding.daysMissed.text=daysMissed.toString()
-        binding.highestStreak.text=highestStreak.toString()
-        binding.daysCompleted.text="$daysCompleted/${ChronoUnit.DAYS.between(habit.startDate, habit.endDate!!.plusDays(1))}"
+        binding.currentStreak.text = currentStreak.toString()
+        binding.daysMissed.text = daysMissed.toString()
+        binding.highestStreak.text = highestStreak.toString()
+        binding.daysCompleted.text = "$daysCompleted/${
+            ChronoUnit.DAYS.between(
+                habit.startDate,
+                habit.endDate!!.plusDays(1)
+            )
+        }"
         initialiseProgress(daysCompleted)
     }
 
     private fun initialiseProgress(daysCompleted: Int) {
-        totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)+1
+        totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate) + 1
 //        habitDurationReached = ChronoUnit.DAYS.between(habit.startDate,LocalDate.now())
         val progress = (daysCompleted.toFloat() / totalHabitDuration!!.toFloat()) * 100f
         binding.habitProgress.progress = progress.roundToInt()
@@ -264,7 +277,19 @@ class HabitFragment : Fragment() {
         val endMonth = YearMonth.of(endDate.year, endDate.month)
 
         calendarBinding.calendarView.setup(startMonth, endMonth, firstDayOfWeekFromLocale())
-        calendarBinding.calendarView.scrollToMonth(viewModel.getCurrentViewingMonth()?:startMonth)
+        calendarBinding.calendarView.scrollToMonth(viewModel.getCurrentViewingMonth() ?: startMonth)
+
+
+        calendarBinding.nextMonth.setOnClickListener {
+            try {
+                calendarBinding.calendarView.smoothScrollToMonth(viewModel.getCurrentViewingMonth()!!.plusMonths(1))
+            } catch (e: Exception) { }
+        }
+        calendarBinding.prevMonth.setOnClickListener {
+            try {
+                calendarBinding.calendarView.smoothScrollToMonth(viewModel.getCurrentViewingMonth()!!.minusMonths(1))
+            } catch (e: Exception) { }
+        }
 
     }
 
@@ -323,7 +348,10 @@ class HabitFragment : Fragment() {
                 return DayHolder(DayBinding.bind(view), object : DateClick {
                     override fun dateClick(date: LocalDate?) {
                         date?.let {
-                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(LocalDate.now()) || date.isEqual(LocalDate.now())) ) {
+                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(
+                                    LocalDate.now()
+                                ) || date.isEqual(LocalDate.now()))
+                            ) {
                                 selectDate(date)
                             }
                         }
@@ -340,7 +368,7 @@ class HabitFragment : Fragment() {
                 Log.e("TAG", "updateEntry selectDate: present $date ")
                 updateEntries(it, habitEntries[it]!!.completed)
             } else {
-                habitEntries[it] = EntryView(it!!, 0,true)
+                habitEntries[it] = EntryView(it!!, 0, true)
                 Log.e("TAG", "updateEntry selectDate: not present $date ")
                 updateEntries(it, true)
             }
@@ -355,15 +383,16 @@ class HabitFragment : Fragment() {
         if (prevEntry == null) {
             habitEntries[date] = EntryView(date, if (isUpgrade) 1 else 0, isUpgrade)
         }
-        val habitList= mutableListOf<EntryView>()
+        val habitList = mutableListOf<EntryView>()
         habitList.addAll(habitEntries.values)
         habitList.sortBy { it.timestamp }
 
-        habitList.forEachIndexed { index,it ->
-            if (index>0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
-                var score= habitList[if(index!=0) index-1 else index].score
-                habitList[index].score=if (isUpgrade) score!!+1 else it.score!!-1
-                if(!it.completed)  habitList[index].score = if(it.score!!-1<0) 0 else it.score!!-1
+        habitList.forEachIndexed { index, it ->
+            if (index > 0 && (it.timestamp!!.isAfter(date) || it.timestamp.isEqual(date))) {
+                var score = habitList[if (index != 0) index - 1 else index].score
+                habitList[index].score = if (isUpgrade) score!! + 1 else it.score!! - 1
+                if (!it.completed) habitList[index].score =
+                    if (it.score!! - 1 < 0) 0 else it.score!! - 1
             }
         }
         habitEntries.putAll(habitList.associateBy { it.timestamp!! })
@@ -372,10 +401,15 @@ class HabitFragment : Fragment() {
 
     private fun initialiseConsistencyGraph(mapEntries: HashMap<LocalDate, EntryView>?) {
         //values for single line chart on the graph
-        val entries:MutableList<Entry> = mutableListOf()
+        val entries: MutableList<Entry> = mutableListOf()
         mapEntries?.forEach {
-           if(it.key.isBefore(LocalDate.now()) || it.key.isEqual(LocalDate.now()))
-               entries.add(Entry(it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli().toFloat(),it.value.score!!.toFloat()))
+            if (it.key.isBefore(LocalDate.now()) || it.key.isEqual(LocalDate.now()))
+                entries.add(
+                    Entry(
+                        it.value.timestamp!!.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+                            .toFloat(), it.value.score!!.toFloat()
+                    )
+                )
         }
         entries.sortBy { it.x }
 //        Toast.makeText(requireContext(),"Entries Size ${entries.size}",Toast.LENGTH_SHORT).show()
@@ -390,50 +424,49 @@ class HabitFragment : Fragment() {
 //        (habit.startDate!!.diff(LocalDate.now()))>3
 //        Log.e(TAG, "initialiseConsistencyGraph: ", )
 
-        Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(mapEntries)}" )
+        Log.e("TAG", "initialiseConsistencyGraph: ${Gson().toJson(mapEntries)}")
 
-        if((habit.startDate!!.diff(LocalDate.now()))>3) {
+        if ((habit.startDate!!.diff(LocalDate.now())) > 3) {
             //Each LineDateSet Represents data for sing line chart on Graph
             val dataset = LineDataSet(entries, "")
-            Log.e("TAG", "initialiseConsistencyGraph: date set ${dataset}", )
-            val startColor =resources.getColor(R.color.orange_op_20)
+            Log.e("TAG", "initialiseConsistencyGraph: date set ${dataset}")
+            val startColor = resources.getColor(R.color.orange_op_20)
             val midColor = resources.getColor(R.color.orange_op_20)
             val endColor = resources.getColor(R.color.transparent)
             val gradientDrawable = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(startColor,midColor, endColor)
+                intArrayOf(startColor, midColor, endColor)
             )
 
             dataset.setDrawFilled(true)
             dataset.fillDrawable = gradientDrawable
-            dataset.color=binding.root.resources.getColor(R.color.medium_orange)
-            dataset.lineWidth=3f
+            dataset.color = binding.root.resources.getColor(R.color.medium_orange)
+            dataset.lineWidth = 3f
             dataset.setDrawCircleHole(false)
             dataset.setDrawCircles(false)
             dataset.setDrawValues(false)
-            dataset.mode= LineDataSet.Mode.CUBIC_BEZIER
+            dataset.mode = LineDataSet.Mode.CUBIC_BEZIER
 
 
-            val xtAxis=binding.consistency.xAxis
-            val ylAxis=binding.consistency.axisLeft
-            val yrAxis=binding.consistency.axisRight
+            val xtAxis = binding.consistency.xAxis
+            val ylAxis = binding.consistency.axisLeft
+            val yrAxis = binding.consistency.axisRight
 
 //            ylAxis.setLabelCount(3,true)
-            xtAxis.setLabelCount(7,true)
-            xtAxis.position=XAxis.XAxisPosition.BOTTOM
+            xtAxis.setLabelCount(7, true)
+            xtAxis.position = XAxis.XAxisPosition.BOTTOM
             xtAxis.textColor = resources.getColor(R.color.text_color)
-            xtAxis.labelRotationAngle=320f
-            yrAxis.isEnabled=false
+            xtAxis.labelRotationAngle = 320f
+            yrAxis.isEnabled = false
 
             ylAxis.setDrawAxisLine(false)
             xtAxis.setDrawGridLines(false)
             ylAxis.textColor = resources.getColor(R.color.text_color)
-            ylAxis.gridColor=resources.getColor(R.color.consistency_graph_grid_color)
-            ylAxis.gridLineWidth=1.4f
+            ylAxis.gridColor = resources.getColor(R.color.consistency_graph_grid_color)
+            ylAxis.gridLineWidth = 1.4f
 
-            xtAxis.valueFormatter=XAxisFormatter()
+            xtAxis.valueFormatter = XAxisFormatter()
 //            ylAxis.valueFormatter=YAxisFormatter()
-
 
 
             //LineData object is Needed by Graph and to create LineData() object we Need to Pass list ILineDataSet objects
@@ -453,14 +486,15 @@ class HabitFragment : Fragment() {
             binding.consistency.animateX(1000)
 
             binding.consistency.data = chartLineData
-            Log.e("TAG", "initialiseConsistencyGraph: chart ${Gson().toJson(entries)}", )
+            Log.e("TAG", "initialiseConsistencyGraph: chart ${Gson().toJson(entries)}")
             binding.consistency.invalidate()
-        }else{
-            binding.consistency.isVisible=false
-            binding.graphHeader.isVisible=false
+        } else {
+            binding.consistency.isVisible = false
+            binding.graphHeader.isVisible = false
         }
 
     }
+
     private fun bindWeekDays() {
         (0 until weekDayBinding.root.childCount).forEach { index ->
             val childView: View = weekDayBinding.root.getChildAt(index)
@@ -477,18 +511,18 @@ class HabitFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding=null
-        _calendarBinding=null
-        _weekDaysBinding=null
+        _binding = null
+        _calendarBinding = null
+        _weekDaysBinding = null
     }
 
-    inner class YAxisFormatter:IAxisValueFormatter{
+    inner class YAxisFormatter : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase?): String {
-            var des:String=((value/ maxScored) * 100).toInt().toString()
-    //  -------------   this is a workaround for formatting data   ---------------
-    //  -------------   because here we are not getting expected   ---------------
-    //  -------------   result to format the data from MPAndroid chart   ------------
-            des = des.substring(0, des.length - 1)+"0"
+            var des: String = ((value / maxScored) * 100).toInt().toString()
+            //  -------------   this is a workaround for formatting data   ---------------
+            //  -------------   because here we are not getting expected   ---------------
+            //  -------------   result to format the data from MPAndroid chart   ------------
+            des = des.substring(0, des.length - 1) + "0"
             return "${des}%"
         }
 
@@ -497,11 +531,12 @@ class HabitFragment : Fragment() {
         }
 
     }
+
     inner class XAxisFormatter : IAxisValueFormatter {
         private val dateFormatter = SimpleDateFormat("d MMM", Locale.getDefault())
         override fun getFormattedValue(value: Float, axis: AxisBase?): String {
             val date = Date(value.toLong())
-            Log.e("TAG", "getFormattedValue: ${date.toString()} ${dateFormatter.format(date)}", )
+            Log.e("TAG", "getFormattedValue: ${date.toString()} ${dateFormatter.format(date)}")
             return dateFormatter.format(date)
         }
 
@@ -510,8 +545,8 @@ class HabitFragment : Fragment() {
         }
 
 
-
     }
+
     fun LocalDate.diff(other: LocalDate): Long {
         return ChronoUnit.DAYS.between(this, other)
     }

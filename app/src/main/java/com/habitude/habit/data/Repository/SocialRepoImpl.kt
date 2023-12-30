@@ -265,7 +265,7 @@ class SocialRepoImpl(
         }
     }
 
-    override fun isUserFollowing(friendId: String): Flow<Boolean> {
+    override fun isUserFollowing(friendId: String): Flow<Boolean?> {
         // if(!Connectivity.isInternetConnected(context)) throw UnknownHostException()
         return flow {
             val response = socialApi.isUserFollowing(friendId)
@@ -273,20 +273,27 @@ class SocialRepoImpl(
                 emit(response.body()?.isFollowing?:false)
             }else{
                 Log.e("TAG", "isUserFollowing: ${response.errorBody()?.string()}", )
-                emit(false)
+                emit(null)
             }
         }
     }
 
-    override suspend fun followUser(friendId: String): Flow<Any> {
+    override suspend fun followUser(friendId: String): Flow<Boolean> {
         // if(!Connectivity.isInternetConnected(context)) throw UnknownHostException()
-            return flow { socialApi.followUser(friendId) }
+//            return flow { socialApi.followUser(friendId) }
+            return flow {
+                val response = socialApi.followUser(friendId)
+                emit(response.isSuccessful)
+            }
 
     }
 
-    override suspend fun unfollowUser(friendId: String): Flow<Any> {
+    override suspend fun unfollowUser(friendId: String): Flow<Boolean> {
         // if(!Connectivity.isInternetConnected(context)) throw UnknownHostException()
-            return flow {  socialApi.unfollowUser(friendId) }
+        return flow {
+            val response = socialApi.unfollowUser(friendId)
+            emit(response.isSuccessful)
+        }
     }
 
 

@@ -66,6 +66,7 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.msgCont.requestFocus()
 
         userId = authPref.getUserId();
         userName = authPref.getUserName()
@@ -120,6 +121,8 @@ class ChatActivity : AppCompatActivity() {
                         ChatsUIState.Nothing -> {
 
                         }
+
+                        else -> {}
                     }
                 }
             }
@@ -210,28 +213,30 @@ class ChatActivity : AppCompatActivity() {
         binding.send.setOnClickListener {
 
             val msg = binding.msgInput.text.toString()
-            socket.emit(
-                "SEND_MESSAGE",
-                userId,
-                binding.msgInput.text.toString(),
-                "Text",
-                "",
-                roomId
-            )
-            chats.add(
-                ChatModel(
-                    null,
-                    userId!!,
-                    null,
-                    binding.msgInput.text.toString(),
+            if(msg.isNotBlank()) {
+                socket.emit(
+                    "SEND_MESSAGE",
+                    userId,
+                    msg,
                     "Text",
-                    ""
+                    "",
+                    roomId
                 )
-            )
-            binding.msgInput.text = null
-            CoroutineScope(Dispatchers.Main).launch {
-                chatController.notifyItemInserted(chats.size-1)
-                binding.chats.smoothScrollToPosition(chats.size-1)
+                chats.add(
+                    ChatModel(
+                        null,
+                        userId!!,
+                        null,
+                        binding.msgInput.text.toString(),
+                        "Text",
+                        ""
+                    )
+                )
+                binding.msgInput.text = null
+                CoroutineScope(Dispatchers.Main).launch {
+                    chatController.notifyItemInserted(chats.size - 1)
+                    binding.chats.smoothScrollToPosition(chats.size - 1)
+                }
             }
         }
 

@@ -31,10 +31,10 @@ interface HabitDao {
     fun getHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit):Flow<List<HabitEntity>>
     @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType AND userId=:userId")
     suspend fun getHabitsForProgress(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit,userId:String):List<HabitEntity>
-    @Query("SELECT * FROM HabitEntity  ")
+    @Query("SELECT * FROM HabitEntity ")
     fun getsHabits():Flow<List<HabitEntity>>
 
-    @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType AND habitSyncType!=:nonMemberSyncType")
+    @Query("SELECT * FROM GroupHabitsEntity WHERE habitSyncType!=:syncType AND habitSyncType!=:nonMemberSyncType ")
     fun getGroupHabits(syncType: HabitRecordSyncType=HabitRecordSyncType.DeleteHabit,
                        nonMemberSyncType: HabitGroupRecordSyncType=HabitGroupRecordSyncType.REMOVED_USER_FROM_GROUP_HABIT
                        ):Flow<List<HabitGroupWithHabitsEntity>>
@@ -57,8 +57,8 @@ interface HabitDao {
     @Query("SELECT * FROM GroupHabitsEntity WHERE localId IN (SELECT habitGroupLocalId FROM HabitEntity WHERE habitGroupLocalId=:groupId)")
     suspend fun getGroupHabit(groupId:String):HabitGroupWithHabitsEntity
 
-    @Query("SELECT * FROM HabitEntity WHERE endDate < :date")
-    fun getCompletedHabits(date: LocalDate):Flow<List<HabitEntity>>
+    @Query("SELECT * FROM HabitEntity")
+    fun getCompletedHabits():Flow<List<HabitEntity>>
 
     @Query("SELECT * FROM HabitEntity WHERE habitSyncType!=:syncType ")
     fun getUnSyncedHabits(syncType:HabitRecordSyncType = HabitRecordSyncType.SyncedHabit):List<HabitEntity>

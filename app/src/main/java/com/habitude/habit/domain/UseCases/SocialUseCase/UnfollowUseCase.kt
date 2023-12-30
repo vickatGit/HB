@@ -7,7 +7,7 @@ import javax.inject.Inject
 class UnfollowUseCase @Inject constructor(
     private val socialRepo: SocialRepo
 ) {
-    suspend operator fun invoke(friendId:String): Flow<Any> {
+    suspend operator fun invoke(friendId:String): Flow<Boolean> {
        return socialRepo.unfollowUser(friendId)
     }
 }

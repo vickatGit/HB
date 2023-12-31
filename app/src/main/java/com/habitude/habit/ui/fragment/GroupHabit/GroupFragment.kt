@@ -521,7 +521,7 @@ class GroupFragment : Fragment() {
             } else {
                 if (highestStreak < currentStreak) highestStreak = currentStreak
                 currentStreak = 0
-                ++daysMissed
+                if(it.value.timestamp!!.isBefore(LocalDate.now())) ++daysMissed
             }
 //            }
         }

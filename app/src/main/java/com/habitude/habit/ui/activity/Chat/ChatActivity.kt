@@ -1,5 +1,6 @@
 package com.habitude.habit.ui.activity.Chat
 
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -19,6 +20,7 @@ import com.habitude.habit.ui.activity.ChatsActivity.ChatsUIState
 import com.habitude.habit.ui.adapter.ChatAdapter
 import com.habitude.habit.ui.viewmodel.ChatsViewModel
 import com.google.gson.Gson
+import com.habitude.habit.R
 import dagger.hilt.android.AndroidEntryPoint
 import io.socket.client.Ack
 import io.socket.client.Socket
@@ -203,6 +205,7 @@ class ChatActivity : AppCompatActivity() {
             )
             CoroutineScope(Dispatchers.Main).launch {
                 chatController.notifyItemInserted(chats.size-1)
+                playTune()
                 binding.chats.smoothScrollToPosition(chats.size-1)
             }
 
@@ -266,5 +269,12 @@ class ChatActivity : AppCompatActivity() {
         socket.off("AM_I_ONLINE")
         socket.disconnect()
 
+    }
+
+    private fun playTune() {
+        // Use MediaPlayer or any audio player library to play the tune
+        // Example using MediaPlayer
+        val mediaPlayer = MediaPlayer.create(this, R.raw.facebookchat)
+        mediaPlayer.start()
     }
 }

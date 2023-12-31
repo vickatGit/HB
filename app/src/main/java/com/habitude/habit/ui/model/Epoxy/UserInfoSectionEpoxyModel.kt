@@ -63,7 +63,11 @@ data class UserInfoSectionEpoxyModel(
                         "circle" -> {
                             userCircleAvatar.isVisible=true
                             if(!it.url.isNullOrBlank())
-                                Glide.with(userCircleAvatar).load(it.url).into(userCircleAvatar)
+                                Glide.with(userCircleAvatar)
+                                    .load(it.url)
+                                    .placeholder(R.drawable.user)
+                                    .error(Glide.with(userCircleAvatar).load(R.drawable.user))
+                                    .into(userCircleAvatar)
                             userCircleAvatar.layoutParams.apply {
                                 this as LinearLayout.LayoutParams
                                 width=DpPxUtils.dpToPX(it.sizeIndDp,userCircleAvatar.context)

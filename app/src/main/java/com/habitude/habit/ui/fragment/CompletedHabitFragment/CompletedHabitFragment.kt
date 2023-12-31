@@ -218,6 +218,15 @@ class CompletedHabitFragment : Fragment() {
         totalHabitDuration = ChronoUnit.DAYS.between(habit.startDate, habit.endDate)+1
         val progress = (daysCompleted.toFloat() / totalHabitDuration!!.toFloat()) * 100f
         binding.habitProgress.progress = progress.roundToInt()
+        if(progress.roundToInt()>=80){
+            binding.encouragementText.text="Congrats! Habit Formed 🚀🚀fly"
+        }else if(progress.roundToInt()>=50){
+            binding.encouragementText.text="You've did it amazingly well! 👌👌"
+        }else if(progress.roundToInt()>=25){
+            binding.encouragementText.text="You did this amazingly! Keep it up 👍👍"
+        }else if(progress.roundToInt()>=0){
+            binding.encouragementText.text="Great job completing! Your journey awaits!"
+        }
         val formattedProgress = DecimalFormat("#.#").format(progress)
         binding.progressPercentage.text = "${formattedProgress}%"
          binding.completionGreet.text = "${formattedProgress}% ${resources.getString(R.string.habit_post_completion_greet)}"

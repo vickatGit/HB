@@ -223,6 +223,7 @@ class HabitRepoImpl(
                 scheduleAlarmUseCase(habit.id, it, context)
             }
         }
+        Log.e("TAG", "getAllHabitsForProgress: ${Gson().toJson(habits)}", )
         return habits
 
 

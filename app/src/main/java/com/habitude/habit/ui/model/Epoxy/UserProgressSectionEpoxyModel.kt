@@ -3,8 +3,10 @@ package com.habitude.habit.ui.model.Epoxy
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.habitude.habit.R
 import com.habitude.habit.data.network.model.UiModels.HomePageModels.HomeElements
 import com.habitude.habit.databinding.UserProgressSectionLayoutBinding
@@ -26,7 +28,7 @@ data class UserProgressSectionEpoxyModel(
     val habits: MutableList<ProgressSectionHabit>
 ) : ViewBindingKotlinModel<UserProgressSectionLayoutBinding>(R.layout.user_progress_section_layout) {
     override fun UserProgressSectionLayoutBinding.bind() {
-
+        Log.e("TAG", "bind: getAllHabitsForProgress section Habits ${Gson().toJson(habits)}", )
 
         userProgressSection.layoutParams.apply {
             this as RecyclerView.LayoutParams
@@ -71,6 +73,7 @@ data class UserProgressSectionEpoxyModel(
             ((completedHabits.toFloat() / totalHabits.toFloat()) * 1000f).toInt()
 
         habitsRecycler.layoutManager = LinearLayoutManager(habitsRecycler.context)
+        Log.e("TAG", "bind: getAllHabitsForProgress section Habits ${Gson().toJson(habits)}", )
         val habitsAdapter = SectionHabitsAdapter(
             habits,
             progressSection.progressTypographyProperties

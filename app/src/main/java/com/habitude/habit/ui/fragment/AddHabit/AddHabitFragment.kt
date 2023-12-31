@@ -119,16 +119,20 @@ class AddHabitFragment : Fragment() {
        }
 
         binding.startDate.setOnClickListener {
-            isStart=true
-            habit.startDate=null
-            findNavController().navigate(R.id.action_addHabitFragment_to_dateFragment)
-            binding.startDate.setText("")
+            if(!isUpdate) {
+                isStart = true
+                habit.startDate = null
+                findNavController().navigate(R.id.action_addHabitFragment_to_dateFragment)
+                binding.startDate.setText("")
+            }
         }
         binding.endDate.setOnClickListener {
-            isStart=false
-            habit.endDate=null
-            findNavController().navigate(R.id.action_addHabitFragment_to_dateFragment)
-            binding.endDate.setText("")
+            if(!isUpdate) {
+                isStart = false
+                habit.endDate = null
+                findNavController().navigate(R.id.action_addHabitFragment_to_dateFragment)
+                binding.endDate.setText("")
+            }
         }
         binding.addHabit.setOnClickListener {
             val title = binding.title.text.trim().toString()

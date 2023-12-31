@@ -121,6 +121,7 @@ class HabitFragment : Fragment() {
                     when (it) {
                         is HabitUiState.HabitData -> {
                             habit = it.habit
+                            Log.e("TAG", "habitData: habitEntries ${Gson().toJson(it.habit.entries)}" )
                             bindHabitPageData(it.habit)
                         }
 
@@ -222,19 +223,15 @@ class HabitFragment : Fragment() {
 
 
         habitEntries.toSortedMap().mapValues {
-//            if(it.key.isBefore(LocalDate.now()) && it.key.isEqual(LocalDate.now())){
-            Log.e("TAG", "bindStreakInfo: ${it.value.completed}")
             if (it.value.completed) {
                 ++daysCompleted
                 ++currentStreak
-                if (highestStreak < currentStreak) highestStreak = currentStreak else {
-                }
+                if (highestStreak < currentStreak) highestStreak = currentStreak
             } else {
                 if (highestStreak < currentStreak) highestStreak = currentStreak
                 currentStreak = 0
-                ++daysMissed
+                if(it.value.timestamp!!.isBefore(LocalDate.now())) ++daysMissed
             }
-//            }
         }
         binding.currentStreak.text = currentStreak.toString()
         binding.daysMissed.text = daysMissed.toString()
@@ -348,12 +345,12 @@ class HabitFragment : Fragment() {
                 return DayHolder(DayBinding.bind(view), object : DateClick {
                     override fun dateClick(date: LocalDate?) {
                         date?.let {
-                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(
-                                    LocalDate.now()
-                                ) || date.isEqual(LocalDate.now()))
-                            ) {
+//                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(
+//                                    LocalDate.now()
+//                                ) || date.isEqual(LocalDate.now()))
+//                            ) {
                                 selectDate(date)
-                            }
+//                            }
                         }
                     }
                 })
@@ -378,6 +375,7 @@ class HabitFragment : Fragment() {
 
 
     private fun updateEntries(date: LocalDate, isUpgrade: Boolean) {
+        Log.e("TAG", "updateEntries: habitEntries ${Gson().toJson(habitEntries)}" )
         val prevEntry = habitEntries[date.minusDays(1)]
 
         if (prevEntry == null) {

@@ -80,8 +80,8 @@ class AddHabitViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     _uiState.update { AddHabitUiState.Loading }
+                    Log.e("TAG", "updateHabit: Insertion Success $habit")
                     updateHabitUseCase(habit = habitMapper.mapFromHabit(habit))
-                    Log.e("TAG", "addHabit: Insertion Success")
                     if (habit.isReminderOn!!) {
                         deleteAlarmUseCase(habit.id, context, reminderTime)
                         scheduleAlarmUseCase(

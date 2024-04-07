@@ -39,6 +39,11 @@ class ScheduleAlarmUseCase {
     }
     private fun retrieveNumbersFromString(input: String): Int {
         val numbersOnly = input.replace("\\D".toRegex(), "")
-        return numbersOnly.substring(0,4).toInt()
+        if(numbersOnly.length>=4){
+            return  numbersOnly.substring(0,4).toInt()
+        }else{
+            return  1
+        }
+
     }
 }

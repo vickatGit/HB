@@ -3,6 +3,7 @@ package com.habitude.habit.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.habitude.habit.domain.UseCases.HabitUseCase.GetCompletedHabitThumbsUseCase
 import com.habitude.habit.domain.UseCases.HabitUseCase.GetHabitThumbsUseCase
 import com.habitude.habit.ui.fragment.Habits.HabitsUiState
@@ -29,10 +30,12 @@ class HabitsViewModel @Inject constructor(
             _habitsState.update { HabitsUiState.Loading }
             try {
                 getHabitUseCase(this).collect { habits ->
+                    Log.e("TAG", "getHabits: gotted : "+Gson().toJson(habits) )
                     _habitsState.update {
                         HabitsUiState.HabitsFetched(habits.map { habitsMapper.mapToHabitThumbView(it) })
                     }
                 }
+
             } catch (e: Exception) {
                 Log.e("TAG", "getHabits: "+e.printStackTrace() )
                 _habitsState.update { HabitsUiState.Error(e.message) }

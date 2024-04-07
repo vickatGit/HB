@@ -141,7 +141,7 @@ class ChatActivity : AppCompatActivity() {
             }
             socket.on("IS_FRIEND_ONLINE",){
                 CoroutineScope(Dispatchers.Main).launch {
-                    Toast.makeText(this@ChatActivity,"status ${it[0]}",Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(this@ChatActivity,"status ${it[0]}",Toast.LENGTH_SHORT).show()
                     if (it[0] as Boolean) {
                         binding.onlineStatus.isVisible = true
                         binding.offlineStatus.isVisible = false

@@ -20,40 +20,40 @@ import retrofit2.http.Path
 
 interface HabitApi {
 
-    @GET("/habit/get_habits")
+    @GET("/dev/habit/get_habits")
     fun getHabits():Call<HabitsListModel>
 
-    @GET("/habit/get_habits")
+    @GET("/dev/habit/get_habits")
     suspend fun getHabitsR():Response<HabitsListModel>
 
 
-    @GET("/habit/group/get_habits")
+    @GET("/dev/habit/group/get_habits")
     fun getGroupHabits():Call<GroupHabitsModel>
 
-    @GET("/habit/group/get_habits")
+    @GET("/dev/habit/group/get_habits")
     suspend fun getGroupHabitsR():Response<GroupHabitsModel>
 
-    @GET("/habit/group/get_habit/{groupHabitId}")
+    @GET("/dev/habit/group/get_habit/{groupHabitId}")
     suspend fun getGroupHabit(@Path("groupHabitId") groupHabitId: String):Response<GroupHabitDataModel>
-    @POST("/habit/add_habit")
+    @POST("/dev/habit/add_habit")
     suspend fun addHabit( @Body habit:HabitModel):Response<AddHabitResponseModel>
 
-    @POST("/habit/group/add_habit/{adminHabitId}")
+    @POST("/dev/habit/group/add_habit/{adminHabitId}")
     fun addGroupHabit(@Body habit: GroupHabitModel,@Path("adminHabitId") habitId: String):Call<Any>
 
-    @PUT("/habit/update_habit/{id}")
+    @PUT("/dev/habit/update_habit/{id}")
     fun updateHabit( @Body habit:HabitModel, @Path("id") id: String?):Call<Any>
 
-    @PATCH("/habit/update_habit_entries/{id}")
+    @PATCH("/dev/habit/update_habit_entries/{id}")
     suspend fun updateHabitEntries( @Body habitEntries: EntriesModel, @Path("id") id:String):Response<Any>
 
-    @PATCH("/habit/group/update_habit/{groupId}")
+    @PATCH("/dev/habit/group/update_habit/{groupId}")
     suspend fun updateGroupHabit(@Body groupHabitModel:GroupHabitModel,@Path("groupId") id:String):Response<Any>
 
-    @DELETE("/habit/group/delete_habit/{groupId}")
+    @DELETE("/dev/habit/group/delete_habit/{groupId}")
     fun deleteGroupHabit(@Path("groupId") id:String):Call<Any>
 
-    @DELETE("/habit/delete_habit/{id}")
+    @DELETE("/dev/habit/delete_habit/{id}")
     fun deleteHabit(  @Path("id") id:String):Call<Any>
 
     @PATCH("habit/group/remove_member/{habitGroupId}")

@@ -15,7 +15,7 @@ class SignupMapper : SignupMapperI<Signup,SignupModel,SignupResponseModel,Signup
     }
 
     override fun toSignupResponse(type: SignupResponseModel): SignupResponse {
-        return SignupResponse(message = type.message, success = type.success)
+        return SignupResponse(message = type.message, success = type.status)
     }
 
 }

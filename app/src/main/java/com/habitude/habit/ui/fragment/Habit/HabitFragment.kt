@@ -345,12 +345,12 @@ class HabitFragment : Fragment() {
                 return DayHolder(DayBinding.bind(view), object : DateClick {
                     override fun dateClick(date: LocalDate?) {
                         date?.let {
-//                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(
-//                                    LocalDate.now()
-//                                ) || date.isEqual(LocalDate.now()))
-//                            ) {
+                            if (!date.isBefore(habitStartDate) && !date.isAfter(habitEndDate) && (date.isBefore(
+                                    LocalDate.now()
+                                ) || date.isEqual(LocalDate.now()))
+                            ) {
                                 selectDate(date)
-//                            }
+                            }
                         }
                     }
                 })

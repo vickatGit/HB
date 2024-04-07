@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.habitude.habit.databinding.TimeLayoutBinding;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 public class CustomTimePicker extends FrameLayout {
     
@@ -36,7 +37,7 @@ public class CustomTimePicker extends FrameLayout {
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         binding= TimeLayoutBinding.inflate(inflater,this,true);
-        selectedTime=Calendar.getInstance();
+        selectedTime=Calendar.getInstance(Locale.getDefault());
         binding.hour.setMinValue(1);
         binding.hour.setMaxValue(12);
         binding.hour.setValue(selectedTime.get(Calendar.HOUR_OF_DAY));
@@ -61,38 +62,26 @@ public class CustomTimePicker extends FrameLayout {
         binding.minute.setFormatter(numberFormatter);
         binding.second.setFormatter(numberFormatter);
 
-        binding.hour.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                Log.e("TAG", "onValueChange: binding.hour "+newVal );
-                selectedTime.set(Calendar.HOUR_OF_DAY,newVal);
-            }
+        binding.hour.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            Log.e("TAG", "onValueChange: binding h "+newVal );
+            selectedTime.set(Calendar.HOUR_OF_DAY,newVal);
         });
 
-        binding.minute.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                Log.e("TAG", "onValueChange: binding.hour "+newVal );
-                selectedTime.set(Calendar.MINUTE,newVal);
-            }
+        binding.minute.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            Log.e("TAG", "onValueChange: binding.minute "+newVal );
+            selectedTime.set(Calendar.MINUTE,newVal);
         });
 
-        binding.second.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                Log.e("TAG", "onValueChange: binding.hour "+newVal );
-                selectedTime.set(Calendar.SECOND,newVal);
-            }
+        binding.second.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            Log.e("TAG", "onValueChange: binding.second "+newVal );
+            selectedTime.set(Calendar.SECOND,newVal);
         });
-        binding.amPm.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                Log.e("TAG", "onValueChange: binding.hour "+newVal );
-                if(newVal==0)
-                    selectedTime.set(Calendar.AM_PM,Calendar.AM);
-                else
-                    selectedTime.set(Calendar.HOUR_OF_DAY,Calendar.PM);
-            }
+        binding.amPm.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            Log.e("TAG", "onValueChange: binding.ampm "+newVal );
+            if(newVal==0)
+                selectedTime.set(Calendar.AM_PM,Calendar.AM);
+            else
+                selectedTime.set(Calendar.AM_PM,Calendar.PM);
         });
 
 

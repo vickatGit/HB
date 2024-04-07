@@ -10,6 +10,7 @@ import com.habitude.habit.R
 import com.habitude.habit.databinding.TimeLayoutBinding
 
 import java.util.Calendar
+import java.util.Locale
 
 class TimePicker(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs) {
     private lateinit var selectedTime: Calendar
@@ -31,7 +32,6 @@ class TimePicker(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
         selectedTime = Calendar.getInstance()
         hour.minValue = 1
         hour.maxValue = 12
-        hour.value=selectedTime.get(Calendar.HOUR_OF_DAY)
         hour.value = selectedTime.get(Calendar.HOUR_OF_DAY)
         minute.minValue = 0
         minute.maxValue = 59
@@ -51,14 +51,17 @@ class TimePicker(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
         hour.setOnValueChangedListener { _, _, newVal ->
             Log.e("TAG", "onValueChange: binding.hour $newVal")
             selectedTime.set(Calendar.HOUR_OF_DAY, newVal)
+            Log.e("TAG", "getSelectedTime: " + selectedTime!!.time.toString())
         }
         minute.setOnValueChangedListener { _, _, newVal ->
-            Log.e("TAG", "onValueChange: binding.hour $newVal")
+            Log.e("TAG", "onValueChange: binding.minute $newVal")
             selectedTime.set(Calendar.MINUTE, newVal)
+            Log.e("TAG", "getSelectedTime: " + selectedTime!!.time.toString())
         }
         seconds.setOnValueChangedListener { _, _, newVal ->
-            Log.e("TAG", "onValueChange: binding.hour $newVal")
+            Log.e("TAG", "onValueChange: binding.second $newVal")
             selectedTime.set(Calendar.SECOND, newVal)
+            Log.e("TAG", "getSelectedTime: " + selectedTime!!.time.toString())
         }
         amPm.setOnValueChangedListener { picker, oldVal, newVal ->
             Log.e("TAG", "onValueChange: binding.hour $newVal")

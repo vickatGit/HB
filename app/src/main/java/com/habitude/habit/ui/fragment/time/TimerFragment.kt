@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
+import kotlin.math.log
 
 class TimerFragment : BottomSheetDialogFragment() {
 
@@ -33,9 +34,10 @@ class TimerFragment : BottomSheetDialogFragment() {
         _binding=FragmentTimerBinding.inflate(inflater,container,false)
         binding.save.setOnClickListener(View.OnClickListener {
             if (binding.timer.getSelectedTime() != null ) {
-//                val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
-//                val formattedTime = timeFormat.format(Date(binding.timer.getSelectedTime()?.timeInMillis?:0))
-//                Log.e("alarm scheduler", " from time setter invoke: alarm scheduled at $formattedTime", )
+                Log.e("TAG", "time in millis : "+binding.timer.getSelectedTime() )
+                val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
+                val formattedTime = timeFormat.format(Date(binding.timer.getSelectedTime()?.timeInMillis?:0))
+                Log.e("alarm scheduler", " from time setter invoke: alarm scheduled at $formattedTime", )
                 setFragmentResult(TIME_RESULT, bundleOf(TIME to binding.timer.getSelectedTime()?.timeInMillis))
                 findNavController().navigateUp()
             } else {

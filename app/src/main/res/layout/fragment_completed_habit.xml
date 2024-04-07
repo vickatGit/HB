@@ -407,7 +407,7 @@
             android:textColor="@color/habit_header_color"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="@id/start"
-            app:layout_constraintTop_toBottomOf="@+id/calendar_card" />
+            />
 
 
 
@@ -423,7 +423,6 @@
             app:cardElevation="5dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/graph_card"
             app:strokeWidth="0dp">
 
             <LinearLayout

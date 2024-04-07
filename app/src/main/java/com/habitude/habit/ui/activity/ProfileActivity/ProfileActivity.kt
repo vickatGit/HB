@@ -18,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
+import com.habitude.habit.R
 import com.habitude.habit.data.local.Pref.AuthPref
 import com.habitude.habit.databinding.ActivityProfileBinding
 import com.habitude.habit.ui.activity.ChatsActivity.ChatsActivity
@@ -110,7 +111,11 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
         avatarUrl?.let {
-            Glide.with(this@ProfileActivity).load(avatarUrl).into(binding.userProfileImage)
+            Glide.with(this@ProfileActivity)
+                .load(avatarUrl)
+                .placeholder(R.drawable.user)
+                .error(Glide.with(this@ProfileActivity).load(R.drawable.user))
+                .into(binding.userProfileImage)
         }
         binding.edit.setOnClickListener {
             isProfileEditable(true)
@@ -153,7 +158,11 @@ class ProfileActivity : AppCompatActivity() {
             binding.userName.text=it.username
             binding.followersCnt.text = it.followers
             binding.followingCnt.text = it.followings
-            Glide.with(this@ProfileActivity).load(it.avatarUrl).into(binding.userProfileImage)
+            Glide.with(this@ProfileActivity)
+                .load(avatarUrl)
+                .placeholder(R.drawable.user)
+                .error(Glide.with(this@ProfileActivity).load(R.drawable.user))
+                .into(binding.userProfileImage)
         }
     }
 

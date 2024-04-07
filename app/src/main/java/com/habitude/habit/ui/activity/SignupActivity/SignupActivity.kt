@@ -35,13 +35,16 @@ class SignupActivity : AppCompatActivity() {
                     when(it){
                         is SignupUiState.Loading -> showProgress()
                         is SignupUiState.Error -> {
+                            Toast.makeText(this@SignupActivity,"error", Toast.LENGTH_SHORT).show()
                             Toast.makeText(this@SignupActivity,it.error, Toast.LENGTH_SHORT).show()
                             hideProgress()
                         }
                         is SignupUiState.Nothing -> { }
                         is SignupUiState.Success -> {
                             Toast.makeText(this@SignupActivity,it.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@SignupActivity,"success", Toast.LENGTH_SHORT).show()
                             hideProgress()
+                            finishAffinity()
                             startActivity(Intent(this@SignupActivity,LoginActivity2::class.java))
                         }
                     }

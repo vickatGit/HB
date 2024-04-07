@@ -114,7 +114,8 @@ class HabitModule {
         return Retrofit.Builder().apply {
             client(httpClient)
 //            baseUrl("http://192.168.43.53:8080/")
-            baseUrl("https://hb-backend.onrender.com/")
+//            baseUrl("https://hb-backend.onrender.com/")
+            baseUrl("https://smzm0ugm2m.execute-api.ap-south-1.amazonaws.com/dev/")
             addConverterFactory(GsonConverterFactory.create())
         }.build()
     }
@@ -124,7 +125,8 @@ class HabitModule {
     @Singleton
     fun provideWithOutAuthRetrofit(): Retrofit {
         return Retrofit.Builder().apply {
-            baseUrl("https://hb-backend.onrender.com/")
+//            baseUrl("https://hb-backend.onrender.com/")
+            baseUrl("https://smzm0ugm2m.execute-api.ap-south-1.amazonaws.com/dev/")
             addConverterFactory(GsonConverterFactory.create())
         }.build()
     }

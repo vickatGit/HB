@@ -13,17 +13,7 @@
         android:layout_height="match_parent"
         android:paddingTop="20dp">
 
-       <ProgressBar
-           android:id="@+id/progress"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:indeterminate="true"
-           android:visibility="gone"
-           android:indeterminateTint="@color/orange"
-           app:layout_constraintStart_toStartOf="parent"
-           app:layout_constraintEnd_toEndOf="parent"
-           app:layout_constraintTop_toTopOf="parent"
-           app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -160,7 +150,7 @@
             app:layout_constraintEnd_toEndOf="@id/end"
             app:layout_constraintStart_toStartOf="@id/start"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
-            app:startIconDrawable="@drawable/at_sign_icon"
+            app:startIconDrawable="@drawable/profile_icon"
             app:startIconTint="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -286,6 +276,19 @@
             app:layout_constraintEnd_toStartOf="@+id/end"
             app:layout_constraintStart_toEndOf="@+id/no_act_text"
             app:layout_constraintTop_toTopOf="@+id/no_act_text" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:elevation="1000dp"
+            android:visibility="gone"
+            android:indeterminateTint="@color/orange"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 

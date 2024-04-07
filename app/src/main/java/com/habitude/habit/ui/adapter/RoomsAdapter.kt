@@ -18,7 +18,7 @@ import com.habitude.habit.databinding.UserThumbItemLayoutBinding
 class RoomsAdapter(
     private val rooms:List<Room>,
     private val context:Context,
-    val roomClick:(roomId:String,roomName:String,roomType:String,member:List<String>,friendImgUrl:String,adminImageUrl:String) -> Unit
+    val roomClick:(roomId:String,roomName:String,roomType:String,member:List<String>,friendImgUrl:String?,adminImageUrl:String) -> Unit
 ) : RecyclerView.Adapter<RoomsAdapter.RoomHolder>() {
 
     inner class RoomHolder(val binding : UserThumbItemLayoutBinding) : ViewHolder(binding.root)
@@ -44,7 +44,7 @@ class RoomsAdapter(
                 room.roomName,
                 room.roomType,
                 room.members,
-                room.roomThumbUrl,
+                room.roomThumbUrl?:"",
                 room.adminImageUrl
             )
         }

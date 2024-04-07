@@ -76,17 +76,18 @@ class HabitsFragment : Fragment() {
                viewModel.habitsUiState.collectLatest {
                    when(it){
                        is HabitsUiState.HabitsFetched -> {
-                           binding.progress.isVisible=false
+                           hideLoadingFoundAnim()
                            habits.clear()
                            habits.addAll(it.habits)
+                           if(habits.isEmpty()) showNoDataFoundAnim() else hideNoDataFoundAnim()
                            habitsAdapter.notifyDataSetChanged()
                        }
                        is HabitsUiState.Error -> {
-                           binding.progress.isVisible=false
+                           hideLoadingFoundAnim()
                            it.error?.let { error -> showToast(error) }
                        }
                        is HabitsUiState.Loading -> {
-                           binding.progress.isVisible=true
+                           showLoadingFoundAnim()
                        }
                        is HabitsUiState.Nothing -> { }
                    }
@@ -101,6 +102,8 @@ class HabitsFragment : Fragment() {
         return binding.root
     }
 
+
+
     private fun showToast(message: String) {
         if(message.isNotBlank())
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
@@ -109,6 +112,27 @@ class HabitsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding=null
+    }
+
+    fun showNoDataFoundAnim(){
+        binding.lottieAnimationView.isVisible=true
+        binding.lottieAnimationView.setAnimation("no_data_found_anim.json")
+        binding.lottieAnimationView.loop(true)
+        binding.lottieAnimationView.playAnimation()
+    }
+    private fun hideNoDataFoundAnim() {
+        binding.lottieAnimationView.isVisible=false
+        binding.lottieAnimationView.clearAnimation()
+    }
+    fun showLoadingFoundAnim(){
+        binding.loader.isVisible=true
+        binding.loader.setAnimation("loading_anim.json")
+        binding.loader.loop(true)
+        binding.loader.playAnimation()
+    }
+    private fun hideLoadingFoundAnim() {
+        binding.loader.isVisible=false
+        binding.loader.clearAnimation()
     }
 
 }

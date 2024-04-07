@@ -65,15 +65,16 @@ class GroupsFragment : Fragment() {
                                     )
                                 }
                             })
+                            if(it.habits.isEmpty()) showNoDataFoundAnim() else hideNoDataFoundAnim()
                             binding.ongoingHabits.adapter = groupHabitsAdapter
-                            hideProgress()
+                            hideLoadingFoundAnim()
                         }
                         is GroupHabitUiState.Error -> {
                             Toast.makeText(requireContext(), it.error, Toast.LENGTH_SHORT).show()
-                            hideProgress()
+                            hideLoadingFoundAnim()
                         }
-                        GroupHabitUiState.Loading -> {showProgress()}
-                        GroupHabitUiState.Nothing -> {hideProgress()}
+                        GroupHabitUiState.Loading -> {showLoadingFoundAnim()}
+                        GroupHabitUiState.Nothing -> {hideLoadingFoundAnim()}
                         else -> {}
                     }
 
@@ -88,7 +89,25 @@ class GroupsFragment : Fragment() {
         return binding.root
     }
 
-    private fun showProgress(){ binding.progress.isVisible=true }
-    private fun hideProgress(){ binding.progress.isVisible=false }
+    fun showNoDataFoundAnim(){
+        binding.lottieAnimationView.isVisible=true
+        binding.lottieAnimationView.setAnimation("no_data_found_anim.json")
+        binding.lottieAnimationView.loop(true)
+        binding.lottieAnimationView.playAnimation()
+    }
+    private fun hideNoDataFoundAnim() {
+        binding.lottieAnimationView.isVisible=false
+        binding.lottieAnimationView.clearAnimation()
+    }
+    fun showLoadingFoundAnim(){
+        binding.loader.isVisible=true
+        binding.loader.setAnimation("loading_anim.json")
+        binding.loader.loop(true)
+        binding.loader.playAnimation()
+    }
+    private fun hideLoadingFoundAnim() {
+        binding.loader.isVisible=false
+        binding.loader.clearAnimation()
+    }
 
 }
